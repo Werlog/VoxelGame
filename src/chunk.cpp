@@ -3,9 +3,11 @@
 #include <vector>
 #include <glad/glad.h>
 #include "faceChecks.h"
+#include "profiling/codetimer.h"
 
-Chunk::Chunk()
+Chunk::Chunk(ChunkCoord coord)
 {
+	this->coord = coord;
 	VAO = 0;
 	SSBO = 0;
 	faceCount = 0;
@@ -21,17 +23,20 @@ void Chunk::generateChunk()
 		{
 			for (size_t z = 0; z < CHUNK_SIZE_Z; z++)
 			{
-				if (y == 30)
+				int yPos = y + coord.y * CHUNK_SIZE_Y;
+				int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+
+				if (yPos == 48)
 				{
-					blocks[x][y][z] = BlockType::GRASS;
+					blocks[index] = BlockType::GRASS;
 				}
-				else if (y > 27 && y < 30)
+				else if (yPos > 44 && yPos < 48)
 				{
-					blocks[x][y][z] = BlockType::DIRT;
+					blocks[index] = BlockType::DIRT;
 				}
-				else if (y <= 27)
+				else if (yPos <= 44)
 				{
-					blocks[x][y][z] = BlockType::STONE;
+					blocks[index] = BlockType::STONE;
 				}
 			}
 		}
@@ -42,15 +47,19 @@ void Chunk::generateMesh(BlockData& blockData)
 {
 	std::vector<int> faceData;
 
+	faceData.reserve(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
+
 	for (size_t x = 0; x < CHUNK_SIZE_X; x++)
 	{
 		for (size_t y = 0; y < CHUNK_SIZE_Y; y++)
 		{
 			for (size_t z = 0; z < CHUNK_SIZE_Z; z++)
 			{
-				if (blocks[x][y][z] == BlockType::AIR) continue;
+				int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
 
-				const TextureData& textureData = blockData.getTextureData(blocks[x][y][z]);
+				if (blocks[index] == BlockType::AIR) continue;
+
+				const TextureData& textureData = blockData.getTextureData(blocks[index]);
 
 				for (size_t i = 0; i < 6; i++)
 				{
@@ -96,10 +105,15 @@ void Chunk::render()
 	glDrawArrays(GL_TRIANGLES, 0, faceCount * 6);
 }
 
-BlockType Chunk::getBlockAt(int x, int y, int z)
+inline BlockType Chunk::getBlockAt(int x, int y, int z)
 {
 	if (x > CHUNK_SIZE_X - 1 || x < 0 || y > CHUNK_SIZE_Y - 1 || y < 0 || z > CHUNK_SIZE_Z - 1 || z < 0)
 		return BlockType::AIR;
+	int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+	return blocks[index];
+}
 
-	return blocks[x][y][z];
+const ChunkCoord& Chunk::getCoord()
+{
+	return coord;
 }

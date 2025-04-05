@@ -7,7 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "timer.h"
 #include "texturesheet.h"
-#include "chunk.h"
+#include "world.h"
 #include "blockdata.h"
 
 Game::Game()
@@ -68,7 +68,8 @@ void Game::gameLoop()
 
 	TextureSheet sheet = TextureSheet(16, 16, "textures\\terrain.png");
 
-	BlockData blockData = BlockData();
+	World world = World(shader);
+	world.generateWorld();
 
 	glBindTexture(GL_TEXTURE_2D, sheet.getSheet().getTextureHandle());
 
@@ -81,10 +82,6 @@ void Game::gameLoop()
 	unsigned int atlasSizeX = glGetUniformLocation(shader.getProgramHandle(), "atlasSizeX");
 	unsigned int atlasSizeY = glGetUniformLocation(shader.getProgramHandle(), "atlasSizeY");
 
-	Chunk* chunk = new Chunk();
-	chunk->generateChunk();
-	chunk->generateMesh(blockData);
-
 	float oneX = sheet.getOneUnitX();
 	float oneY = sheet.getOneUnitY();
 
@@ -96,7 +93,7 @@ void Game::gameLoop()
 
 	InputHandler inputHandler;
 	Timer timer;
-	Camera camera = Camera(glm::vec3(0.0f), 60.0f, (float)windowWidth / (float)windowHeight, 2.0f);
+	Camera camera = Camera(glm::vec3(0.0f), 60.0f, (float)windowWidth / (float)windowHeight, 5.0f);
 
 	glm::mat4 model = glm::mat4(1.0f);
 
@@ -139,7 +136,7 @@ void Game::gameLoop()
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-		chunk->render();
+		world.renderWorld();
 
 		glBindVertexArray(0);
 
