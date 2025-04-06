@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include "faceChecks.h"
 #include "profiling/codetimer.h"
-#include <FastNoiseSIMD.h>
 
 Chunk::Chunk(ChunkCoord coord)
 {
@@ -16,10 +15,8 @@ Chunk::Chunk(ChunkCoord coord)
 	std::memset(blocks, BlockType::AIR, sizeof(blocks));
 }
 
-void Chunk::generateChunk()
+void Chunk::generateChunk(FastNoiseSIMD* noise)
 {
-	FastNoiseSIMD* noise = FastNoiseSIMD::NewFastNoiseSIMD(1337);
-
 	float* noiseSet = noise->GetSimplexFractalSet(coord.x * CHUNK_SIZE_X, 0, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, 1, CHUNK_SIZE_Z);
 	for (size_t x = 0; x < CHUNK_SIZE_X; x++)
 	{

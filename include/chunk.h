@@ -1,6 +1,7 @@
 #pragma once
 #include "blockdata.h"
 #include <glm/glm.hpp>
+#include <FastNoiseSIMD.h>
 
 constexpr int CHUNK_SIZE_X = 32;
 constexpr int CHUNK_SIZE_Y = 32;
@@ -45,7 +46,7 @@ public:
 
 	Chunk(ChunkCoord coord);
 
-	void generateChunk();
+	void generateChunk(FastNoiseSIMD* noise);
 	void generateMesh(BlockData& blockData);
 	void createChunkMesh(std::vector<int>& faceData);
 	void render();

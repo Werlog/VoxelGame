@@ -1,18 +1,17 @@
 #include "game.h"
 #include <glad/glad.h>
-#include "shader.h"
 #include "openglErrorReporting.h"
-#include "inputhandler.h"
-#include "camera.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "timer.h"
-#include "texturesheet.h"
 #include "world.h"
 #include "blockdata.h"
+#include "GameState/PlayingGameState.h"
 
-Game::Game()
+Game::Game() 
+	: camera(glm::vec3(0), 60.0f, (float)windowWidth / (float)windowHeight, 5.0f)
 {
-
+	running = true;
+	currentState = nullptr;
 }
 
 bool Game::init()
@@ -47,55 +46,22 @@ bool Game::init()
 	glCullFace(GL_BACK);
 	
 	glViewport(0, 0, windowWidth, windowHeight);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	
 	enableReportGlErrors();
+
+	// Game State Setup
+	PlayingGameState* playingState = new PlayingGameState(this, resourceManager);
+	switchToState(playingState);
 
 	return true;
 }
 
 void Game::gameLoop()
 {
-	bool running = true;
-
-	glClearColor(0.0f, 0.7f, 1.0f, 1.0f);
-
-	Shader shader = Shader("shaders\\chunk.vert", "shaders\\chunk.frag");
-
-	glUseProgram(shader.getProgramHandle());
-
-	TextureSheet sheet = TextureSheet(16, 16, "textures\\terrain.png");
-
-	World world = World(shader);
-	world.generateWorld();
-
-	glBindTexture(GL_TEXTURE_2D, sheet.getSheet().getTextureHandle());
-
-	unsigned int projectionLoc = glGetUniformLocation(shader.getProgramHandle(), "projection");
-	unsigned int viewLoc = glGetUniformLocation(shader.getProgramHandle(), "view");
-	unsigned int modelLoc = glGetUniformLocation(shader.getProgramHandle(), "model");
-
-	unsigned int unitXLoc = glGetUniformLocation(shader.getProgramHandle(), "texUnitX");
-	unsigned int unitYLoc = glGetUniformLocation(shader.getProgramHandle(), "texUnitY");
-	unsigned int atlasSizeX = glGetUniformLocation(shader.getProgramHandle(), "atlasSizeX");
-	unsigned int atlasSizeY = glGetUniformLocation(shader.getProgramHandle(), "atlasSizeY");
-
-	float oneX = sheet.getOneUnitX();
-	float oneY = sheet.getOneUnitY();
-
-	int atlasSize = 16;
-	glUniform1fv(unitXLoc, 1, &oneX);
-	glUniform1fv(unitYLoc, 1, &oneY);
-	glUniform1iv(atlasSizeX, 1, &atlasSize);
-	glUniform1iv(atlasSizeY, 1, &atlasSize);
-
-	InputHandler inputHandler;
 	Timer timer;
-	Camera camera = Camera(glm::vec3(0.0f), 60.0f, (float)windowWidth / (float)windowHeight, 5.0f);
-
-	glm::mat4 model = glm::mat4(1.0f);
-
 	while (running)
 	{
 		int w, h;
@@ -106,39 +72,57 @@ void Game::gameLoop()
 		inputHandler.update();
 		timer.tick();
 
-		SDL_Event e;
-		while (SDL_PollEvent(&e))
-		{
-			switch (e.type)
-			{
-			case SDL_QUIT:
-				running = false;
-				break;
-			case SDL_KEYDOWN:
-				inputHandler.keyUpdate(e);
-				break;
-			case SDL_KEYUP:
-				inputHandler.keyUpdate(e);
-				break;
-			}
-		}
+		handleEvents();
+
 		if (inputHandler.getKeyUp(SDLK_ESCAPE))
 		{
 			running = false;
 		}
 
-		camera.update(timer.deltaTime, inputHandler);
+		// Game Updates
+		currentState->update(timer.deltaTime, inputHandler);
 
+		// Rendering
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-		world.renderWorld();
-
-		glBindVertexArray(0);
+		currentState->render();
 
 		SDL_GL_SwapWindow(window);
+	}
+}
+
+Camera& Game::getCamera()
+{
+	return camera;
+}
+
+void Game::switchToState(BaseGameState* newState)
+{
+	if (currentState != nullptr)
+	{
+		currentState->onExit();
+		delete currentState;
+	}
+	currentState = newState;
+	currentState->onEnter();
+}
+
+void Game::handleEvents()
+{
+	SDL_Event e;
+	while (SDL_PollEvent(&e))
+	{
+		switch (e.type)
+		{
+		case SDL_QUIT:
+			running = false;
+			break;
+		case SDL_KEYDOWN:
+			inputHandler.keyUpdate(e);
+			break;
+		case SDL_KEYUP:
+			inputHandler.keyUpdate(e);
+			break;
+		}
 	}
 }

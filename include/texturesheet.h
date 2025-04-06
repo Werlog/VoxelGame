@@ -1,9 +1,11 @@
+#pragma once
+
 #include "texture.h"
 
 class TextureSheet
 {
 public:
-	TextureSheet(int textureWidth, int textureHeight, const std::string& texturePath);
+	TextureSheet(int textureWidth, int textureHeight, Texture* texture);
 
 	const Texture& getSheet() const;
 
@@ -11,7 +13,7 @@ public:
 	float getOneUnitY() const;
 
 private:
-	Texture sheet;
+	Texture* sheet;
 
 	int textureWidth, textureHeight;
 };

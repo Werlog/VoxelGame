@@ -2,10 +2,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
+#include <iostream>
 
 World::World(const Shader& terrainShader)
 {
 	shaderModelLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "model");
+
+	noise = FastNoiseSIMD::NewFastNoiseSIMD(0); // TODO: Random seeds
 }
 
 void World::generateWorld()
@@ -17,13 +20,15 @@ void World::generateWorld()
 			for (int z = -WORLD_SIZE_Z / 2; z < WORLD_SIZE_Z / 2; z++)
 			{
 				Chunk* chunk = new Chunk(ChunkCoord{x, y, z});
-				chunk->generateChunk();
+				chunk->generateChunk(noise);
 				chunk->generateMesh(blockData);
 				
 				loadedChunks.push_back(chunk);
 			}
 		}
 	}
+
+	std::cout << "World Generated" << std::endl;
 }
 
 void World::renderWorld()
