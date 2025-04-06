@@ -37,6 +37,7 @@ add_subdirectory(thirdparty/stb_truetype)		#loading ttf files
 add_subdirectory(thirdparty/glm)			#math
 add_subdirectory(thirdparty/imgui-docking)		#ui
 add_subdirectory(thirdparty/gl2d)			#rendering
+add_subdirectory(thirdparty/FastNoiseSIMD)
 
 
 # MY_SOURCES is defined to be a list of all the source files for my game 
@@ -88,6 +89,6 @@ target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURC
 
 #enet not working yet on linux for some reason
 target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE glm 
-	glad stb_image stb_truetype gl2d imgui SDL2-static)
+	glad stb_image stb_truetype gl2d imgui SDL2-static fastNoiseSIMD)
 
 

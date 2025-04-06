@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include "faceChecks.h"
 #include "profiling/codetimer.h"
+#include <FastNoiseSIMD.h>
 
 Chunk::Chunk(ChunkCoord coord)
 {
@@ -17,6 +18,9 @@ Chunk::Chunk(ChunkCoord coord)
 
 void Chunk::generateChunk()
 {
+	FastNoiseSIMD* noise = FastNoiseSIMD::NewFastNoiseSIMD(1337);
+
+	float* noiseSet = noise->GetSimplexFractalSet(coord.x * CHUNK_SIZE_X, 0, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, 1, CHUNK_SIZE_Z);
 	for (size_t x = 0; x < CHUNK_SIZE_X; x++)
 	{
 		for (size_t y = 0; y < CHUNK_SIZE_Y; y++)
@@ -25,22 +29,28 @@ void Chunk::generateChunk()
 			{
 				int yPos = y + coord.y * CHUNK_SIZE_Y;
 				int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+				int noiseIndex = z + x * CHUNK_SIZE_Z;
 
-				if (yPos == 48)
+				int height = (int)floor(10.0f + noiseSet[noiseIndex] * 10.0f);
+
+				
+				if (yPos == height)
 				{
 					blocks[index] = BlockType::GRASS;
 				}
-				else if (yPos > 44 && yPos < 48)
+				else if (yPos > height - 3 && yPos < height)
 				{
 					blocks[index] = BlockType::DIRT;
 				}
-				else if (yPos <= 44)
+				else if (yPos <= height - 3)
 				{
 					blocks[index] = BlockType::STONE;
 				}
 			}
 		}
 	}
+
+	FastNoiseSIMD::FreeNoiseSet(noiseSet);
 }
 
 void Chunk::generateMesh(BlockData& blockData)
