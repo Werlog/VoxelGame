@@ -4,6 +4,7 @@
 #include "world.h"
 #include "resourcemanager.h"
 #include "texturesheet.h"
+#include "skybox.h"
 
 class PlayingGameState : public BaseGameState
 {
@@ -21,6 +22,9 @@ private:
 	World world;
 	Texture& terrainTexture;
 	TextureSheet terrainSheet;
+
+	Shader& skyboxShader;
+	SkyBox skybox;
 
 	unsigned int shaderViewLoc;
 	unsigned int shaderProjectionLoc;
