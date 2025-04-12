@@ -15,7 +15,7 @@ void World::generateWorld()
 {
 	for (int x = -WORLD_SIZE_X / 2; x < WORLD_SIZE_X / 2; x++)
 	{
-		for (int y = 0; y < WORLD_SIZE_Y; y++)
+		for (int y = -WORLD_SIZE_Y / 2; y < WORLD_SIZE_Y; y++)
 		{
 			for (int z = -WORLD_SIZE_Z / 2; z < WORLD_SIZE_Z / 2; z++)
 			{

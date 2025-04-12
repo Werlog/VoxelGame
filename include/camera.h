@@ -25,21 +25,18 @@ public:
 	float pitch;
 	float fov;
 
-	float movementSpeed;
 	float mouseSensitivity;
 
-	Camera(glm::vec3 position, float fov, float aspectRatio, float movementSpeed);
+	Camera(glm::vec3 position, float fov, float aspectRatio);
 
 	glm::mat4 getViewMatrix();
 	glm::mat4 getProjectionMatrix();
-	void update(float deltaTime, const InputHandler& inputHandler);
-	void ProccessKeyboard(CameraMovement movement, float deltaTime);
+	void update(float deltaTime);
 	void ProccessMouse(float mouseX, float mouseY, bool constrainPitch = true);
 	void updateProjectionMatrix(float aspectRatio);
 private:
 	float lastMouseX, lastMouseY;
 	bool firstMouse;
-	bool fastFlight;
 	glm::mat4 projectionMatrix;
 
 	void updateCameraVectors();

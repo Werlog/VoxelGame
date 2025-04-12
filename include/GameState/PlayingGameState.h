@@ -5,6 +5,7 @@
 #include "resourcemanager.h"
 #include "texturesheet.h"
 #include "skybox.h"
+#include "player.h"
 
 class PlayingGameState : public BaseGameState
 {
@@ -20,6 +21,7 @@ public:
 private:
 	Shader& terrainShader;
 	World world;
+	Player player;
 	Texture& terrainTexture;
 	TextureSheet terrainSheet;
 

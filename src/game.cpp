@@ -8,7 +8,7 @@
 #include "GameState/PlayingGameState.h"
 
 Game::Game() 
-	: camera(glm::vec3(0), 60.0f, (float)windowWidth / (float)windowHeight, 5.0f)
+	: camera(glm::vec3(0), 60.0f, (float)windowWidth / (float)windowHeight)
 {
 	running = true;
 	currentState = nullptr;

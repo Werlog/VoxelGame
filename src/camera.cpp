@@ -2,14 +2,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
-Camera::Camera(glm::vec3 position, float fov, float aspectRatio, float movementSpeed) 
+Camera::Camera(glm::vec3 position, float fov, float aspectRatio) 
 {
 	this->position = position;
 	this->fov = fov;
-	this->movementSpeed = movementSpeed;
 
 	firstMouse = true;
-	fastFlight = false;
 
 	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -27,54 +25,12 @@ glm::mat4 Camera::getViewMatrix()
 	return glm::lookAt(position, position + front, up);
 }
 
-void Camera::update(float deltaTime, const InputHandler& inputHandler)
+void Camera::update(float deltaTime)
 {
 	int xrel = 0;
 	int yrel = 0;
 	SDL_GetRelativeMouseState(&xrel, &yrel);
 	ProccessMouse(xrel, yrel, true);
-
-	fastFlight = inputHandler.getKey(SDLK_LSHIFT);
-
-	if (inputHandler.getKey(SDLK_w))
-	{
-		ProccessKeyboard(CameraMovement::FORWARD, deltaTime);
-	}
-	if (inputHandler.getKey(SDLK_a))
-	{
-		ProccessKeyboard(CameraMovement::LEFT, deltaTime);
-	}
-	if (inputHandler.getKey(SDLK_s))
-	{
-		ProccessKeyboard(CameraMovement::BACKWARD, deltaTime);
-	}
-	if (inputHandler.getKey(SDLK_d))
-	{
-		ProccessKeyboard(CameraMovement::RIGHT, deltaTime);
-	}
-}
-
-void Camera::ProccessKeyboard(CameraMovement movement, float deltaTime)
-{
-	float velocity = movementSpeed * deltaTime;
-
-	if (fastFlight)
-		velocity *= 3.0f;
-
-	switch (movement) {
-	case FORWARD:
-		position += front * velocity;
-		break;
-	case BACKWARD:
-		position -= front * velocity;
-		break;
-	case LEFT:
-		position -= right * velocity;
-		break;
-	case RIGHT:
-		position += right * velocity;
-		break;
-	}
 }
 
 void Camera::ProccessMouse(float mouseX, float mouseY, bool constrainPitch)
