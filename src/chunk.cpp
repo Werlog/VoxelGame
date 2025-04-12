@@ -18,11 +18,11 @@ Chunk::Chunk(ChunkCoord coord)
 void Chunk::generateChunk(FastNoiseSIMD* noise)
 {
 	float* noiseSet = noise->GetSimplexFractalSet(coord.x * CHUNK_SIZE_X, 0, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, 1, CHUNK_SIZE_Z);
-	for (size_t x = 0; x < CHUNK_SIZE_X; x++)
+	for (int x = 0; x < CHUNK_SIZE_X; x++)
 	{
-		for (size_t y = 0; y < CHUNK_SIZE_Y; y++)
+		for (int y = 0; y < CHUNK_SIZE_Y; y++)
 		{
-			for (size_t z = 0; z < CHUNK_SIZE_Z; z++)
+			for (int z = 0; z < CHUNK_SIZE_Z; z++)
 			{
 				int yPos = y + coord.y * CHUNK_SIZE_Y;
 				int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
@@ -56,11 +56,11 @@ void Chunk::generateMesh(BlockData& blockData)
 
 	faceData.reserve(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 
-	for (size_t x = 0; x < CHUNK_SIZE_X; x++)
+	for (int x = 0; x < CHUNK_SIZE_X; x++)
 	{
-		for (size_t y = 0; y < CHUNK_SIZE_Y; y++)
+		for (int y = 0; y < CHUNK_SIZE_Y; y++)
 		{
-			for (size_t z = 0; z < CHUNK_SIZE_Z; z++)
+			for (int z = 0; z < CHUNK_SIZE_Z; z++)
 			{
 				int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
 

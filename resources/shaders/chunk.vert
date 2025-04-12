@@ -109,7 +109,7 @@ void main()
 	position += vertexPositions[indices[vertexIndex]];
 
 	uint row = textureId / atlasSizeX;
-	uint column = textureId % row;
+	uint column = textureId - row * atlasSizeX;
 	if (row == 0)
 		column = textureId;
 
