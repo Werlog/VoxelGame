@@ -4,10 +4,13 @@
 #include <glad/glad.h>
 #include "faceChecks.h"
 #include "profiling/codetimer.h"
+#include "world.h"
 
-Chunk::Chunk(ChunkCoord coord)
+Chunk::Chunk(ChunkCoord coord, World* world)
 {
 	this->coord = coord;
+	this->world = world;
+
 	VAO = 0;
 	SSBO = 0;
 	faceCount = 0;
@@ -115,7 +118,7 @@ void Chunk::render()
 inline BlockType Chunk::getBlockAt(int x, int y, int z)
 {
 	if (x > CHUNK_SIZE_X - 1 || x < 0 || y > CHUNK_SIZE_Y - 1 || y < 0 || z > CHUNK_SIZE_Z - 1 || z < 0)
-		return BlockType::AIR;
+		return world->getBlockAt(coord.x * CHUNK_SIZE_X + x, coord.y * CHUNK_SIZE_Y + y, coord.z * CHUNK_SIZE_Z + z);
 	int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
 	return blocks[index];
 }

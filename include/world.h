@@ -1,7 +1,7 @@
 #pragma once
 
 #include "chunk.h"
-#include <vector>
+#include <unordered_map>
 #include "shader.h"
 #include <FastNoiseSIMD.h>
 
@@ -18,9 +18,11 @@ public:
 	void generateWorld();
 	void renderWorld();
 
+	BlockType getBlockAt(int x, int y, int z);
+	Chunk* getChunkByCoordinate(ChunkCoord coord);
 private:
 	BlockData blockData;
-	std::vector<Chunk*> loadedChunks;
+	std::unordered_map<ChunkCoord, Chunk*> loadedChunks;
 	unsigned int shaderModelLoc;
 	FastNoiseSIMD* noise;
 };
