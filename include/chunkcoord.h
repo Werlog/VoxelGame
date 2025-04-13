@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <glm/glm.hpp>
 
 constexpr int CHUNK_SIZE_X = 32;
 constexpr int CHUNK_SIZE_Y = 32;

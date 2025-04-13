@@ -1,8 +1,6 @@
 #pragma once
 #include "blockdata.h"
-#include <glm/glm.hpp>
 #include <FastNoiseSIMD.h>
-#include <functional>
 #include "chunkcoord.h"
 
 class World;
@@ -12,6 +10,7 @@ class Chunk
 public:
 
 	Chunk(ChunkCoord coord, World* world);
+	~Chunk();
 
 	void generateChunk(FastNoiseSIMD* noise);
 	void generateMesh(BlockData& blockData);

@@ -16,6 +16,11 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	camera->position = position + glm::vec3(0.0f, playerHeight, 0.0f);
 }
 
+const glm::vec3& Player::getPosition() const
+{
+	return position;
+}
+
 void Player::movement(InputHandler& inputHandler, float deltaTime)
 {
 	glm::vec3 input = getInputDirection(inputHandler);

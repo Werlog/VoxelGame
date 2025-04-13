@@ -18,9 +18,16 @@ Chunk::Chunk(ChunkCoord coord, World* world)
 	std::memset(blocks, BlockType::AIR, sizeof(blocks));
 }
 
+Chunk::~Chunk()
+{
+	if (VAO != 0)
+		glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &SSBO);
+}
+
 void Chunk::generateChunk(FastNoiseSIMD* noise)
 {
-	float* noiseSet = noise->GetSimplexFractalSet(coord.x * CHUNK_SIZE_X, 0, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, 1, CHUNK_SIZE_Z);
+	float* noiseSet = noise->GetSimplexFractalSet(coord.x * CHUNK_SIZE_X, coord.y * CHUNK_SIZE_Y, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
 	for (int x = 0; x < CHUNK_SIZE_X; x++)
 	{
 		for (int y = 0; y < CHUNK_SIZE_Y; y++)
@@ -29,11 +36,16 @@ void Chunk::generateChunk(FastNoiseSIMD* noise)
 			{
 				int yPos = y + coord.y * CHUNK_SIZE_Y;
 				int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
-				int noiseIndex = z + x * CHUNK_SIZE_Z;
+				int noiseIndex = z + y * CHUNK_SIZE_Z + x * CHUNK_SIZE_Z * CHUNK_SIZE_Y;
 
-				int height = (int)floor(10.0f + noiseSet[noiseIndex] * 10.0f);
+				int density = (int)floor(10.0f + noiseSet[noiseIndex] * 10.0f);
 
-				
+				if (density > 9.0f)
+					blocks[index] = BlockType::BEDROCK;
+				else
+					blocks[index] = BlockType::AIR;
+
+				/*
 				if (yPos == height)
 				{
 					blocks[index] = BlockType::GRASS;
@@ -46,6 +58,7 @@ void Chunk::generateChunk(FastNoiseSIMD* noise)
 				{
 					blocks[index] = BlockType::STONE;
 				}
+				*/
 			}
 		}
 	}
@@ -96,12 +109,13 @@ void Chunk::generateMesh(BlockData& blockData)
 
 void Chunk::createChunkMesh(std::vector<int>& faceData)
 {
-	if (VAO != 0) return;
-
-	glGenVertexArrays(1, &VAO);
+	if (VAO == 0)
+		glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	glGenBuffers(1, &SSBO);
+	if (SSBO == 0)
+		glGenBuffers(1, &SSBO);
+
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
 
 	glBufferData(GL_SHADER_STORAGE_BUFFER, faceData.size() * sizeof(int), faceData.data(), GL_DYNAMIC_DRAW);

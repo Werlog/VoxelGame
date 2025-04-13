@@ -13,6 +13,8 @@ public:
 	Player(Camera* camera);
 
 	void update(InputHandler& inputHandler, float deltaTime);
+
+	const glm::vec3& getPosition() const;
 private:
 	Camera* camera;
 	glm::vec3 position;
