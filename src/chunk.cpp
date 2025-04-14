@@ -16,18 +16,21 @@ Chunk::Chunk(ChunkCoord coord, World* world)
 	faceCount = 0;
 
 	std::memset(blocks, BlockType::AIR, sizeof(blocks));
+	shouldUpdateMesh.store(false);
+	toBeRemeshed.store(false);
 }
 
 Chunk::~Chunk()
 {
 	if (VAO != 0)
 		glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &SSBO);
+	if (SSBO != 0)
+		glDeleteBuffers(1, &SSBO);
 }
 
 void Chunk::generateChunk(FastNoiseSIMD* noise)
 {
-	float* noiseSet = noise->GetSimplexFractalSet(coord.x * CHUNK_SIZE_X, coord.y * CHUNK_SIZE_Y, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z);
+	//float* noiseSet = noise->GetSimplexFractalSet(coord.x * CHUNK_SIZE_X, 0, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, 1, CHUNK_SIZE_Z);
 	for (int x = 0; x < CHUNK_SIZE_X; x++)
 	{
 		for (int y = 0; y < CHUNK_SIZE_Y; y++)
@@ -36,16 +39,10 @@ void Chunk::generateChunk(FastNoiseSIMD* noise)
 			{
 				int yPos = y + coord.y * CHUNK_SIZE_Y;
 				int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
-				int noiseIndex = z + y * CHUNK_SIZE_Z + x * CHUNK_SIZE_Z * CHUNK_SIZE_Y;
+				int noiseIndex = z + x * CHUNK_SIZE_Z;
 
-				int density = (int)floor(10.0f + noiseSet[noiseIndex] * 10.0f);
+				int height = (int)floor(10.0f + 0.25f * 15.0f);
 
-				if (density > 9.0f)
-					blocks[index] = BlockType::BEDROCK;
-				else
-					blocks[index] = BlockType::AIR;
-
-				/*
 				if (yPos == height)
 				{
 					blocks[index] = BlockType::GRASS;
@@ -58,17 +55,16 @@ void Chunk::generateChunk(FastNoiseSIMD* noise)
 				{
 					blocks[index] = BlockType::STONE;
 				}
-				*/
 			}
 		}
 	}
 
-	FastNoiseSIMD::FreeNoiseSet(noiseSet);
+	//FastNoiseSIMD::FreeNoiseSet(noiseSet);
 }
 
-void Chunk::generateMesh(BlockData& blockData)
+void Chunk::generateMesh(BlockData& blockData, std::mutex& chunksMutex)
 {
-	std::vector<int> faceData;
+	faceData.clear();
 
 	faceData.reserve(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 
@@ -84,30 +80,29 @@ void Chunk::generateMesh(BlockData& blockData)
 
 				const TextureData& textureData = blockData.getTextureData(blocks[index]);
 
-				for (size_t i = 0; i < 6; i++)
+				for (int i = 0; i < 6; i++)
 				{
 					int checkIndex = i * 3;
 					int checkX = faceChecks[checkIndex] + x;
 					int checkY = faceChecks[checkIndex + 1] + y;
 					int checkZ = faceChecks[checkIndex + 2] + z;
 
+					std::lock_guard lock(chunksMutex);
 					if (getBlockAt(checkX, checkY, checkZ) != BlockType::AIR)
 						continue;
 
 					int textureId = blockData.getTextureIdFromFaceIndex(textureData, i);
-					int face = (x | y << 6 | z << 12 | textureId << 18 | i << 26);
-					faceData.push_back(face);
+
+					faceData.push_back(createFace(x, y, z, textureId, i));
 				}
 			}
 		}
 	}
 
 	faceCount = faceData.size();
-
-	createChunkMesh(faceData);
 }
 
-void Chunk::createChunkMesh(std::vector<int>& faceData)
+void Chunk::createChunkMesh()
 {
 	if (VAO == 0)
 		glGenVertexArrays(1, &VAO);
@@ -121,7 +116,7 @@ void Chunk::createChunkMesh(std::vector<int>& faceData)
 	glBufferData(GL_SHADER_STORAGE_BUFFER, faceData.size() * sizeof(int), faceData.data(), GL_DYNAMIC_DRAW);
 }
 
-void Chunk::render()
+void Chunk::render() const
 {
 	glBindVertexArray(VAO);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
@@ -140,4 +135,14 @@ inline BlockType Chunk::getBlockAt(int x, int y, int z)
 const ChunkCoord& Chunk::getCoord()
 {
 	return coord;
+}
+
+bool Chunk::hasMesh() const
+{
+	return VAO != 0;
+}
+
+inline int Chunk::createFace(int x, int y, int z, int textureId, int faceDirection)
+{
+	return (x | y << 6 | z << 12 | textureId << 18 | faceDirection << 26);
 }

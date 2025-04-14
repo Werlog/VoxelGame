@@ -7,8 +7,9 @@
 #include <queue>
 #include "player.h"
 #include <mutex>
+#include "chunkmanager.h"
 
-constexpr int RENDER_DISTANCE = 5;
+constexpr int RENDER_DISTANCE = 10;
 constexpr int RENDER_HEIGHT = 1;
 
 constexpr int chunkLoadDirections[6][3] = { { 1, 0, 0 }, { 0, 0, 1 }, { -1, 0, 0, }, { 0, 0, -1 }, { 0, 1, 0 }, { 0, -1, 0 } };
@@ -27,12 +28,12 @@ public:
 
 	BlockType getBlockAt(int x, int y, int z);
 	Chunk* getChunkByCoordinate(ChunkCoord coord);
+	FastNoiseSIMD* getNoise();
+	BlockData& getBlockData();
 private:
 	BlockData blockData;
-	std::unordered_map<ChunkCoord, Chunk*> loadedChunks;
+	ChunkManager chunkManager;
 
-	std::queue<ChunkCoord> chunksToUpdate;
-	std::recursive_mutex chunksMutex;
 	ChunkCoord lastplayerCoord;
 
 	unsigned int shaderModelLoc;

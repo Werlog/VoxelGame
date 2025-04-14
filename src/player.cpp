@@ -29,7 +29,7 @@ void Player::movement(InputHandler& inputHandler, float deltaTime)
 	glm::vec3 movementDirection = glm::normalize(camera->front * input.y + camera->right * input.x);
 	if (inputHandler.getKey(SDLK_LSHIFT))
 	{
-		movementDirection *= 2.0f;
+		movementDirection *= 5.0f;
 	}
 
 	position += movementDirection * 8.0f * deltaTime;

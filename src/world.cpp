@@ -7,6 +7,7 @@
 #include <unordered_set>
 
 World::World(const Shader& terrainShader)
+	: chunkManager(this)
 {
 	shaderModelLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "model");
 
@@ -23,13 +24,18 @@ void World::updateWorld(Player& player)
 	{
 		updateLoadedChunks(playerCoord);
 	}
+
+	chunkManager.update();
 }
 
 void World::renderWorld()
 {
+	const auto& loadedChunks = chunkManager.getLoadedChunks();
 	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
 	{
 		Chunk* chunk = (*it).second;
+		if (!chunk->hasMesh()) continue;
+
 		const ChunkCoord& coord = (*it).first;
 		glm::mat4 model = glm::mat4(1);
 
@@ -43,12 +49,11 @@ void World::renderWorld()
 
 void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 {
-	std::lock_guard lock(chunksMutex);
-
 	std::queue<ChunkCoord> coordsToLoad;
 	std::unordered_set<ChunkCoord> visited;
 
 	coordsToLoad.push(newCoordinate);
+	const auto& loadedChunks = chunkManager.getLoadedChunks();
 
 	while (!coordsToLoad.empty())
 	{
@@ -58,9 +63,10 @@ void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 		if (visited.find(coord) != visited.end())
 			continue;
 
+		
 		if (loadedChunks.find(coord) == loadedChunks.end())
 			loadChunk(coord);
-
+		
 		for (const auto& direction : chunkLoadDirections)
 		{
 			ChunkCoord neighbour = ChunkCoord{ coord.x + direction[0], coord.y + direction[1], coord.z + direction[2] };
@@ -80,6 +86,8 @@ void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 		visited.insert(coord);
 	}
 
+
+	std::unordered_set<ChunkCoord> chunksToUnload;
 	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
 	{
 		const ChunkCoord& coord = it->first;
@@ -91,36 +99,21 @@ void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 		float squareDist = xDiff * xDiff + zDiff * zDiff;
 		if (squareDist > RENDER_DISTANCE * RENDER_DISTANCE || yDiff > RENDER_HEIGHT)
 		{
-			Chunk* chunk = it->second;
-			delete chunk;
-			it = loadedChunks.erase(it);
+			chunksToUnload.insert(it->second->getCoord());
 		}
 	}
 
+	for (auto it = chunksToUnload.begin(); it != chunksToUnload.end(); it++)
+	{
+		chunkManager.unloadChunk(*it);
+	}
+	
 	lastplayerCoord = newCoordinate;
 }
 
 void World::loadChunk(ChunkCoord coordinate)
 {
-	if (loadedChunks.find(coordinate) != loadedChunks.end())
-		return;
-
-	Chunk* chunk = new Chunk(coordinate, this);
-	chunk->generateChunk(noise);
-	chunk->generateMesh(blockData);
-	
-	std::lock_guard lock(chunksMutex);
-
-	loadedChunks.insert({ coordinate, chunk });
-
-	for (const auto& direction : chunkLoadDirections)
-	{
-		ChunkCoord neighbour = ChunkCoord{ coordinate.x + direction[0], coordinate.y + direction[1], coordinate.z + direction[2] };
-
-		Chunk* nChunk = getChunkByCoordinate(neighbour);
-		if (nChunk != nullptr)
-			nChunk->generateMesh(blockData);
-	}
+	chunkManager.loadChunk(coordinate);
 }
 
 BlockType World::getBlockAt(int x, int y, int z)
@@ -135,9 +128,15 @@ BlockType World::getBlockAt(int x, int y, int z)
 
 Chunk* World::getChunkByCoordinate(ChunkCoord coord)
 {
-	auto it = loadedChunks.find(coord);
-	if (it != loadedChunks.end())
-		return it->second;
+	return chunkManager.getLoadedChunk(coord);
+}
 
-	return nullptr;
+FastNoiseSIMD* World::getNoise()
+{
+	return noise;
+}
+
+BlockData& World::getBlockData()
+{
+	return blockData;
 }
