@@ -123,6 +123,12 @@ void Game::handleEvents()
 		case SDL_KEYUP:
 			inputHandler.keyUpdate(e);
 			break;
+		case SDL_MOUSEBUTTONDOWN:
+			inputHandler.mouseUpdate(e);
+			break;
+		case SDL_MOUSEBUTTONUP:
+			inputHandler.mouseUpdate(e);
+			break;
 		}
 	}
 }
