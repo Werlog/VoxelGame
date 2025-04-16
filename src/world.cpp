@@ -31,6 +31,7 @@ void World::updateWorld(Player& player)
 void World::renderWorld()
 {
 	const auto& loadedChunks = chunkManager.getLoadedChunks();
+	std::lock_guard lock(chunkManager.getChunkMutex());
 	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
 	{
 		Chunk* chunk = (*it).second;
@@ -63,9 +64,11 @@ void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 		if (visited.find(coord) != visited.end())
 			continue;
 
-		
-		if (loadedChunks.find(coord) == loadedChunks.end())
-			loadChunk(coord);
+		{
+			std::lock_guard lock(chunkManager.getChunkMutex());
+			if (loadedChunks.find(coord) == loadedChunks.end())
+				loadChunk(coord);
+		}
 		
 		for (const auto& direction : chunkLoadDirections)
 		{

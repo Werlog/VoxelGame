@@ -97,11 +97,17 @@ const std::unordered_map<ChunkCoord, Chunk*>& ChunkManager::getLoadedChunks()
 
 Chunk* ChunkManager::getLoadedChunk(ChunkCoord coordinate)
 {
+	std::lock_guard lock(chunksMutex);
 	auto it = loadedChunks.find(coordinate);
 	if (it == loadedChunks.end())
 		return nullptr;
 
 	return it->second;
+}
+
+std::recursive_mutex& ChunkManager::getChunkMutex()
+{
+	return chunksMutex;
 }
 
 void ChunkManager::init()
@@ -161,7 +167,7 @@ void ChunkManager::meshWorker()
 			continue;
 
 
-		chunk->generateMesh(world->getBlockData(), chunksMutex);
+		chunk->generateMesh(world->getBlockData());
 		chunk->shouldUpdateMesh.store(true);
 		chunk->toBeRemeshed.store(false);
 	}

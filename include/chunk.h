@@ -17,7 +17,7 @@ public:
 	~Chunk();
 
 	void generateChunk(FastNoiseSIMD* noise);
-	void generateMesh(BlockData& blockData, std::mutex& chunksMutex);
+	void generateMesh(BlockData& blockData);
 	void createChunkMesh();
 	void render() const;
 

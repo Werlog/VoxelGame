@@ -25,6 +25,7 @@ public:
 
 	const std::unordered_map<ChunkCoord, Chunk*>& getLoadedChunks();
 	Chunk* getLoadedChunk(ChunkCoord coordinate);
+	std::recursive_mutex& getChunkMutex();
 private:
 	World* world;
 
@@ -36,7 +37,7 @@ private:
 
 	std::mutex meshMutex;
 	std::mutex genMutex;
-	std::mutex chunksMutex;
+	std::recursive_mutex chunksMutex;
 
 	std::thread generationThread;
 	std::thread meshingThread;

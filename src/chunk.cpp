@@ -30,7 +30,7 @@ Chunk::~Chunk()
 
 void Chunk::generateChunk(FastNoiseSIMD* noise)
 {
-	//float* noiseSet = noise->GetSimplexFractalSet(coord.x * CHUNK_SIZE_X, 0, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, 1, CHUNK_SIZE_Z);
+	float* noiseSet = noise->GetSimplexFractalSet(coord.x * CHUNK_SIZE_X, 0, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, 1, CHUNK_SIZE_Z);
 	for (int x = 0; x < CHUNK_SIZE_X; x++)
 	{
 		for (int y = 0; y < CHUNK_SIZE_Y; y++)
@@ -41,7 +41,7 @@ void Chunk::generateChunk(FastNoiseSIMD* noise)
 				int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
 				int noiseIndex = z + x * CHUNK_SIZE_Z;
 
-				int height = (int)floor(10.0f + 0.25f * 15.0f);
+				int height = (int)floor(10.0f + noiseSet[noiseIndex] * 15.0f);
 
 				if (yPos == height)
 				{
@@ -59,10 +59,10 @@ void Chunk::generateChunk(FastNoiseSIMD* noise)
 		}
 	}
 
-	//FastNoiseSIMD::FreeNoiseSet(noiseSet);
+	FastNoiseSIMD::FreeNoiseSet(noiseSet);
 }
 
-void Chunk::generateMesh(BlockData& blockData, std::mutex& chunksMutex)
+void Chunk::generateMesh(BlockData& blockData)
 {
 	faceData.clear();
 
@@ -87,7 +87,7 @@ void Chunk::generateMesh(BlockData& blockData, std::mutex& chunksMutex)
 					int checkY = faceChecks[checkIndex + 1] + y;
 					int checkZ = faceChecks[checkIndex + 2] + z;
 
-					std::lock_guard lock(chunksMutex);
+
 					if (getBlockAt(checkX, checkY, checkZ) != BlockType::AIR)
 						continue;
 
