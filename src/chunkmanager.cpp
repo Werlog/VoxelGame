@@ -11,31 +11,31 @@ ChunkManager::ChunkManager(World* world)
 void ChunkManager::loadChunk(ChunkCoord coord)
 {
 	{
-		std::lock_guard chunkLock(chunksMutex);
+		std::lock_guard lock(chunksMutex);
 		if (loadedChunks.find(coord) != loadedChunks.end()) return;
 	}
 
-	{
-		std::lock_guard lock(genMutex);
-		chunksToGenerate.push(coord);
-	}
-	
+	std::lock_guard genLock(genMutex);
+	chunksToGenerate.push(coord);
 	genCondition.notify_one();
 }
 
 void ChunkManager::unloadChunk(ChunkCoord coord)
 {
-	Chunk* chunk = getLoadedChunk(coord);
-	if (chunk == nullptr || chunksToUnload.find(chunk) != chunksToUnload.end())
-		return;
-	chunksToUnload.insert(chunk);
+	{
+		std::lock_guard lock(chunksMutex);
+		if (loadedChunks.find(coord) == loadedChunks.end())
+			return;
+	}
+
+	chunksToUnload.insert(coord);
 }
 
 void ChunkManager::update()
 {
 	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
 	{
-		Chunk* chunk = it->second;
+		std::shared_ptr<Chunk> chunk = it->second;
 		if (chunk == nullptr)
 			continue;
 
@@ -46,56 +46,42 @@ void ChunkManager::update()
 		}
 	}
 
+	int unloadedCount = 0;
 	for (auto it = chunksToUnload.begin(); it != chunksToUnload.end();)
 	{
-		Chunk* chunk = *it;
-		
-		if (!chunk->toBeRemeshed.load())
-		{
-			auto chunkIt = loadedChunks.find(chunk->getCoord());
-			if (chunkIt != loadedChunks.end())
-			{
-				std::lock_guard chunkLock(chunksMutex);
-				loadedChunks.erase(chunkIt);
-			}
-			delete chunk;
+		if (unloadedCount >= MAX_UNLOAD_COUNT)
+			break;
 
-			it = chunksToUnload.erase(it);
-		}
-		else
+		std::shared_ptr<Chunk> chunk = getLoadedChunk(*it);
+
 		{
-			it++;
+			std::lock_guard lock(chunksMutex);
+			loadedChunks.erase(*it);
 		}
+		it = chunksToUnload.erase(it);
+		unloadedCount++;
 	}
 }
 
 void ChunkManager::remeshChunk(ChunkCoord coord)
 {
-	Chunk* chunk = getLoadedChunk(coord);
-	if (chunk == nullptr)
-		return;
+	std::shared_ptr<Chunk> chunk = getLoadedChunk(coord);
 
-	if (chunksToUnload.find(chunk) != chunksToUnload.end())
+	std::lock_guard lock(meshMutex);
+	if (std::find(chunksToMesh.begin(), chunksToMesh.end(), chunk) != chunksToMesh.end())
 	{
 		return;
 	}
-
-	std::lock_guard lock(meshMutex);
-	auto it = std::find(chunksToMesh.begin(), chunksToMesh.end(), chunk);
-	if (it != chunksToMesh.end())
-		chunksToMesh.erase(it);
-
-	chunk->toBeRemeshed.store(true);
 	chunksToMesh.push_back(chunk);
 	meshCondition.notify_one();
 }
 
-const std::unordered_map<ChunkCoord, Chunk*>& ChunkManager::getLoadedChunks()
+const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& ChunkManager::getLoadedChunks()
 {
 	return loadedChunks;
 }
 
-Chunk* ChunkManager::getLoadedChunk(ChunkCoord coordinate)
+std::shared_ptr<Chunk> ChunkManager::getLoadedChunk(ChunkCoord coordinate)
 {
 	std::lock_guard lock(chunksMutex);
 	auto it = loadedChunks.find(coordinate);
@@ -121,6 +107,7 @@ void ChunkManager::init()
 
 void ChunkManager::genWorker()
 {
+	FastNoiseSIMD* noise = FastNoiseSIMD::NewFastNoiseSIMD(0);
 	while (true)
 	{
 		std::unique_lock lock(genMutex);
@@ -132,8 +119,8 @@ void ChunkManager::genWorker()
 
 		lock.unlock();
 
-		Chunk* chunk = new Chunk(coord, world);
-		chunk->generateChunk(world->getNoise());
+		std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>(coord, world);
+		chunk->generateChunk(noise);
 
 		{
 			std::lock_guard chunksLock(chunksMutex);
@@ -158,17 +145,22 @@ void ChunkManager::meshWorker()
 
 		meshCondition.wait(lock, [this] { return !chunksToMesh.empty(); });
 
-		Chunk* chunk = chunksToMesh.front();
-		chunksToMesh.pop_front();
+		std::shared_ptr<Chunk> chunk = chunksToMesh.front();
+
+		if (chunk == nullptr)
+		{
+			chunksToMesh.pop_front();
+			continue;
+		}
 
 		lock.unlock();
 
-		if (chunk == nullptr)
-			continue;
-
-
 		chunk->generateMesh(world->getBlockData());
 		chunk->shouldUpdateMesh.store(true);
-		chunk->toBeRemeshed.store(false);
+
+
+		lock.lock();
+		// Can't pop_front(), because it may no longer be in the front
+		std::remove(chunksToMesh.begin(), chunksToMesh.end(), chunk);
 	}
 }

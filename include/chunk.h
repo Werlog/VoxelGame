@@ -11,7 +11,6 @@ class Chunk
 {
 public:
 	std::atomic<bool> shouldUpdateMesh;
-	std::atomic<bool> toBeRemeshed; // If the chunk is currently queued for remeshing
 
 	Chunk(ChunkCoord coord, World* world);
 	~Chunk();

@@ -34,7 +34,7 @@ void World::renderWorld()
 	std::lock_guard lock(chunkManager.getChunkMutex());
 	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
 	{
-		Chunk* chunk = (*it).second;
+		std::shared_ptr<Chunk> chunk = (*it).second;
 		if (!chunk->hasMesh()) continue;
 
 		const ChunkCoord& coord = (*it).first;
@@ -89,8 +89,6 @@ void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 		visited.insert(coord);
 	}
 
-
-	std::unordered_set<ChunkCoord> chunksToUnload;
 	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
 	{
 		const ChunkCoord& coord = it->first;
@@ -102,13 +100,8 @@ void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 		float squareDist = xDiff * xDiff + zDiff * zDiff;
 		if (squareDist > RENDER_DISTANCE * RENDER_DISTANCE || yDiff > RENDER_HEIGHT)
 		{
-			chunksToUnload.insert(it->second->getCoord());
+			chunkManager.unloadChunk(coord);
 		}
-	}
-
-	for (auto it = chunksToUnload.begin(); it != chunksToUnload.end(); it++)
-	{
-		chunkManager.unloadChunk(*it);
 	}
 	
 	lastplayerCoord = newCoordinate;
@@ -122,14 +115,14 @@ void World::loadChunk(ChunkCoord coordinate)
 BlockType World::getBlockAt(int x, int y, int z)
 {
 	ChunkCoord coord = ChunkCoord::toChunkCoord(x, y, z);
-	Chunk* chunk = getChunkByCoordinate(coord);
+	std::shared_ptr<Chunk> chunk = getChunkByCoordinate(coord);
 	if (chunk == nullptr)
 		return BlockType::AIR;
 
 	return chunk->getBlockAt(x - coord.x * CHUNK_SIZE_X, y - coord.y * CHUNK_SIZE_Y, z - coord.z * CHUNK_SIZE_Z);
 }
 
-Chunk* World::getChunkByCoordinate(ChunkCoord coord)
+std::shared_ptr<Chunk> World::getChunkByCoordinate(ChunkCoord coord)
 {
 	return chunkManager.getLoadedChunk(coord);
 }

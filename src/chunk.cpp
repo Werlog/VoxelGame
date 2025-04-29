@@ -17,7 +17,6 @@ Chunk::Chunk(ChunkCoord coord, World* world)
 
 	std::memset(blocks, BlockType::AIR, sizeof(blocks));
 	shouldUpdateMesh.store(false);
-	toBeRemeshed.store(false);
 }
 
 Chunk::~Chunk()
@@ -30,7 +29,7 @@ Chunk::~Chunk()
 
 void Chunk::generateChunk(FastNoiseSIMD* noise)
 {
-	float* noiseSet = noise->GetSimplexFractalSet(coord.x * CHUNK_SIZE_X, 0, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, 1, CHUNK_SIZE_Z);
+	float* noiseSet = noise->GetPerlinSet(coord.x * CHUNK_SIZE_X, 0, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, 1, CHUNK_SIZE_Z);
 	for (int x = 0; x < CHUNK_SIZE_X; x++)
 	{
 		for (int y = 0; y < CHUNK_SIZE_Y; y++)

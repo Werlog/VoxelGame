@@ -12,12 +12,6 @@ PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager)
 
 void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 {
-	if (inputHandler.getKeyDown(SDLK_r))
-	{
-		ChunkCoord coord = ChunkCoord::toChunkCoord(player.getPosition());
-		Chunk* chunk = world.getChunkByCoordinate(coord);
-	}
-
 	player.update(inputHandler, deltaTime);
 	world.updateWorld(player);
 }

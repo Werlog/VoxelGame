@@ -23,17 +23,17 @@ public:
 	void update();
 	void remeshChunk(ChunkCoord coord);
 
-	const std::unordered_map<ChunkCoord, Chunk*>& getLoadedChunks();
-	Chunk* getLoadedChunk(ChunkCoord coordinate);
+	const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& getLoadedChunks();
+	std::shared_ptr<Chunk> getLoadedChunk(ChunkCoord coordinate);
 	std::recursive_mutex& getChunkMutex();
 private:
 	World* world;
 
-	std::unordered_map<ChunkCoord, Chunk*> loadedChunks;
+	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> loadedChunks;
 
 	std::queue<ChunkCoord> chunksToGenerate;
-	std::deque<Chunk*> chunksToMesh;
-	std::unordered_set<Chunk*> chunksToUnload;
+	std::deque<std::shared_ptr<Chunk>> chunksToMesh;
+	std::unordered_set<ChunkCoord> chunksToUnload;
 
 	std::mutex meshMutex;
 	std::mutex genMutex;
