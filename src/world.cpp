@@ -11,7 +11,9 @@ World::World(const Shader& terrainShader)
 {
 	shaderModelLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "model");
 
-	noise = FastNoiseSIMD::NewFastNoiseSIMD(0); // TODO: Random seeds
+	srand(time(0));
+
+	noise = FastNoiseSIMD::NewFastNoiseSIMD(rand() % 32767);
 
 	lastplayerCoord = ChunkCoord{ 0, 0, 0 };
 }

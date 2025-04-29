@@ -107,7 +107,6 @@ void ChunkManager::init()
 
 void ChunkManager::genWorker()
 {
-	FastNoiseSIMD* noise = FastNoiseSIMD::NewFastNoiseSIMD(0);
 	while (true)
 	{
 		std::unique_lock lock(genMutex);
@@ -120,7 +119,7 @@ void ChunkManager::genWorker()
 		lock.unlock();
 
 		std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>(coord, world);
-		chunk->generateChunk(noise);
+		chunk->generateChunk(world->getNoise());
 
 		{
 			std::lock_guard chunksLock(chunksMutex);
@@ -146,21 +145,16 @@ void ChunkManager::meshWorker()
 		meshCondition.wait(lock, [this] { return !chunksToMesh.empty(); });
 
 		std::shared_ptr<Chunk> chunk = chunksToMesh.front();
-
-		if (chunk == nullptr)
-		{
-			chunksToMesh.pop_front();
-			continue;
-		}
+		chunksToMesh.pop_front();
 
 		lock.unlock();
 
+		if (chunk == nullptr)
+		{
+			continue;
+		}
+
 		chunk->generateMesh(world->getBlockData());
 		chunk->shouldUpdateMesh.store(true);
-
-
-		lock.lock();
-		// Can't pop_front(), because it may no longer be in the front
-		std::remove(chunksToMesh.begin(), chunksToMesh.end(), chunk);
 	}
 }
