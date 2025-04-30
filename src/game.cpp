@@ -6,6 +6,10 @@
 #include "world.h"
 #include "blockdata.h"
 #include "GameState/PlayingGameState.h"
+#include "imgui.h"
+#include "backends/imgui_impl_opengl3.h"
+#include "backends/imgui_impl_sdl2.h"
+#include "imguiThemes.h"
 
 Game::Game() 
 	: camera(glm::vec3(0), 60.0f, (float)windowWidth / (float)windowHeight)
@@ -52,6 +56,27 @@ bool Game::init()
 	
 	enableReportGlErrors();
 
+	// ImGUI
+	ImGui::CreateContext();
+
+	imguiThemes::embraceTheDarkness();
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		//style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 0.f;
+		style.Colors[ImGuiCol_DockingEmptyBg].w = 0.f;
+	}
+
+	ImGui_ImplSDL2_InitForOpenGL(window, context);
+	ImGui_ImplOpenGL3_Init("#version 330");
+
 	// Game State Setup
 	PlayingGameState* playingState = new PlayingGameState(this, resourceManager);
 	switchToState(playingState);
@@ -82,10 +107,30 @@ void Game::gameLoop()
 		// Game Updates
 		currentState->update(timer.deltaTime, inputHandler);
 
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplSDL2_NewFrame(window);
+		ImGui::NewFrame();
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
 		// Rendering
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		currentState->render();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		//view port stuff
+		ImGuiIO& io = ImGui::GetIO();
+
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+			SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+		}
 
 		SDL_GL_SwapWindow(window);
 	}
@@ -112,6 +157,7 @@ void Game::handleEvents()
 	SDL_Event e;
 	while (SDL_PollEvent(&e))
 	{
+		ImGui_ImplSDL2_ProcessEvent(&e);
 		switch (e.type)
 		{
 		case SDL_QUIT:
