@@ -131,6 +131,14 @@ inline BlockType Chunk::getBlockAt(int x, int y, int z)
 	return blocks[index];
 }
 
+void Chunk::setBlockAt(int x, int y, int z, BlockType newBlock)
+{
+	if (x > CHUNK_SIZE_X - 1 || x < 0 || y > CHUNK_SIZE_Y - 1 || y < 0 || z > CHUNK_SIZE_Z - 1 || z < 0)
+		return;
+	int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+	blocks[index] = newBlock;
+}
+
 const ChunkCoord& Chunk::getCoord()
 {
 	return coord;

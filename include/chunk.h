@@ -21,6 +21,8 @@ public:
 	void render() const;
 
 	inline BlockType getBlockAt(int x, int y, int z);
+	void setBlockAt(int x, int y, int z, BlockType newBlock);
+
 	const ChunkCoord& getCoord();
 	bool hasMesh() const;
 private:

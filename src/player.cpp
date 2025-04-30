@@ -1,10 +1,13 @@
 #include "player.h"
 #include <SDL2/SDL.h>
+#include "world.h"
+#include "imgui.h"
 
-Player::Player(Camera* camera)
+Player::Player(Camera* camera, World* world)
 {
 	this->camera = camera;
 	this->position = glm::vec3(0);
+	this->world = world;
 }
 
 void Player::update(InputHandler& inputHandler, float deltaTime)
@@ -12,6 +15,18 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	camera->update(deltaTime);
 
 	movement(inputHandler, deltaTime);
+
+	ChunkCoord currentCoord = ChunkCoord::toChunkCoord(camera->position);
+
+	ImGui::Begin("Debug UI");
+	ImGui::Text("Position: %f, %f, %f ", camera->position.x, camera->position.y, camera->position.z);
+	ImGui::Text("Chunk Coord: %d, %d, %d", currentCoord.x, currentCoord.y, currentCoord.z);
+	ImGui::End();
+
+	if (inputHandler.getMouseButtonDown(SDL_BUTTON_LEFT))
+	{
+		blockBreakLogic();
+	}
 
 	camera->position = position + glm::vec3(0.0f, playerHeight, 0.0f);
 }
@@ -57,4 +72,24 @@ glm::vec3 Player::getInputDirection(InputHandler& inputHandler)
 	}
 
 	return input;
+}
+
+void Player::blockBreakLogic()
+{
+	const glm::vec3& direction = camera->front;
+	const glm::vec3& startPosition = camera->position;
+	for (float dist = 0.0f; dist < 5.0f; dist += 0.05f)
+	{
+		glm::vec3 checkPos = startPosition + direction * dist;
+		int checkX = (int)floor(checkPos.x);
+		int checkY = (int)floor(checkPos.y);
+		int checkZ = (int)floor(checkPos.z);
+
+		if (world->getBlockAt(checkX, checkY, checkZ) != BlockType::AIR)
+		{
+			world->setBlockAt(checkX, checkY, checkZ, BlockType::AIR);
+			world->remeshChunk(ChunkCoord::toChunkCoord(checkX, checkY, checkZ));
+			break;
+		}
+	}
 }

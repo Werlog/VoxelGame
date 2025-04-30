@@ -23,11 +23,14 @@ public:
 
 	void updateLoadedChunks(ChunkCoord& newCoordinate);
 	void loadChunk(ChunkCoord coordinate);
+	void remeshChunk(ChunkCoord coordinate);
 
 	void updateWorld(Player& player);
 	void renderWorld();
 
 	BlockType getBlockAt(int x, int y, int z);
+	void setBlockAt(int x, int y, int z, BlockType newBlock);
+
 	std::shared_ptr<Chunk> getChunkByCoordinate(ChunkCoord coord);
 	FastNoiseSIMD* getNoise();
 	BlockData& getBlockData();

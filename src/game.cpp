@@ -75,7 +75,7 @@ bool Game::init()
 	}
 
 	ImGui_ImplSDL2_InitForOpenGL(window, context);
-	ImGui_ImplOpenGL3_Init("#version 330");
+	ImGui_ImplOpenGL3_Init("#version 430");
 
 	// Game State Setup
 	PlayingGameState* playingState = new PlayingGameState(this, resourceManager);
@@ -101,16 +101,16 @@ void Game::gameLoop()
 
 		if (inputHandler.getKeyUp(SDLK_ESCAPE))
 		{
-			running = false;
+			SDL_SetRelativeMouseMode(SDL_GetRelativeMouseMode() == SDL_TRUE ? SDL_FALSE : SDL_TRUE);
 		}
-
-		// Game Updates
-		currentState->update(timer.deltaTime, inputHandler);
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL2_NewFrame(window);
 		ImGui::NewFrame();
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
+		// Game Updates
+		currentState->update(timer.deltaTime, inputHandler);
 
 		// Rendering
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

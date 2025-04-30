@@ -40,9 +40,9 @@ void World::renderWorld()
 		if (!chunk->hasMesh()) continue;
 
 		const ChunkCoord& coord = (*it).first;
-		glm::mat4 model = glm::mat4(1);
+		glm::mat4 model = glm::mat4(1.0f);
 
-		model = glm::translate(model, glm::vec3(coord.x * CHUNK_SIZE_X, coord.y * CHUNK_SIZE_Y, coord.z * CHUNK_SIZE_Z));
+		model = glm::translate(model, glm::vec3(coord.x * CHUNK_SIZE_X, coord.y * CHUNK_SIZE_Y, coord.z * CHUNK_SIZE_Z + 1));
 
 		glUniformMatrix4fv(shaderModelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
@@ -114,6 +114,11 @@ void World::loadChunk(ChunkCoord coordinate)
 	chunkManager.loadChunk(coordinate);
 }
 
+void World::remeshChunk(ChunkCoord coordinate)
+{
+	chunkManager.remeshChunk(coordinate);
+}
+
 BlockType World::getBlockAt(int x, int y, int z)
 {
 	ChunkCoord coord = ChunkCoord::toChunkCoord(x, y, z);
@@ -122,6 +127,15 @@ BlockType World::getBlockAt(int x, int y, int z)
 		return BlockType::AIR;
 
 	return chunk->getBlockAt(x - coord.x * CHUNK_SIZE_X, y - coord.y * CHUNK_SIZE_Y, z - coord.z * CHUNK_SIZE_Z);
+}
+
+void World::setBlockAt(int x, int y, int z, BlockType newBlock)
+{
+	ChunkCoord coord = ChunkCoord::toChunkCoord(x, y, z);
+	std::shared_ptr<Chunk> chunk = getChunkByCoordinate(coord);
+	if (chunk == nullptr)
+		return;
+	chunk->setBlockAt(x - coord.x * CHUNK_SIZE_X, y - coord.y * CHUNK_SIZE_Y, z - coord.z * CHUNK_SIZE_Z, newBlock);
 }
 
 std::shared_ptr<Chunk> World::getChunkByCoordinate(ChunkCoord coord)
