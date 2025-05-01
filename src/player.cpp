@@ -3,7 +3,8 @@
 #include "world.h"
 #include "imgui.h"
 
-Player::Player(Camera* camera, World* world)
+Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
+	: blockOutline(&(resourceManager.getShader("shaders\\outline")))
 {
 	this->camera = camera;
 	this->position = glm::vec3(0);
@@ -34,6 +35,19 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	}
 
 	camera->position = position + glm::vec3(0.0f, playerHeight, 0.0f);
+}
+
+void Player::render()
+{
+	std::unique_ptr<glm::vec3> lookPos = getLookingAtPosition();
+
+	if (lookPos == nullptr)
+		return;
+
+	glm::ivec3 blockPos = glm::ivec3((int)floor(lookPos->x), (int)floor(lookPos->y), (int)floor(lookPos->z));
+
+	blockOutline.setPosition(blockPos);
+	blockOutline.render(*camera);
 }
 
 const glm::vec3& Player::getPosition() const

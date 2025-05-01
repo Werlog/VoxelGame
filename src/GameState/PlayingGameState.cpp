@@ -4,7 +4,7 @@
 
 PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager)
 	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), world(terrainShader),
-	player(&(game->getCamera()), &world), terrainTexture(resourceManager.getTexture("textures\\terrain.png")), terrainSheet(16, 16, &terrainTexture),
+	player(&(game->getCamera()), &world, resourceManager), terrainTexture(resourceManager.getTexture("textures\\terrain.png")), terrainSheet(16, 16, &terrainTexture),
 	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.45f, 1.0f), glm::vec3(0.3f, 0.9f, 1.0f), &skyboxShader)
 {
 	setupShader();
@@ -29,6 +29,9 @@ void PlayingGameState::render()
 
 	world.renderWorld();
 	glBindVertexArray(0);
+	glUseProgram(0);
+
+	player.render();
 }
 
 void PlayingGameState::onEnter()
