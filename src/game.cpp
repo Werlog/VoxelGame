@@ -10,6 +10,8 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
 #include "imguiThemes.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 Game::Game() 
 	: camera(glm::vec3(0), 60.0f, (float)windowWidth / (float)windowHeight)
@@ -39,6 +41,19 @@ bool Game::init()
 	{
 		std::cout << "Failed to initialize GLAD!" << std::endl;
 		return false;
+	}
+
+	FT_Library ft;
+	if (FT_Init_FreeType(&ft) != 0)
+	{
+		std::cout << "Could not init FreeType" << std::endl;
+		return false;
+	}
+
+	FT_Face face;
+	if (FT_New_Face(ft, RESOURCES_PATH "\\fonts\\MinecraftRegular.otf", 0, &face) != 0)
+	{
+		std::cout << "Could not load the minecraft font" << std::endl;
 	}
 
 	const GLubyte* version = glGetString(GL_VERSION);
