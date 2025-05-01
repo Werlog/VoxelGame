@@ -28,6 +28,11 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 		blockBreakLogic();
 	}
 
+	if (inputHandler.getMouseButtonDown(SDL_BUTTON_RIGHT))
+	{
+		blockPlaceLogic();
+	}
+
 	camera->position = position + glm::vec3(0.0f, playerHeight, 0.0f);
 }
 
@@ -76,20 +81,74 @@ glm::vec3 Player::getInputDirection(InputHandler& inputHandler)
 
 void Player::blockBreakLogic()
 {
+	std::unique_ptr<glm::vec3> blockPos = getLookingAtPosition();
+	if (blockPos == nullptr)
+		return;
+
+	int breakX = (int)floor(blockPos->x);
+	int breakY = (int)floor(blockPos->y);
+	int breakZ = (int)floor(blockPos->z);
+
+	world->modifyBlockAt(breakX, breakY, breakZ, BlockType::AIR);
+}
+
+void Player::blockPlaceLogic()
+{
+	std::unique_ptr<glm::vec3> blockPos = getLookingAtPosition();
+	if (blockPos == nullptr)
+		return;
+
+	glm::vec3 centerPos = glm::vec3(floor(blockPos->x) + 0.5f, floor(blockPos->y) + 0.5f, floor(blockPos->z) + 0.5f);
+	glm::vec3 direction = glm::normalize((*blockPos) - centerPos);
+
+	glm::vec3 compass[] =
+	{
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(-1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		glm::vec3(0.0f, -1.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f),
+		glm::vec3(0.0f, 0.0f, -1.0f),
+	};
+
+	glm::vec3& highestDir = compass[0];
+	float highestDot = -1.1f;
+	for (const glm::vec3& dir : compass)
+	{
+		float dot = glm::dot(dir, direction);
+
+		if (dot > highestDot)
+		{
+			highestDot = dot;
+			highestDir = dir;
+		}
+	}
+	
+	int placeX = (int)floor(centerPos.x + highestDir.x);
+	int placeY = (int)floor(centerPos.y + highestDir.y);
+	int placeZ = (int)floor(centerPos.z + highestDir.z);
+
+	if (world->getBlockAt(placeX, placeY, placeZ) == BlockType::AIR)
+		world->modifyBlockAt(placeX, placeY, placeZ, BlockType::STONE);
+}
+
+std::unique_ptr<glm::vec3> Player::getLookingAtPosition()
+{
 	const glm::vec3& direction = camera->front;
 	const glm::vec3& startPosition = camera->position;
-	for (float dist = 0.0f; dist < 5.0f; dist += 0.05f)
+	for (float dist = 0.0f; dist < 5.0f; dist += 0.03f)
 	{
 		glm::vec3 checkPos = startPosition + direction * dist;
+
 		int checkX = (int)floor(checkPos.x);
 		int checkY = (int)floor(checkPos.y);
 		int checkZ = (int)floor(checkPos.z);
 
 		if (world->getBlockAt(checkX, checkY, checkZ) != BlockType::AIR)
 		{
-			world->setBlockAt(checkX, checkY, checkZ, BlockType::AIR);
-			world->remeshChunk(ChunkCoord::toChunkCoord(checkX, checkY, checkZ));
-			break;
+			return std::make_unique<glm::vec3>(checkPos);
 		}
 	}
+
+	return nullptr;
 }

@@ -63,7 +63,7 @@ void ChunkManager::update()
 	}
 }
 
-void ChunkManager::remeshChunk(ChunkCoord coord)
+void ChunkManager::remeshChunk(ChunkCoord coord, bool pushToFront)
 {
 	std::shared_ptr<Chunk> chunk = getLoadedChunk(coord);
 
@@ -72,7 +72,10 @@ void ChunkManager::remeshChunk(ChunkCoord coord)
 	{
 		return;
 	}
-	chunksToMesh.push_back(chunk);
+	if (pushToFront)
+		chunksToMesh.push_front(chunk);
+	else
+		chunksToMesh.push_back(chunk);
 	meshCondition.notify_one();
 }
 

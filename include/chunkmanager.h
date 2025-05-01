@@ -21,7 +21,7 @@ public:
 	void loadChunk(ChunkCoord coord);
 	void unloadChunk(ChunkCoord coord);
 	void update();
-	void remeshChunk(ChunkCoord coord);
+	void remeshChunk(ChunkCoord coord, bool pushToFront = false);
 
 	const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& getLoadedChunks();
 	std::shared_ptr<Chunk> getLoadedChunk(ChunkCoord coordinate);

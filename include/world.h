@@ -30,6 +30,7 @@ public:
 
 	BlockType getBlockAt(int x, int y, int z);
 	void setBlockAt(int x, int y, int z, BlockType newBlock);
+	void modifyBlockAt(int x, int y, int z, BlockType newBlock);
 
 	std::shared_ptr<Chunk> getChunkByCoordinate(ChunkCoord coord);
 	FastNoiseSIMD* getNoise();

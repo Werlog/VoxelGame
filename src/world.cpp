@@ -138,6 +138,29 @@ void World::setBlockAt(int x, int y, int z, BlockType newBlock)
 	chunk->setBlockAt(x - coord.x * CHUNK_SIZE_X, y - coord.y * CHUNK_SIZE_Y, z - coord.z * CHUNK_SIZE_Z, newBlock);
 }
 
+void World::modifyBlockAt(int x, int y, int z, BlockType newBlock)
+{
+	setBlockAt(x, y, z, newBlock);
+
+	ChunkCoord coord = ChunkCoord::toChunkCoord(x, y, z);
+
+	chunkManager.remeshChunk(coord, true);
+
+	for (const auto& direction : chunkLoadDirections)
+	{
+		int relX = x + direction[0];
+		int relY = y + direction[1];
+		int relZ = z + direction[2];
+
+		ChunkCoord neighbourCoord = ChunkCoord::toChunkCoord(relX, relY, relZ);
+
+		if (neighbourCoord != coord)
+		{
+			chunkManager.remeshChunk(neighbourCoord, true);
+		}
+	}
+}
+
 std::shared_ptr<Chunk> World::getChunkByCoordinate(ChunkCoord coord)
 {
 	return chunkManager.getLoadedChunk(coord);

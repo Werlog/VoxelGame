@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "camera.h"
 #include "inputhandler.h"
+#include <memory>
 
 constexpr float playerHeight = 1.8f;
 
@@ -26,4 +27,7 @@ private:
 	glm::vec3 getInputDirection(InputHandler& inputHandler);
 
 	void blockBreakLogic();
+	void blockPlaceLogic();
+
+	std::unique_ptr<glm::vec3> getLookingAtPosition();
 };
