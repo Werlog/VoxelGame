@@ -3,7 +3,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager)
-	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), world(terrainShader),
+	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader),
 	player(&(game->getCamera()), &world, resourceManager), terrainTexture(resourceManager.getTexture("textures\\terrain.png")), terrainSheet(16, 16, &terrainTexture),
 	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.45f, 1.0f), glm::vec3(0.3f, 0.9f, 1.0f), &skyboxShader)
 {
@@ -27,11 +27,16 @@ void PlayingGameState::render()
 	glUniformMatrix4fv(shaderProjectionLoc, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
 	glUniformMatrix4fv(shaderViewLoc, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
 
+	glBindTexture(GL_TEXTURE_2D, terrainTexture.getTextureHandle());
+
 	world.renderWorld();
 	glBindVertexArray(0);
 	glUseProgram(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	player.render();
+
+	game->getUIRenderer().renderText(minecraftFont, "Hello World!", 200, 300, 1.0f, glm::vec3(1.0f));
 }
 
 void PlayingGameState::onEnter()

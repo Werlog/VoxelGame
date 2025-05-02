@@ -6,6 +6,7 @@
 #include "inputhandler.h"
 #include "camera.h"
 #include "resourcemanager.h"
+#include "UI/uirenderer.h"
 
 constexpr int windowWidth = 1280;
 constexpr int windowHeight = 720;
@@ -23,6 +24,7 @@ public:
 	void gameLoop();
 
 	Camera& getCamera();
+	UIRenderer& getUIRenderer();
 
 	void switchToState(BaseGameState* newState);
 private:
@@ -33,6 +35,8 @@ private:
 
 	InputHandler inputHandler;
 	ResourceManager resourceManager;
+	UIRenderer uiRenderer;
+	
 	Camera camera;
 
 	bool running;

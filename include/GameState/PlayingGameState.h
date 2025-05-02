@@ -20,6 +20,7 @@ public:
 	void onExit() override;
 private:
 	Shader& terrainShader;
+	Font& minecraftFont;
 	World world;
 	Player player;
 	Texture& terrainTexture;

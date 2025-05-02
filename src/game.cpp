@@ -10,8 +10,6 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
 #include "imguiThemes.h"
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 Game::Game() 
 	: camera(glm::vec3(0), 60.0f, (float)windowWidth / (float)windowHeight)
@@ -43,19 +41,6 @@ bool Game::init()
 		return false;
 	}
 
-	FT_Library ft;
-	if (FT_Init_FreeType(&ft) != 0)
-	{
-		std::cout << "Could not init FreeType" << std::endl;
-		return false;
-	}
-
-	FT_Face face;
-	if (FT_New_Face(ft, RESOURCES_PATH "\\fonts\\MinecraftRegular.otf", 0, &face) != 0)
-	{
-		std::cout << "Could not load the minecraft font" << std::endl;
-	}
-
 	const GLubyte* version = glGetString(GL_VERSION);
 	std::cout << "OpenGL Version: " << version << std::endl;
 
@@ -66,6 +51,9 @@ bool Game::init()
 	
 	glViewport(0, 0, windowWidth, windowHeight);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	
@@ -92,6 +80,8 @@ bool Game::init()
 	ImGui_ImplSDL2_InitForOpenGL(window, context);
 	ImGui_ImplOpenGL3_Init("#version 430");
 
+	uiRenderer.init(resourceManager, windowWidth, windowHeight);
+
 	// Game State Setup
 	PlayingGameState* playingState = new PlayingGameState(this, resourceManager);
 	switchToState(playingState);
@@ -106,8 +96,10 @@ void Game::gameLoop()
 	{
 		int w, h;
 		SDL_GetWindowSize(window, &w, &h);
+
 		glViewport(0, 0, w, h);
 		camera.updateProjectionMatrix(w / (float)h);
+		uiRenderer.updateProjectionMatrix(w, h);
 
 		inputHandler.update();
 		timer.tick();
@@ -135,7 +127,6 @@ void Game::gameLoop()
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		//view port stuff
 		ImGuiIO& io = ImGui::GetIO();
 
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -154,6 +145,11 @@ void Game::gameLoop()
 Camera& Game::getCamera()
 {
 	return camera;
+}
+
+UIRenderer& Game::getUIRenderer()
+{
+	return uiRenderer;
 }
 
 void Game::switchToState(BaseGameState* newState)

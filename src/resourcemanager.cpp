@@ -26,3 +26,14 @@ Shader& ResourceManager::getShader(const std::string& shaderPath)
 
 	return inserted.first->second;
 }
+
+Font& ResourceManager::getFont(const std::string& fontPath)
+{
+	auto it = loadedFonts.find(fontPath);
+	if (it != loadedFonts.end())
+		return it->second;
+
+	auto inserted = loadedFonts.try_emplace(fontPath, fontPath);
+
+	return inserted.first->second;
+}
