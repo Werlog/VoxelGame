@@ -32,6 +32,7 @@ private:
 	unsigned int shaderViewLoc;
 	unsigned int shaderProjectionLoc;
 	unsigned int shaderModelLoc;
+	unsigned int shaderCameraPositionLoc;
 
 	void setupShader();
 };

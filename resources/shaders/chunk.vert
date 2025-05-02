@@ -90,6 +90,7 @@ const vec2 uvs[4] = vec2[4]
 );
 
 out vec2 texCoord;
+out vec3 worldPosition;
 
 void main()
 {
@@ -123,4 +124,5 @@ void main()
 	// projection * view * model
 
 	gl_Position = projection * view * model * vec4(position, 1.0f);
+	worldPosition = (model * vec4(position, 1.0f)).xyz;
 }

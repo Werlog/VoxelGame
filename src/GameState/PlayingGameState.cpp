@@ -26,6 +26,8 @@ void PlayingGameState::render()
 
 	glUniformMatrix4fv(shaderProjectionLoc, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
 	glUniformMatrix4fv(shaderViewLoc, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
+	glUniform3fv(shaderCameraPositionLoc, 1, glm::value_ptr(camera.position));
+
 
 	glBindTexture(GL_TEXTURE_2D, terrainTexture.getTextureHandle());
 
@@ -60,6 +62,7 @@ void PlayingGameState::setupShader()
 	shaderViewLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "view");
 	shaderProjectionLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "projection");
 	shaderModelLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "model");
+	shaderCameraPositionLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "cameraPosition");
 
 	unsigned int unitXLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "texUnitX");
 	unsigned int unitYLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "texUnitY");
