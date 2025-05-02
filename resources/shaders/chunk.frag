@@ -11,6 +11,7 @@ uniform vec3 fogColor = vec3(0.2f, 0.8f, 1.0f);
 
 out vec4 outColor;
 in vec3 worldPosition;
+in float brightness;
 
 float calcLinearFogFactor()
 {
@@ -26,7 +27,7 @@ void main()
 {
 	float fogFactor = calcLinearFogFactor();
 
-	outColor = mix(vec4(fogColor, 1.0f), texture(terrainTexture, texCoord), fogFactor);
+	outColor = mix(vec4(fogColor, 1.0f), vec4((texture(terrainTexture, texCoord) * brightness).xyz, 1.0f), fogFactor);
 
 	if (outColor.a < 0.1f)
 		discard;

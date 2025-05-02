@@ -10,6 +10,8 @@ uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
 
+uniform vec3 lightDirection;
+
 layout(std430, binding = 0) readonly buffer vertexPullBuffer
 {
 	uint meshData[];
@@ -89,8 +91,18 @@ const vec2 uvs[4] = vec2[4]
 	vec2(1.0f, 1.0f)
 );
 
+vec3 voxelNormals[6] = vec3[6](
+	vec3(0, 0, 1),
+	vec3(1, 0, 0),
+	vec3(0, 0, -1),
+	vec3(-1, 0, 0),
+	vec3(0, 1, 0),
+	vec3(0, -1, 0)
+);
+
 out vec2 texCoord;
 out vec3 worldPosition;
+out float brightness;
 
 void main()
 {
@@ -120,6 +132,12 @@ void main()
 	vec2 uvs = vec2(uvs[indices[curVertexId]].x, uvs[indices[curVertexId]].y);
 
 	texCoord = vec2(columnPos, rowPos) + vec2(uvs.x * texUnitX, uvs.y * texUnitY);
+
+	vec3 normal = voxelNormals[faceDirection];
+
+	brightness = max(dot(normal, lightDirection), -0.5f);
+	brightness += 0.5f;
+	brightness = clamp(brightness, 0.65f, 1.0f);
 
 	// projection * view * model
 

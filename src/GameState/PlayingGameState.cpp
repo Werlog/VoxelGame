@@ -63,6 +63,10 @@ void PlayingGameState::setupShader()
 	shaderProjectionLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "projection");
 	shaderModelLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "model");
 	shaderCameraPositionLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "cameraPosition");
+	shaderLightDirectionLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "lightDirection");
+
+	glm::vec3 lightDirection = glm::normalize(glm::vec3(0.5f, 1.0f, 1.0f));
+	glUniform3fv(shaderLightDirectionLoc, 1, glm::value_ptr(lightDirection));
 
 	unsigned int unitXLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "texUnitX");
 	unsigned int unitYLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "texUnitY");
