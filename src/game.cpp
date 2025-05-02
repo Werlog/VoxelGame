@@ -186,6 +186,9 @@ void Game::handleEvents()
 		case SDL_MOUSEBUTTONUP:
 			inputHandler.mouseUpdate(e);
 			break;
+		case SDL_MOUSEWHEEL:
+			inputHandler.scrollUpdate(e);
+			break;
 		}
 	}
 }

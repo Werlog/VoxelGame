@@ -36,7 +36,9 @@ void PlayingGameState::render()
 
 	player.render();
 
-	game->getUIRenderer().renderText(minecraftFont, "Hello World!", game->getUIRenderer().getWindowWidth() / 2, 150, 1.0f, glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
+	const BlockProperties& block = world.getBlockData().getBlockProperties(player.getSelectedBlock());
+
+	game->getUIRenderer().renderText(minecraftFont, block.blockName + " selected", game->getUIRenderer().getWindowWidth() / 2, 150, 0.9f, glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
 }
 
 void PlayingGameState::onEnter()

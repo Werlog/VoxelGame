@@ -6,6 +6,7 @@
 #include <memory>
 #include "blockoutline.h"
 #include "resourcemanager.h"
+#include "blockdata.h"
 
 constexpr float playerHeight = 1.8f;
 
@@ -20,11 +21,14 @@ public:
 	void update(InputHandler& inputHandler, float deltaTime);
 	void render();
 
+	BlockType getSelectedBlock() const;
 	const glm::vec3& getPosition() const;
 private:
 	Camera* camera;
 	glm::vec3 position;
 	World* world;
+
+	BlockType selectedBlock;
 
 	BlockOutline blockOutline;
 
@@ -33,6 +37,7 @@ private:
 
 	void blockBreakLogic();
 	void blockPlaceLogic();
+	void blockSwitchLogic(InputHandler& inputHandler);
 
 	std::unique_ptr<glm::vec3> getLookingAtPosition();
 };

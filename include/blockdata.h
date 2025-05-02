@@ -7,6 +7,8 @@ enum BlockType : unsigned char
 {
 	AIR,
 	STONE,
+	OAK_PLANKS,
+	COBBLESTONE,
 	DIRT,
 	GRASS,
 	BEDROCK,
@@ -29,9 +31,12 @@ public:
 
 	BlockData();
 
-	const BlockProperties& getTextureData(BlockType blockType);
+	const BlockProperties& getBlockProperties(BlockType blockType);
 	
 	int getTextureIdFromFaceIndex(const BlockProperties& blockData, int index);
+
+	const std::unordered_map<BlockType, BlockProperties>& getData();
+
 private:
 	std::unordered_map<BlockType, BlockProperties> data;
 

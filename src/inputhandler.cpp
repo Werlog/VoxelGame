@@ -2,7 +2,7 @@
 
 InputHandler::InputHandler()
 {
-
+	scrollValue = 0;
 }
 
 void InputHandler::update()
@@ -26,6 +26,8 @@ void InputHandler::update()
 		else if (state == KeyState::KEYUP)
 			state = KeyState::NOT_PRESSED;
 	}
+
+	scrollValue = 0;
 }
 
 void InputHandler::keyUpdate(SDL_Event& event)
@@ -40,6 +42,11 @@ void InputHandler::mouseUpdate(SDL_Event& event)
 	if (event.type != SDL_MOUSEBUTTONDOWN && event.type != SDL_MOUSEBUTTONUP) return;
 
 	mouseStates[(unsigned char)event.button.button] = event.type == SDL_MOUSEBUTTONDOWN ? KeyState::KEYDOWN : KeyState::KEYUP;
+}
+
+void InputHandler::scrollUpdate(SDL_Event& event)
+{
+	scrollValue = event.wheel.y;
 }
 
 bool InputHandler::getKey(int keycode) const
@@ -88,4 +95,9 @@ bool InputHandler::getMouseButtonUp(unsigned char button) const
 	if (it == mouseStates.end()) return false;
 
 	return it->second == KeyState::KEYUP;
+}
+
+int InputHandler::getMouseScroll() const
+{
+	return scrollValue;
 }

@@ -9,6 +9,8 @@ Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
 	this->camera = camera;
 	this->position = glm::vec3(0);
 	this->world = world;
+
+	selectedBlock = BlockType::STONE;
 }
 
 void Player::update(InputHandler& inputHandler, float deltaTime)
@@ -33,6 +35,7 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	{
 		blockPlaceLogic();
 	}
+	blockSwitchLogic(inputHandler);
 
 	camera->position = position + glm::vec3(0.0f, playerHeight, 0.0f);
 }
@@ -48,6 +51,11 @@ void Player::render()
 
 	blockOutline.setPosition(blockPos);
 	blockOutline.render(*camera);
+}
+
+BlockType Player::getSelectedBlock() const
+{
+	return selectedBlock;
 }
 
 const glm::vec3& Player::getPosition() const
@@ -143,7 +151,23 @@ void Player::blockPlaceLogic()
 	int placeZ = (int)floor(centerPos.z + highestDir.z);
 
 	if (world->getBlockAt(placeX, placeY, placeZ) == BlockType::AIR)
-		world->modifyBlockAt(placeX, placeY, placeZ, BlockType::STONE);
+		world->modifyBlockAt(placeX, placeY, placeZ, selectedBlock);
+}
+
+void Player::blockSwitchLogic(InputHandler& inputHandler)
+{
+	unsigned char block = ((unsigned char)selectedBlock) + inputHandler.getMouseScroll();
+
+	if (block >= world->getBlockData().getData().size())
+	{
+		block = 1;
+	}
+	else if (block < 1)
+	{
+		block = world->getBlockData().getData().size() - 1;
+	}
+
+	selectedBlock = (BlockType)block;
 }
 
 std::unique_ptr<glm::vec3> Player::getLookingAtPosition()
