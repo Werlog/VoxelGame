@@ -36,7 +36,7 @@ void PlayingGameState::render()
 
 	player.render();
 
-	game->getUIRenderer().renderText(minecraftFont, "Hello World!", 200, 300, 1.0f, glm::vec3(1.0f));
+	game->getUIRenderer().renderText(minecraftFont, "Hello World!", game->getUIRenderer().getWindowWidth() / 2, 150, 1.0f, glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
 }
 
 void PlayingGameState::onEnter()

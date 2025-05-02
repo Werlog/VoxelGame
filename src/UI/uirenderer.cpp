@@ -8,6 +8,9 @@ UIRenderer::UIRenderer()
 	textVAO = 0;
 	textVBO = 0;
 
+	windowWidth = 0;
+	windowHeight = 0;
+
 	textProjectionLoc = 0;
 	textColorLoc = 0;
 }
@@ -24,6 +27,9 @@ void UIRenderer::updateProjectionMatrix(int width, int height)
 {
 	uiProjection = glm::ortho(0.0f, (float)width, 0.0f, (float)height);
 
+	windowWidth = width;
+	windowHeight = height;
+
 	glUseProgram(textShader->getProgramHandle());
 
 	glUniformMatrix4fv(textProjectionLoc, 1, GL_FALSE, glm::value_ptr(uiProjection));
@@ -31,8 +37,14 @@ void UIRenderer::updateProjectionMatrix(int width, int height)
 	glUseProgram(0);
 }
 
-void UIRenderer::renderText(Font& font, const std::string& text, float x, float y, float scale, const glm::vec3& color)
+void UIRenderer::renderText(Font& font, const std::string& text, float x, float y, float scale, const glm::vec3& color, TextAlignment alignment)
 {
+	if (alignment != TextAlignment::ALIGN_LEFT)
+	{
+		float width = getTextWidth(font, text, scale);
+		x -= alignment == TextAlignment::ALIGN_CENTER ? width * 0.5f : width;
+	}
+
 	glUseProgram(textShader->getProgramHandle());
 
 	glUniform3fv(textColorLoc, 1, glm::value_ptr(color));
@@ -73,6 +85,35 @@ void UIRenderer::renderText(Font& font, const std::string& text, float x, float 
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glUseProgram(0);
+}
+
+float UIRenderer::getTextWidth(Font& font, const std::string& text, float scale)
+{
+	float width = 0.0f;
+
+	for (size_t i = 0; i < text.size(); i++)
+	{
+		const Character& ch = font.getCharacter(text[i]);
+
+		if (i != text.size() - 1)
+		{
+			width += (ch.advance >> 6) * scale;
+			continue;
+		}
+		width += ch.size.x * scale;
+	}
+
+	return width;
+}
+
+int UIRenderer::getWindowWidth()
+{
+	return windowWidth;
+}
+
+int UIRenderer::getWindowHeight()
+{
+	return windowHeight;
 }
 
 void UIRenderer::setup()

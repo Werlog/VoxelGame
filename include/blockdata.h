@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <string>
 
 enum BlockType : unsigned char
 {
@@ -11,8 +12,9 @@ enum BlockType : unsigned char
 	BEDROCK,
 };
 
-struct TextureData
+struct BlockProperties
 {
+	std::string blockName;
 	unsigned char frontFaceTexId;
 	unsigned char rightFaceTexId;
 	unsigned char backFaceTexId;
@@ -27,11 +29,11 @@ public:
 
 	BlockData();
 
-	const TextureData& getTextureData(BlockType blockType);
+	const BlockProperties& getTextureData(BlockType blockType);
 	
-	int getTextureIdFromFaceIndex(const TextureData& blockData, int index);
+	int getTextureIdFromFaceIndex(const BlockProperties& blockData, int index);
 private:
-	std::unordered_map<BlockType, TextureData> textureData;
+	std::unordered_map<BlockType, BlockProperties> data;
 
 	void init();
 };

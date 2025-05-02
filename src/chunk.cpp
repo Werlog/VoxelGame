@@ -77,7 +77,7 @@ void Chunk::generateMesh(BlockData& blockData)
 
 				if (blocks[index] == BlockType::AIR) continue;
 
-				const TextureData& textureData = blockData.getTextureData(blocks[index]);
+				const BlockProperties& textureData = blockData.getTextureData(blocks[index]);
 
 				for (int i = 0; i < 6; i++)
 				{
