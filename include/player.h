@@ -13,6 +13,11 @@ constexpr float playerHeight = 1.9f;
 constexpr float cameraHeight = 1.8f;
 constexpr float playerWidth = 0.6f;
 
+// Movement
+constexpr float gravity = 32.0f;
+constexpr float jumpHeight = 1.5f;
+constexpr float playerSpeed = 9.1f;
+
 class World;
 
 class Player
@@ -30,6 +35,8 @@ private:
 	Camera* camera;
 	glm::vec3 position;
 	glm::vec3 velocity;
+	glm::vec3 acceleration;
+	bool isGrounded;
 	World* world;
 
 	AABB collider;
@@ -38,15 +45,13 @@ private:
 
 	BlockOutline blockOutline;
 
-	// Debug
-	int frameCount;
-	int fps;
-	float frameTime;
-
 	void movement(InputHandler& inputHandler, float deltaTime);
 	glm::vec3 getInputDirection(InputHandler& inputHandler);
 	void updateCollider();
-	void resolveCollisions();
+	void resolveCollisions(float deltaTime);
+	void checkGround();
+	glm::vec3 getFriction();
+	glm::vec3 minAbsVector(const glm::vec3& vec1, const glm::vec3& vec2);
 
 	void blockBreakLogic();
 	void blockPlaceLogic();

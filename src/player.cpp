@@ -12,9 +12,7 @@ Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
 	this->world = world;
 	this->velocity = glm::vec3(0);
 
-	frameTime = 0;
-	frameCount = 0;
-	fps = 0;
+	isGrounded = false;
 
 	selectedBlock = BlockType::STONE;
 }
@@ -23,42 +21,26 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 {
 	camera->update(deltaTime);
 
+	glm::vec3 friction = getFriction();
+	velocity = velocity + acceleration * friction * deltaTime;
+	acceleration = glm::vec3(0.0f);
+
+	checkGround();
 	movement(inputHandler, deltaTime);
-
-	ChunkCoord currentCoord = ChunkCoord::toChunkCoord(camera->position);
-
-	frameTime += deltaTime;
-	frameCount++;
-	if (frameTime > 0.5f)
-	{
-		fps = (int)((float)frameCount / frameTime);
-		frameCount = 0;
-		frameTime = 0.0f;
-	}
-
-	ImGui::Begin("Debug UI");
-	ImGui::Text("Position: %f, %f, %f ", camera->position.x, camera->position.y, camera->position.z);
-	ImGui::Text("Chunk Coord: %d, %d, %d", currentCoord.x, currentCoord.y, currentCoord.z);
-	ImGui::Text("FPS: %d", fps);
-	ImGui::End();
+	resolveCollisions(deltaTime);
+	position += velocity * deltaTime;
+	camera->position = position + glm::vec3(0.0f, cameraHeight, 0.0f);
+	updateCollider();
 
 	if (inputHandler.getMouseButtonDown(SDL_BUTTON_LEFT))
 	{
 		blockBreakLogic();
 	}
-
 	if (inputHandler.getMouseButtonDown(SDL_BUTTON_RIGHT))
 	{
 		blockPlaceLogic();
 	}
-
-	resolveCollisions();
-
 	blockSwitchLogic(inputHandler);
-	camera->position = position + glm::vec3(0.0f, cameraHeight, 0.0f);
-	position += velocity;
-	updateCollider();
-	velocity = glm::vec3(0.0f);
 }
 
 void Player::render()
@@ -87,15 +69,29 @@ const glm::vec3& Player::getPosition() const
 void Player::movement(InputHandler& inputHandler, float deltaTime)
 {
 	glm::vec3 input = getInputDirection(inputHandler);
-	if (input.x == 0 && input.y == 0) return;
 
-	glm::vec3 movementDirection = glm::normalize(camera->front * input.y + camera->right * input.x);
-	if (inputHandler.getKey(SDLK_LSHIFT))
+	float yaw = camera->yaw;
+
+	glm::vec3 forward = glm::vec3(cos(glm::radians(yaw)), 0.0f, sin(glm::radians(yaw)));
+	glm::vec3 right = glm::cross(forward, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	acceleration = input.y * forward + input.x * right;
+	if (acceleration != glm::vec3(0))
 	{
-		movementDirection *= 5.0f;
+		acceleration = glm::normalize(acceleration);
+		acceleration *= playerSpeed;
 	}
 
-	velocity = movementDirection * 8.0f * deltaTime;
+	glm::vec3 friction = getFriction();
+
+	velocity.y -= gravity * deltaTime;
+
+	velocity -= minAbsVector(velocity, velocity * friction * deltaTime);
+
+	if (inputHandler.getKey(SDLK_SPACE) && isGrounded)
+	{
+		velocity.y = sqrt(2 * gravity * jumpHeight);
+	}
 }
 
 glm::vec3 Player::getInputDirection(InputHandler& inputHandler)
@@ -131,10 +127,12 @@ void Player::updateCollider()
 	collider.setMax(max);
 }
 
-void Player::resolveCollisions()
+void Player::resolveCollisions(float deltaTime)
 {
 	const glm::vec3& min = collider.getMin();
 	const glm::vec3& max = collider.getMax();
+
+	glm::vec3 velocity = this->velocity * deltaTime;
 
 	for (int _ = 0; _ < 3; _++)
 	{
@@ -183,8 +181,48 @@ void Player::resolveCollisions()
 
 			float dot = glm::dot(velocity, nearest.normal);
 			velocity -= nearest.normal * dot;
+			this->velocity = velocity / deltaTime;
 		}
 	}
+}
+
+void Player::checkGround()
+{
+	for (float x = -0.3f; x <= 0.3f; x += 0.3f)
+	{
+		for (float z = -0.3f; z <= 0.3f; z += 0.3f)
+		{
+			isGrounded = world->getBlockAt((int)floor(position.x + x), (int)floor(position.y - 0.1f), (int)floor(position.z + z)) != BlockType::AIR;
+			if (isGrounded) return;
+		}
+	}
+}
+
+glm::vec3 Player::getFriction()
+{
+	if (isGrounded)
+	{
+		return glm::vec3(18.0f);
+	}
+
+	if (velocity.y > 0.0f)
+	{
+		return glm::vec3(1.8f, 0.0f, 1.8f);
+	}
+
+	return glm::vec3(1.8f, 0.0f, 1.8f);
+}
+
+glm::vec3 Player::minAbsVector(const glm::vec3& vec1, const glm::vec3& vec2)
+{
+	glm::vec3 absVec1 = glm::vec3(abs(vec1.x), abs(vec1.y), abs(vec1.z));
+	glm::vec3 absVec2 = glm::vec3(abs(vec2.x), abs(vec2.y), abs(vec2.z));
+
+	if (glm::min(absVec1, absVec2) == absVec1)
+	{
+		return glm::vec3(vec1);
+	}
+	return glm::vec3(vec2);
 }
 
 void Player::blockBreakLogic()
