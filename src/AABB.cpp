@@ -35,10 +35,28 @@ const glm::vec3& AABB::getMax() const
 	return max;
 }
 
-void AABB::collide(const AABB& other, const glm::vec3& velocity)
+CollisionResult AABB::collide(const AABB& other, const glm::vec3& velocity)
 {
 	const glm::vec3& otherMin = other.getMin();
 	const glm::vec3& otherMax = other.getMax();
+
+	auto discreteCheck = [this, velocity, other, otherMin, otherMax]() -> bool
+		{
+			if (velocity.x == 0.0f && (min.x > otherMax.x || max.x < otherMin.x))
+			{
+				return false;
+			}
+			if (velocity.y == 0.0f && (min.y > otherMax.y || max.y < otherMin.y))
+			{
+				return false;
+			}
+			
+			if (velocity.z == 0.0f && (min.z > otherMax.z || max.z < otherMin.z))
+			{
+				return false;
+			}
+			return true;
+		};
 
 	// X Axis
 	float xEntry, xExit;
@@ -117,10 +135,41 @@ void AABB::collide(const AABB& other, const glm::vec3& velocity)
 
 	if (entryTime > exitTime || xEntry < 0.0f && yEntry < 0.0f && zEntry < 0.0f || xEntry > 1.0f || yEntry > 1.0f || zEntry > 1.0f)
 	{
-		// No collision occured
+		return CollisionResult
+		{
+			1.0f,
+			glm::vec3(0),
+		};
 	}
 	else
 	{
-		__debugbreak();
+		if (!discreteCheck())
+		{
+			return CollisionResult
+			{
+				1.0f,
+				glm::vec3(0),
+			};
+		}
+
+		glm::vec3 normal = glm::vec3(0);
+		if (xEntry > yEntry && xEntry > zEntry)
+		{
+			normal = velocity.x > 0 ? glm::vec3(-1.0f, 0.0f, 0.0f) : glm::vec3(1.0f, 0.0f, 0.0f);
+		}
+		else if (yEntry > xEntry && yEntry > zEntry)
+		{
+			normal = velocity.y > 0 ? glm::vec3(0.0f, -1.0f, 0.0f) : glm::vec3(0.0f, 1.0f, 0.0f);
+		}
+		else
+		{
+			normal = velocity.z > 0 ? glm::vec3(0.0f, 0.0f, -1.0f) : glm::vec3(0.0f, 0.0f, 1.0f);
+		}
+
+		return CollisionResult
+		{
+			entryTime,
+			normal,
+		};
 	}
 }

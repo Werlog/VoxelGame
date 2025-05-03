@@ -40,7 +40,12 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	blockSwitchLogic(inputHandler);
 
 	AABB testAABB = AABB(glm::vec3(0.0f, 20.0f, 0.0f), glm::vec3(1.0f, 21.0f, 1.0f));
-	collider.collide(testAABB, velocity);
+	CollisionResult collision = collider.collide(testAABB, velocity);
+	if (collision.entryTime < 1.0f)
+	{
+		float dot = glm::dot(velocity, collision.normal);
+		velocity -= collision.normal * dot;
+	}
 
 	camera->position = position + glm::vec3(0.0f, playerHeight, 0.0f);
 	position += velocity;
@@ -114,8 +119,8 @@ glm::vec3 Player::getInputDirection(InputHandler& inputHandler)
 
 void Player::updateCollider()
 {
-	glm::vec3 min = glm::vec3(position.x - playerWidth * 0.5f, position.y, position.z - playerHeight * 0.5f);
-	glm::vec3 max = glm::vec3(position.x + playerWidth * 0.5f, position.y + playerHeight, position.z + playerHeight * 0.5f);
+	glm::vec3 min = glm::vec3(position.x - playerWidth * 0.5f, position.y, position.z - playerWidth * 0.5f);
+	glm::vec3 max = glm::vec3(position.x + playerWidth * 0.5f, position.y + playerHeight, position.z + playerWidth * 0.5f);
 
 	collider.setMin(min);
 	collider.setMax(max);

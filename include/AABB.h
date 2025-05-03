@@ -2,6 +2,12 @@
 
 #include <glm/glm.hpp>
 
+struct CollisionResult
+{
+	float entryTime;
+	glm::vec3 normal;
+};
+
 class AABB
 {
 public:
@@ -15,7 +21,7 @@ public:
 	const glm::vec3& getMin() const;
 	const glm::vec3& getMax() const;
 
-	void collide(const AABB& other, const glm::vec3& velocity);
+	CollisionResult collide(const AABB& other, const glm::vec3& velocity);
 private:
 	glm::vec3 min;
 	glm::vec3 max;
