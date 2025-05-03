@@ -9,7 +9,8 @@
 #include "blockdata.h"
 #include "AABB.h"
 
-constexpr float playerHeight = 1.8f;
+constexpr float playerHeight = 1.9f;
+constexpr float cameraHeight = 1.8f;
 constexpr float playerWidth = 0.6f;
 
 class World;
@@ -36,11 +37,16 @@ private:
 	BlockType selectedBlock;
 
 	BlockOutline blockOutline;
-	BlockOutline testOutline;
+
+	// Debug
+	int frameCount;
+	int fps;
+	float frameTime;
 
 	void movement(InputHandler& inputHandler, float deltaTime);
 	glm::vec3 getInputDirection(InputHandler& inputHandler);
 	void updateCollider();
+	void resolveCollisions();
 
 	void blockBreakLogic();
 	void blockPlaceLogic();

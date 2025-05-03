@@ -81,6 +81,9 @@ bool Game::init()
 	ImGui_ImplOpenGL3_Init("#version 430");
 
 	uiRenderer.init(resourceManager, windowWidth, windowHeight);
+	debugRenderer.init(resourceManager, &camera);
+
+	glLineWidth(3.0f);
 
 	// Game State Setup
 	PlayingGameState* playingState = new PlayingGameState(this, resourceManager);
@@ -116,11 +119,11 @@ void Game::gameLoop()
 		ImGui::NewFrame();
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-		// Game Updates
-		currentState->update(timer.deltaTime, inputHandler);
-
 		// Rendering
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Game Updates
+		currentState->update(timer.deltaTime, inputHandler);
 
 		currentState->render();
 
@@ -150,6 +153,11 @@ Camera& Game::getCamera()
 UIRenderer& Game::getUIRenderer()
 {
 	return uiRenderer;
+}
+
+DebugRenderer& Game::getDebugRenderer()
+{
+	return debugRenderer;
 }
 
 void Game::switchToState(BaseGameState* newState)

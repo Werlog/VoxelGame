@@ -5,12 +5,16 @@
 
 Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
 	: blockOutline(&(resourceManager.getShader("shaders\\outline"))), 
-		testOutline(&(resourceManager.getShader("shaders\\outline"))), collider(glm::vec3(0), glm::vec3(0))
+		collider(glm::vec3(0), glm::vec3(0))
 {
 	this->camera = camera;
 	this->position = glm::vec3(0, 25, 0);
 	this->world = world;
 	this->velocity = glm::vec3(0);
+
+	frameTime = 0;
+	frameCount = 0;
+	fps = 0;
 
 	selectedBlock = BlockType::STONE;
 }
@@ -23,9 +27,19 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 
 	ChunkCoord currentCoord = ChunkCoord::toChunkCoord(camera->position);
 
+	frameTime += deltaTime;
+	frameCount++;
+	if (frameTime > 0.5f)
+	{
+		fps = (int)((float)frameCount / frameTime);
+		frameCount = 0;
+		frameTime = 0.0f;
+	}
+
 	ImGui::Begin("Debug UI");
 	ImGui::Text("Position: %f, %f, %f ", camera->position.x, camera->position.y, camera->position.z);
 	ImGui::Text("Chunk Coord: %d, %d, %d", currentCoord.x, currentCoord.y, currentCoord.z);
+	ImGui::Text("FPS: %d", fps);
 	ImGui::End();
 
 	if (inputHandler.getMouseButtonDown(SDL_BUTTON_LEFT))
@@ -37,17 +51,11 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	{
 		blockPlaceLogic();
 	}
+
+	resolveCollisions();
+
 	blockSwitchLogic(inputHandler);
-
-	AABB testAABB = AABB(glm::vec3(0.0f, 20.0f, 0.0f), glm::vec3(1.0f, 21.0f, 1.0f));
-	CollisionResult collision = collider.collide(testAABB, velocity);
-	if (collision.entryTime < 1.0f)
-	{
-		float dot = glm::dot(velocity, collision.normal);
-		velocity -= collision.normal * dot;
-	}
-
-	camera->position = position + glm::vec3(0.0f, playerHeight, 0.0f);
+	camera->position = position + glm::vec3(0.0f, cameraHeight, 0.0f);
 	position += velocity;
 	updateCollider();
 	velocity = glm::vec3(0.0f);
@@ -56,9 +64,6 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 void Player::render()
 {
 	std::unique_ptr<glm::vec3> lookPos = getLookingAtPosition();
-
-	testOutline.setPosition(glm::ivec3(0.0f, 20.0f, 0.0f));
-	testOutline.render(*camera);
 
 	if (lookPos == nullptr)
 		return;
@@ -124,6 +129,62 @@ void Player::updateCollider()
 
 	collider.setMin(min);
 	collider.setMax(max);
+}
+
+void Player::resolveCollisions()
+{
+	const glm::vec3& min = collider.getMin();
+	const glm::vec3& max = collider.getMax();
+
+	for (int _ = 0; _ < 3; _++)
+	{
+		// Broad phase box
+		float startX = velocity.x > 0 ? min.x : min.x + velocity.x;
+		float startY = velocity.y > 0 ? min.y : min.y + velocity.y;
+		float startZ = velocity.z > 0 ? min.z : min.z + velocity.z;
+
+		float endX = velocity.x > 0 ? velocity.x + max.x : max.x - velocity.x;
+		float endY = velocity.y > 0 ? velocity.y + max.y : max.y - velocity.y;
+		float endZ = velocity.z > 0 ? velocity.z + max.z : max.z - velocity.z;
+
+		CollisionResult nearest = CollisionResult
+		{
+			1.0f,
+			glm::vec3(0.0f),
+		};
+
+		for (int x = (int)floor(startX); x <= (int)floor(endX); x++)
+		{
+			for (int y = (int)floor(startY); y <= (int)floor(endY); y++)
+			{
+				for (int z = (int)floor(startZ); z <= (int)floor(endZ); z++)
+				{
+					if (world->getBlockAt(x, y, z) == BlockType::AIR)
+					{
+						continue;
+					}
+					AABB blockAABB = AABB(glm::vec3(x, y, z), glm::vec3(x + 1, y + 1, z + 1));
+
+					CollisionResult collision = collider.collide(blockAABB, velocity);
+
+					if (collision.entryTime < nearest.entryTime)
+					{
+						nearest = collision;
+					}
+				}
+			}
+		}
+
+		if (nearest.entryTime < 1.0f)
+		{
+			glm::vec3 move = velocity * (nearest.normal.y == 0.0f ? nearest.entryTime - 0.005f : nearest.entryTime);
+			position += move;
+			updateCollider();
+
+			float dot = glm::dot(velocity, nearest.normal);
+			velocity -= nearest.normal * dot;
+		}
+	}
 }
 
 void Player::blockBreakLogic()

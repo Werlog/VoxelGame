@@ -7,6 +7,7 @@
 #include "camera.h"
 #include "resourcemanager.h"
 #include "UI/uirenderer.h"
+#include "debugRenderer.h"
 
 constexpr int windowWidth = 1280;
 constexpr int windowHeight = 720;
@@ -25,6 +26,7 @@ public:
 
 	Camera& getCamera();
 	UIRenderer& getUIRenderer();
+	DebugRenderer& getDebugRenderer();
 
 	void switchToState(BaseGameState* newState);
 private:
@@ -36,6 +38,7 @@ private:
 	InputHandler inputHandler;
 	ResourceManager resourceManager;
 	UIRenderer uiRenderer;
+	DebugRenderer debugRenderer;
 	
 	Camera camera;
 

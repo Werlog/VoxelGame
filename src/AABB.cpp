@@ -40,6 +40,7 @@ CollisionResult AABB::collide(const AABB& other, const glm::vec3& velocity)
 	const glm::vec3& otherMin = other.getMin();
 	const glm::vec3& otherMax = other.getMax();
 
+	// Checks for collision on non-moving axis, eliminates false positives.
 	auto discreteCheck = [this, velocity, other, otherMin, otherMax]() -> bool
 		{
 			if (velocity.x == 0.0f && (min.x > otherMax.x || max.x < otherMin.x))
