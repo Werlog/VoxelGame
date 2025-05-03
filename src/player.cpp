@@ -4,11 +4,13 @@
 #include "imgui.h"
 
 Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
-	: blockOutline(&(resourceManager.getShader("shaders\\outline")))
+	: blockOutline(&(resourceManager.getShader("shaders\\outline"))), 
+		testOutline(&(resourceManager.getShader("shaders\\outline"))), collider(glm::vec3(0), glm::vec3(0))
 {
 	this->camera = camera;
-	this->position = glm::vec3(0);
+	this->position = glm::vec3(0, 25, 0);
 	this->world = world;
+	this->velocity = glm::vec3(0);
 
 	selectedBlock = BlockType::STONE;
 }
@@ -37,12 +39,21 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	}
 	blockSwitchLogic(inputHandler);
 
+	AABB testAABB = AABB(glm::vec3(0.0f, 20.0f, 0.0f), glm::vec3(1.0f, 21.0f, 1.0f));
+	collider.collide(testAABB, velocity);
+
 	camera->position = position + glm::vec3(0.0f, playerHeight, 0.0f);
+	position += velocity;
+	updateCollider();
+	velocity = glm::vec3(0.0f);
 }
 
 void Player::render()
 {
 	std::unique_ptr<glm::vec3> lookPos = getLookingAtPosition();
+
+	testOutline.setPosition(glm::ivec3(0.0f, 20.0f, 0.0f));
+	testOutline.render(*camera);
 
 	if (lookPos == nullptr)
 		return;
@@ -74,7 +85,7 @@ void Player::movement(InputHandler& inputHandler, float deltaTime)
 		movementDirection *= 5.0f;
 	}
 
-	position += movementDirection * 8.0f * deltaTime;
+	velocity = movementDirection * 8.0f * deltaTime;
 }
 
 glm::vec3 Player::getInputDirection(InputHandler& inputHandler)
@@ -99,6 +110,15 @@ glm::vec3 Player::getInputDirection(InputHandler& inputHandler)
 	}
 
 	return input;
+}
+
+void Player::updateCollider()
+{
+	glm::vec3 min = glm::vec3(position.x - playerWidth * 0.5f, position.y, position.z - playerHeight * 0.5f);
+	glm::vec3 max = glm::vec3(position.x + playerWidth * 0.5f, position.y + playerHeight, position.z + playerHeight * 0.5f);
+
+	collider.setMin(min);
+	collider.setMax(max);
 }
 
 void Player::blockBreakLogic()
