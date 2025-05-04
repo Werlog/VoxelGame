@@ -1,6 +1,7 @@
 #include "GameState/PlayingGameState.h"
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
+#include "imgui.h"
 
 PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager)
 	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader),
@@ -8,12 +9,20 @@ PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager)
 	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.45f, 1.0f), glm::vec3(0.3f, 0.9f, 1.0f), &skyboxShader)
 {
 	setupShader();
+
+	enableDevMenu = false;
+	enableCollisionOption = true;
+	enableFlightOption = false;
 }
 
 void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 {
-	player.update(inputHandler, deltaTime);
+	if (!enableDevMenu)
+		player.update(inputHandler, deltaTime);
+
 	world.updateWorld(player);
+
+	devMenuLogic(inputHandler);
 }
 
 void PlayingGameState::render()
@@ -27,7 +36,6 @@ void PlayingGameState::render()
 	glUniformMatrix4fv(shaderProjectionLoc, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
 	glUniformMatrix4fv(shaderViewLoc, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
 	glUniform3fv(shaderCameraPositionLoc, 1, glm::value_ptr(camera.position));
-
 
 	glBindTexture(GL_TEXTURE_2D, terrainTexture.getTextureHandle());
 
@@ -81,4 +89,31 @@ void PlayingGameState::setupShader()
 	glUniform1fv(unitYLoc, 1, &oneY);
 	glUniform1iv(atlasSizeX, 1, &atlasSize);
 	glUniform1iv(atlasSizeY, 1, &atlasSize);
+}
+
+void PlayingGameState::devMenuLogic(InputHandler& inputHandler)
+{
+	if (inputHandler.getKeyDown(SDLK_RSHIFT))
+	{
+		enableDevMenu = !enableDevMenu;
+
+		if (!enableDevMenu)
+		{
+			SDL_SetRelativeMouseMode(SDL_TRUE);
+		}
+	}
+
+	if (enableDevMenu)
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+		ImGui::Begin("Developer Menu");
+
+		ImGui::Checkbox("Enable Flight", &enableFlightOption);
+		ImGui::Checkbox("Enable Collisions", &enableCollisionOption);
+
+		ImGui::End();
+
+		player.setEnableFlight(enableFlightOption);
+		player.setEnableCollision(enableCollisionOption);
+	}
 }

@@ -29,6 +29,10 @@ private:
 	Shader& skyboxShader;
 	SkyBox skybox;
 
+	bool enableDevMenu;
+	bool enableCollisionOption;
+	bool enableFlightOption;
+
 	unsigned int shaderViewLoc;
 	unsigned int shaderProjectionLoc;
 	unsigned int shaderModelLoc;
@@ -36,4 +40,5 @@ private:
 	unsigned int shaderLightDirectionLoc;
 
 	void setupShader();
+	void devMenuLogic(InputHandler& inputHandler);
 };

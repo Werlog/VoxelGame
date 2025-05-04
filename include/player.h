@@ -17,6 +17,7 @@ constexpr float playerWidth = 0.6f;
 constexpr float gravity = 32.0f;
 constexpr float jumpHeight = 1.5f;
 constexpr float playerSpeed = 9.1f;
+constexpr float flightSpeed = 18.1f;
 
 class World;
 
@@ -29,14 +30,21 @@ public:
 	void update(InputHandler& inputHandler, float deltaTime);
 	void render();
 
+	void setEnableCollision(bool enable);
+	void setEnableFlight(bool enable);
+
 	BlockType getSelectedBlock() const;
 	const glm::vec3& getPosition() const;
+	bool getEnableCollision() const;
+	bool getEnableFlight() const;
 private:
 	Camera* camera;
 	glm::vec3 position;
 	glm::vec3 velocity;
 	glm::vec3 acceleration;
 	bool isGrounded;
+	bool enableCollision;
+	bool enableFlight;
 	World* world;
 
 	AABB collider;

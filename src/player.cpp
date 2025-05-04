@@ -11,8 +11,12 @@ Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
 	this->position = glm::vec3(0, 25, 0);
 	this->world = world;
 	this->velocity = glm::vec3(0);
+	this->acceleration = glm::vec3(0);
 
 	isGrounded = false;
+
+	enableCollision = true;
+	enableFlight = false;
 
 	selectedBlock = BlockType::STONE;
 }
@@ -56,6 +60,16 @@ void Player::render()
 	blockOutline.render(*camera);
 }
 
+void Player::setEnableCollision(bool enable)
+{
+	enableCollision = enable;
+}
+
+void Player::setEnableFlight(bool enable)
+{
+	enableFlight = enable;
+}
+
 BlockType Player::getSelectedBlock() const
 {
 	return selectedBlock;
@@ -64,6 +78,16 @@ BlockType Player::getSelectedBlock() const
 const glm::vec3& Player::getPosition() const
 {
 	return position;
+}
+
+bool Player::getEnableCollision() const
+{
+	return enableCollision;
+}
+
+bool Player::getEnableFlight() const
+{
+	return enableFlight;
 }
 
 void Player::movement(InputHandler& inputHandler, float deltaTime)
@@ -79,16 +103,26 @@ void Player::movement(InputHandler& inputHandler, float deltaTime)
 	if (acceleration != glm::vec3(0))
 	{
 		acceleration = glm::normalize(acceleration);
-		acceleration *= playerSpeed;
+		acceleration *= enableFlight ? flightSpeed : playerSpeed;
 	}
 
 	glm::vec3 friction = getFriction();
 
-	velocity.y -= gravity * deltaTime;
+	if (!enableFlight)
+		velocity.y -= gravity * deltaTime;
 
 	velocity -= minAbsVector(velocity, velocity * friction * deltaTime);
 
-	if (inputHandler.getKey(SDLK_SPACE) && isGrounded)
+	if (enableFlight && inputHandler.getKey(SDLK_SPACE))
+	{
+		acceleration.y += flightSpeed * 0.75f;
+	}
+	if (enableFlight && inputHandler.getKey(SDLK_LSHIFT))
+	{
+		acceleration.y -= flightSpeed * 0.75f;
+	}
+
+	if (inputHandler.getKey(SDLK_SPACE) && isGrounded && !enableFlight)
 	{
 		velocity.y = sqrt(2 * gravity * jumpHeight);
 	}
@@ -129,6 +163,8 @@ void Player::updateCollider()
 
 void Player::resolveCollisions(float deltaTime)
 {
+	if (!enableCollision) return;
+
 	const glm::vec3& min = collider.getMin();
 	const glm::vec3& max = collider.getMax();
 
@@ -200,6 +236,11 @@ void Player::checkGround()
 
 glm::vec3 Player::getFriction()
 {
+	if (enableFlight)
+	{
+		return glm::vec3(6.0f);
+	}
+
 	if (isGrounded)
 	{
 		return glm::vec3(18.0f);
@@ -277,7 +318,7 @@ void Player::blockPlaceLogic()
 	if (world->getBlockAt(placeX, placeY, placeZ) == BlockType::AIR)
 	{
 		AABB blockAABB = AABB(glm::vec3(placeX, placeY, placeZ), glm::vec3(placeX + 1, placeY + 1, placeZ + 1));
-		if (blockAABB.isOverlapping(collider))
+		if (enableCollision && blockAABB.isOverlapping(collider))
 			return;
 
 		world->modifyBlockAt(placeX, placeY, placeZ, selectedBlock);
