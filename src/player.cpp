@@ -275,7 +275,13 @@ void Player::blockPlaceLogic()
 	int placeZ = (int)floor(centerPos.z + highestDir.z);
 
 	if (world->getBlockAt(placeX, placeY, placeZ) == BlockType::AIR)
+	{
+		AABB blockAABB = AABB(glm::vec3(placeX, placeY, placeZ), glm::vec3(placeX + 1, placeY + 1, placeZ + 1));
+		if (blockAABB.isOverlapping(collider))
+			return;
+
 		world->modifyBlockAt(placeX, placeY, placeZ, selectedBlock);
+	}
 }
 
 void Player::blockSwitchLogic(InputHandler& inputHandler)

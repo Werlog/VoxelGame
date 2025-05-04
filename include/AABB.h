@@ -21,6 +21,8 @@ public:
 	const glm::vec3& getMin() const;
 	const glm::vec3& getMax() const;
 
+	bool isOverlapping(const AABB& other) const;
+
 	CollisionResult collide(const AABB& other, const glm::vec3& velocity);
 private:
 	glm::vec3 min;
