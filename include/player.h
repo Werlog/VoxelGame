@@ -8,6 +8,7 @@
 #include "resourcemanager.h"
 #include "blockdata.h"
 #include "AABB.h"
+#include "debugRenderer.h"
 
 constexpr float playerHeight = 1.9f;
 constexpr float cameraHeight = 1.8f;
@@ -17,7 +18,7 @@ constexpr float playerWidth = 0.6f;
 constexpr float gravity = 32.0f;
 constexpr float jumpHeight = 1.5f;
 constexpr float playerSpeed = 9.1f;
-constexpr float flightSpeed = 18.1f;
+constexpr float flightSpeed = 30.1f;
 
 class World;
 
@@ -47,6 +48,7 @@ private:
 	bool enableFlight;
 	World* world;
 
+	// Collider relative to the current chunk's position
 	AABB collider;
 
 	BlockType selectedBlock;

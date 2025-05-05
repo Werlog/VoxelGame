@@ -40,7 +40,7 @@ void Chunk::generateChunk(FastNoiseSIMD* noise)
 				int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
 				int noiseIndex = z + x * CHUNK_SIZE_Z;
 
-				int height = (int)floor(10.0f + noiseSet[noiseIndex] * 15.0f);
+				int height = (int)floor(10.0f + noiseSet[noiseIndex] * 35.0f);
 
 				if (yPos == height)
 				{

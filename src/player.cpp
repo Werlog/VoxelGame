@@ -4,11 +4,11 @@
 #include "imgui.h"
 
 Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
-	: blockOutline(&(resourceManager.getShader("shaders\\outline"))), 
+	: blockOutline(&(resourceManager.getShader("shaders\\outline"))),
 		collider(glm::vec3(0), glm::vec3(0))
 {
 	this->camera = camera;
-	this->position = glm::vec3(0, 25, 0);
+	this->position = glm::vec3(0, 40, 0);
 	this->world = world;
 	this->velocity = glm::vec3(0);
 	this->acceleration = glm::vec3(0);
@@ -154,8 +154,15 @@ glm::vec3 Player::getInputDirection(InputHandler& inputHandler)
 
 void Player::updateCollider()
 {
-	glm::vec3 min = glm::vec3(position.x - playerWidth * 0.5f, position.y, position.z - playerWidth * 0.5f);
-	glm::vec3 max = glm::vec3(position.x + playerWidth * 0.5f, position.y + playerHeight, position.z + playerWidth * 0.5f);
+	/*
+		The collisions are handled relative to the current
+		chunk's origin to get rid of float imprecision errors
+	*/
+	ChunkCoord currentCoord = ChunkCoord::toChunkCoord(position);
+	glm::vec3 relPosition = glm::vec3(position.x - currentCoord.x * CHUNK_SIZE_X, position.y - currentCoord.y * CHUNK_SIZE_Y, position.z - currentCoord.z * CHUNK_SIZE_Z);
+
+	glm::vec3 min = glm::vec3(relPosition.x - playerWidth * 0.5f, relPosition.y, relPosition.z - playerWidth * 0.5f);
+	glm::vec3 max = glm::vec3(relPosition.x + playerWidth * 0.5f, relPosition.y + playerHeight, relPosition.z + playerWidth * 0.5f);
 
 	collider.setMin(min);
 	collider.setMax(max);
@@ -187,18 +194,23 @@ void Player::resolveCollisions(float deltaTime)
 			glm::vec3(0.0f),
 		};
 
+		ChunkCoord currentCoord = ChunkCoord::toChunkCoord(position);
+
 		for (int x = (int)floor(startX); x <= (int)floor(endX); x++)
 		{
 			for (int y = (int)floor(startY); y <= (int)floor(endY); y++)
 			{
 				for (int z = (int)floor(startZ); z <= (int)floor(endZ); z++)
 				{
-					if (world->getBlockAt(x, y, z) == BlockType::AIR)
+					int worldX = x + currentCoord.x * CHUNK_SIZE_X;
+					int worldY = y + currentCoord.y * CHUNK_SIZE_Y;
+					int worldZ = z + currentCoord.z * CHUNK_SIZE_Z;
+					if (world->getBlockAt(worldX, worldY, worldZ) == BlockType::AIR)
 					{
 						continue;
 					}
-					AABB blockAABB = AABB(glm::vec3(x, y, z), glm::vec3(x + 1, y + 1, z + 1));
 
+					AABB blockAABB = AABB(glm::vec3(x, y, z), glm::vec3(x + 1, y + 1, z + 1));
 					CollisionResult collision = collider.collide(blockAABB, velocity);
 
 					if (collision.entryTime < nearest.entryTime)
@@ -211,7 +223,7 @@ void Player::resolveCollisions(float deltaTime)
 
 		if (nearest.entryTime < 1.0f)
 		{
-			glm::vec3 move = velocity * (nearest.normal.y == 0.0f ? nearest.entryTime - 0.005f : nearest.entryTime);
+			glm::vec3 move = velocity * (nearest.entryTime - 0.001f);
 			position += move;
 			updateCollider();
 
@@ -224,9 +236,9 @@ void Player::resolveCollisions(float deltaTime)
 
 void Player::checkGround()
 {
-	for (float x = -0.3f; x <= 0.3f; x += 0.3f)
+	for (float x = -playerWidth * 0.4f; x <= playerWidth * 0.4f; x += playerWidth * 0.4f)
 	{
-		for (float z = -0.3f; z <= 0.3f; z += 0.3f)
+		for (float z = -playerWidth * 0.4f; z <= playerWidth * 0.4f; z += playerWidth * 0.4f)
 		{
 			isGrounded = world->getBlockAt((int)floor(position.x + x), (int)floor(position.y - 0.1f), (int)floor(position.z + z)) != BlockType::AIR;
 			if (isGrounded) return;
@@ -315,9 +327,14 @@ void Player::blockPlaceLogic()
 	int placeY = (int)floor(centerPos.y + highestDir.y);
 	int placeZ = (int)floor(centerPos.z + highestDir.z);
 
+	ChunkCoord current = ChunkCoord::toChunkCoord(position);
+
 	if (world->getBlockAt(placeX, placeY, placeZ) == BlockType::AIR)
 	{
-		AABB blockAABB = AABB(glm::vec3(placeX, placeY, placeZ), glm::vec3(placeX + 1, placeY + 1, placeZ + 1));
+		int relX = placeX - current.x * CHUNK_SIZE_X;
+		int relY = placeY - current.y * CHUNK_SIZE_Y;
+		int relZ = placeZ - current.z * CHUNK_SIZE_Z;
+		AABB blockAABB = AABB(glm::vec3(relX, relY, relZ), glm::vec3(relX + 1, relY + 1, relZ + 1));
 		if (enableCollision && blockAABB.isOverlapping(collider))
 			return;
 
