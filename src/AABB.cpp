@@ -144,7 +144,7 @@ CollisionResult AABB::collide(const AABB& other, const glm::vec3& velocity)
 	float entryTime = std::max({ xEntry, yEntry, zEntry });
 	float exitTime = std::min({ xExit, yExit, zExit });
 
-	if (entryTime > exitTime || xEntry < 0.0f && yEntry < 0.0f && zEntry < 0.0f || xEntry > 1.0f || yEntry > 1.0f || zEntry > 1.0f)
+	if (entryTime > exitTime || entryTime > 1.0f || entryTime < 0.0f)
 	{
 		return CollisionResult
 		{

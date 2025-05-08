@@ -39,7 +39,7 @@ void PlayingGameState::render()
 
 	glBindTexture(GL_TEXTURE_2D, terrainTexture.getTextureHandle());
 
-	world.renderWorld();
+	world.renderWorld(player.getChunkPosition(), camera.position);
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -55,7 +55,7 @@ void PlayingGameState::onEnter()
 {
 	glBindTexture(GL_TEXTURE_2D, terrainSheet.getSheet().getTextureHandle());
 
-	world.updateLoadedChunks(ChunkCoord::toChunkCoord(player.getPosition()));
+	world.updateLoadedChunks(ChunkCoord::toChunkCoord(player.getWorldPosition()));
 }
 
 void PlayingGameState::onExit()

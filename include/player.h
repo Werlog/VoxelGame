@@ -9,6 +9,7 @@
 #include "blockdata.h"
 #include "AABB.h"
 #include "debugRenderer.h"
+#include "chunkcoord.h"
 
 constexpr float playerHeight = 1.9f;
 constexpr float cameraHeight = 1.8f;
@@ -35,18 +36,22 @@ public:
 	void setEnableFlight(bool enable);
 
 	BlockType getSelectedBlock() const;
-	const glm::vec3& getPosition() const;
+	const glm::vec3& getRelPosition() const;
+	const ChunkCoord& getChunkPosition() const;
+	glm::vec3 getWorldPosition() const;
 	bool getEnableCollision() const;
 	bool getEnableFlight() const;
 private:
 	Camera* camera;
-	glm::vec3 position;
+	glm::vec3 relPosition;
 	glm::vec3 velocity;
 	glm::vec3 acceleration;
 	bool isGrounded;
 	bool enableCollision;
 	bool enableFlight;
 	World* world;
+
+	ChunkCoord chunkPosition;
 
 	// Collider relative to the current chunk's position
 	AABB collider;
@@ -57,6 +62,9 @@ private:
 
 	void movement(InputHandler& inputHandler, float deltaTime);
 	glm::vec3 getInputDirection(InputHandler& inputHandler);
+	void playerMoved();
+
+	void updateRelPosition();
 	void updateCollider();
 	void resolveCollisions(float deltaTime);
 	void checkGround();

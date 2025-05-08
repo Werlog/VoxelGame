@@ -20,6 +20,25 @@ struct ChunkCoord
 		return x != other.x || y != other.y || z != other.z;
 	}
 
+	ChunkCoord operator+(const ChunkCoord& other) const
+	{
+		return ChunkCoord{ x + other.x, y + other.y, z + other.z };
+	}
+
+	ChunkCoord operator-(const ChunkCoord& other) const
+	{
+		return ChunkCoord{ x - other.x, y - other.y, z - other.z };
+	}
+
+	ChunkCoord& operator+=(const ChunkCoord& other)
+	{
+		x += other.x;
+		y += other.y;
+		z += other.z;
+
+		return *this;
+	}
+
 	static ChunkCoord toChunkCoord(const glm::vec3& pos)
 	{
 		int x = (int)floor(pos.x / CHUNK_SIZE_X);

@@ -8,10 +8,13 @@ Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
 		collider(glm::vec3(0), glm::vec3(0))
 {
 	this->camera = camera;
-	this->position = glm::vec3(0, 40, 0);
+	this->relPosition = glm::vec3(16777216, 40, 16777216);
 	this->world = world;
 	this->velocity = glm::vec3(0);
 	this->acceleration = glm::vec3(0);
+
+	this->chunkPosition = ChunkCoord{ 0, 0, 0 };
+	playerMoved();
 
 	isGrounded = false;
 
@@ -29,12 +32,20 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	velocity = velocity + acceleration * friction * deltaTime;
 	acceleration = glm::vec3(0.0f);
 
+
 	checkGround();
 	movement(inputHandler, deltaTime);
 	resolveCollisions(deltaTime);
-	position += velocity * deltaTime;
-	camera->position = position + glm::vec3(0.0f, cameraHeight, 0.0f);
-	updateCollider();
+	relPosition += velocity * deltaTime;
+	playerMoved();
+	glm::vec3 worldPos = getWorldPosition();
+	camera->position = relPosition + glm::vec3(0.0f, cameraHeight, 0.0f);
+
+	ImGui::Begin("Test GUI");
+	ImGui::Text("Position: %f, %f, %f", worldPos.x, worldPos.y, worldPos.z);
+	ImGui::Text("Rel Position: %f, %f, %f", relPosition.x, relPosition.y, relPosition.z);
+	ImGui::Text("Chunk Coord: %d, %d, %d", chunkPosition.x, chunkPosition.y, chunkPosition.z);
+	ImGui::End();
 
 	if (inputHandler.getMouseButtonDown(SDL_BUTTON_LEFT))
 	{
@@ -57,7 +68,7 @@ void Player::render()
 	glm::ivec3 blockPos = glm::ivec3((int)floor(lookPos->x), (int)floor(lookPos->y), (int)floor(lookPos->z));
 
 	blockOutline.setPosition(blockPos);
-	blockOutline.render(*camera);
+	blockOutline.render(*camera, chunkPosition);
 }
 
 void Player::setEnableCollision(bool enable)
@@ -75,9 +86,19 @@ BlockType Player::getSelectedBlock() const
 	return selectedBlock;
 }
 
-const glm::vec3& Player::getPosition() const
+const glm::vec3& Player::getRelPosition() const
 {
-	return position;
+	return relPosition;
+}
+
+const ChunkCoord& Player::getChunkPosition() const
+{
+	return chunkPosition;
+}
+
+glm::vec3 Player::getWorldPosition() const
+{
+	return glm::vec3(relPosition.x + chunkPosition.x * CHUNK_SIZE_X, relPosition.y + chunkPosition.y * CHUNK_SIZE_Y, relPosition.z + chunkPosition.z * CHUNK_SIZE_Z);
 }
 
 bool Player::getEnableCollision() const
@@ -152,15 +173,25 @@ glm::vec3 Player::getInputDirection(InputHandler& inputHandler)
 	return input;
 }
 
+void Player::playerMoved()
+{
+	updateRelPosition();
+	updateCollider();
+}
+
+void Player::updateRelPosition()
+{
+	ChunkCoord coord = ChunkCoord::toChunkCoord(relPosition);
+
+	if (coord.x != 0 || coord.y != 0 || coord.z != 0)
+	{
+		chunkPosition += coord;
+		relPosition -= glm::vec3(coord.x * CHUNK_SIZE_X, coord.y * CHUNK_SIZE_Y, coord.z * CHUNK_SIZE_Z);
+	}
+}
+
 void Player::updateCollider()
 {
-	/*
-		The collisions are handled relative to the current
-		chunk's origin to get rid of float imprecision errors
-	*/
-	ChunkCoord currentCoord = ChunkCoord::toChunkCoord(position);
-	glm::vec3 relPosition = glm::vec3(position.x - currentCoord.x * CHUNK_SIZE_X, position.y - currentCoord.y * CHUNK_SIZE_Y, position.z - currentCoord.z * CHUNK_SIZE_Z);
-
 	glm::vec3 min = glm::vec3(relPosition.x - playerWidth * 0.5f, relPosition.y, relPosition.z - playerWidth * 0.5f);
 	glm::vec3 max = glm::vec3(relPosition.x + playerWidth * 0.5f, relPosition.y + playerHeight, relPosition.z + playerWidth * 0.5f);
 
@@ -194,17 +225,15 @@ void Player::resolveCollisions(float deltaTime)
 			glm::vec3(0.0f),
 		};
 
-		ChunkCoord currentCoord = ChunkCoord::toChunkCoord(position);
-
 		for (int x = (int)floor(startX); x <= (int)floor(endX); x++)
 		{
 			for (int y = (int)floor(startY); y <= (int)floor(endY); y++)
 			{
 				for (int z = (int)floor(startZ); z <= (int)floor(endZ); z++)
 				{
-					int worldX = x + currentCoord.x * CHUNK_SIZE_X;
-					int worldY = y + currentCoord.y * CHUNK_SIZE_Y;
-					int worldZ = z + currentCoord.z * CHUNK_SIZE_Z;
+					int worldX = x + chunkPosition.x * CHUNK_SIZE_X;
+					int worldY = y + chunkPosition.y * CHUNK_SIZE_Y;
+					int worldZ = z + chunkPosition.z * CHUNK_SIZE_Z;
 					if (world->getBlockAt(worldX, worldY, worldZ) == BlockType::AIR)
 					{
 						continue;
@@ -223,24 +252,31 @@ void Player::resolveCollisions(float deltaTime)
 
 		if (nearest.entryTime < 1.0f)
 		{
-			glm::vec3 move = velocity * (nearest.entryTime - 0.001f);
-			position += move;
-			updateCollider();
+			float epsilon = std::max(0.01f, glm::length(velocity) * 0.01f);
+
+			//this->velocity = glm::vec3(0.0f);
+
+			
+			glm::vec3 move = velocity * (nearest.entryTime - epsilon);
+			relPosition += move;
+			playerMoved();
 
 			float dot = glm::dot(velocity, nearest.normal);
 			velocity -= nearest.normal * dot;
 			this->velocity = velocity / deltaTime;
+			
 		}
 	}
 }
 
 void Player::checkGround()
 {
+	glm::vec3 worldPos = getWorldPosition();
 	for (float x = -playerWidth * 0.4f; x <= playerWidth * 0.4f; x += playerWidth * 0.4f)
 	{
 		for (float z = -playerWidth * 0.4f; z <= playerWidth * 0.4f; z += playerWidth * 0.4f)
 		{
-			isGrounded = world->getBlockAt((int)floor(position.x + x), (int)floor(position.y - 0.1f), (int)floor(position.z + z)) != BlockType::AIR;
+			isGrounded = world->getBlockAt((int)floor(worldPos.x + x), (int)floor(worldPos.y - 0.1f), (int)floor(worldPos.z + z)) != BlockType::AIR;
 			if (isGrounded) return;
 		}
 	}
@@ -327,13 +363,11 @@ void Player::blockPlaceLogic()
 	int placeY = (int)floor(centerPos.y + highestDir.y);
 	int placeZ = (int)floor(centerPos.z + highestDir.z);
 
-	ChunkCoord current = ChunkCoord::toChunkCoord(position);
-
 	if (world->getBlockAt(placeX, placeY, placeZ) == BlockType::AIR)
 	{
-		int relX = placeX - current.x * CHUNK_SIZE_X;
-		int relY = placeY - current.y * CHUNK_SIZE_Y;
-		int relZ = placeZ - current.z * CHUNK_SIZE_Z;
+		int relX = placeX - chunkPosition.x * CHUNK_SIZE_X;
+		int relY = placeY - chunkPosition.y * CHUNK_SIZE_Y;
+		int relZ = placeZ - chunkPosition.z * CHUNK_SIZE_Z;
 		AABB blockAABB = AABB(glm::vec3(relX, relY, relZ), glm::vec3(relX + 1, relY + 1, relZ + 1));
 		if (enableCollision && blockAABB.isOverlapping(collider))
 			return;
@@ -361,7 +395,7 @@ void Player::blockSwitchLogic(InputHandler& inputHandler)
 std::unique_ptr<glm::vec3> Player::getLookingAtPosition()
 {
 	const glm::vec3& direction = camera->front;
-	const glm::vec3& startPosition = camera->position;
+	const glm::vec3& startPosition = camera->position + glm::vec3(chunkPosition.x * CHUNK_SIZE_X, chunkPosition.y * CHUNK_SIZE_Y, chunkPosition.z * CHUNK_SIZE_Z);
 	for (float dist = 0.0f; dist < 5.0f; dist += 0.03f)
 	{
 		glm::vec3 checkPos = startPosition + direction * dist;

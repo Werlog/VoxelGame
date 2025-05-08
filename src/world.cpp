@@ -20,7 +20,7 @@ World::World(const Shader& terrainShader)
 
 void World::updateWorld(Player& player)
 {
-	ChunkCoord playerCoord = ChunkCoord::toChunkCoord(player.getPosition());
+	ChunkCoord playerCoord = ChunkCoord::toChunkCoord(player.getWorldPosition());
 
 	if (playerCoord != lastplayerCoord)
 	{
@@ -30,7 +30,7 @@ void World::updateWorld(Player& player)
 	chunkManager.update();
 }
 
-void World::renderWorld()
+void World::renderWorld(const ChunkCoord& playerCoord, const glm::vec3& cameraPos)
 {
 	const auto& loadedChunks = chunkManager.getLoadedChunks();
 	std::lock_guard lock(chunkManager.getChunkMutex());
@@ -42,7 +42,9 @@ void World::renderWorld()
 		const ChunkCoord& coord = (*it).first;
 		glm::mat4 model = glm::mat4(1.0f);
 
-		model = glm::translate(model, glm::vec3(coord.x * CHUNK_SIZE_X, coord.y * CHUNK_SIZE_Y, coord.z * CHUNK_SIZE_Z + 1));
+		ChunkCoord relative = coord - playerCoord;
+
+		model = glm::translate(model, glm::vec3(relative.x * CHUNK_SIZE_X, relative.y * CHUNK_SIZE_Y, relative.z * CHUNK_SIZE_Z + 1));
 
 		glUniformMatrix4fv(shaderModelLoc, 1, GL_FALSE, glm::value_ptr(model));
 

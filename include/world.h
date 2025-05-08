@@ -26,7 +26,7 @@ public:
 	void remeshChunk(ChunkCoord coordinate);
 
 	void updateWorld(Player& player);
-	void renderWorld();
+	void renderWorld(const ChunkCoord& playerCoord, const glm::vec3& cameraPos);
 
 	BlockType getBlockAt(int x, int y, int z);
 	void setBlockAt(int x, int y, int z, BlockType newBlock);

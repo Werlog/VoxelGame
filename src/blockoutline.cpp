@@ -18,11 +18,13 @@ BlockOutline::BlockOutline(Shader* shader)
 	setupShader();
 }
 
-void BlockOutline::render(Camera& camera)
+void BlockOutline::render(Camera& camera, const ChunkCoord& playerCoord)
 {
 	glUseProgram(outlineShader->getProgramHandle());
 
-	glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(position));
+	glm::vec3 chunkPos = glm::vec3(playerCoord.x * CHUNK_SIZE_X, playerCoord.y * CHUNK_SIZE_Y, playerCoord.z * CHUNK_SIZE_Z);
+
+	glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(position) - chunkPos);
 
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));

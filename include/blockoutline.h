@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include "shader.h"
 #include "camera.h"
+#include "chunkcoord.h"
 
 class BlockOutline
 {
@@ -10,7 +11,7 @@ public:
 
 	BlockOutline(Shader* shader);
 
-	void render(Camera& camera);
+	void render(Camera& camera, const ChunkCoord& playerCoord);
 
 	void setPosition(const glm::ivec3 newPosition);
 private:
