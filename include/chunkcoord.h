@@ -50,9 +50,10 @@ struct ChunkCoord
 
 	static ChunkCoord toChunkCoord(int xPos, int yPos, int zPos)
 	{
-		int x = (int)floor(xPos / (float)CHUNK_SIZE_X);
-		int y = (int)floor(yPos / (float)CHUNK_SIZE_Y);
-		int z = (int)floor(zPos / (float)CHUNK_SIZE_Z);
+		// Casting to float would break past 2^24
+		int x = (int)floor(xPos / (double)CHUNK_SIZE_X);
+		int y = (int)floor(yPos / (double)CHUNK_SIZE_Y);
+		int z = (int)floor(zPos / (double)CHUNK_SIZE_Z);
 
 		return ChunkCoord{ x, y, z };
 	}

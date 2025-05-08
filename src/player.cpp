@@ -8,7 +8,7 @@ Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
 		collider(glm::vec3(0), glm::vec3(0))
 {
 	this->camera = camera;
-	this->relPosition = glm::vec3(16777216, 40, 16777216);
+	this->relPosition = glm::vec3(0, 40, 0);
 	this->world = world;
 	this->velocity = glm::vec3(0);
 	this->acceleration = glm::vec3(0);
