@@ -13,7 +13,7 @@ World::World(const Shader& terrainShader)
 
 	srand(time(0));
 
-	noise = FastNoiseSIMD::NewFastNoiseSIMD(rand() % 32767);
+	noise = FastNoiseSIMD::NewFastNoiseSIMD(0);
 
 	lastplayerCoord = ChunkCoord{ 0, 0, 0 };
 }

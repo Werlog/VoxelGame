@@ -11,6 +11,8 @@ enum BlockType : unsigned char
 	COBBLESTONE,
 	DIRT,
 	GRASS,
+	OAK_LOG,
+	OAK_LEAVES,
 	BEDROCK,
 };
 

@@ -27,40 +27,6 @@ Chunk::~Chunk()
 		glDeleteBuffers(1, &SSBO);
 }
 
-void Chunk::generateChunk(FastNoiseSIMD* noise)
-{
-	float* noiseSet = noise->GetSimplexSet(coord.x * CHUNK_SIZE_X, 0, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, 1, CHUNK_SIZE_Z);
-	for (int x = 0; x < CHUNK_SIZE_X; x++)
-	{
-		for (int y = 0; y < CHUNK_SIZE_Y; y++)
-		{
-			for (int z = 0; z < CHUNK_SIZE_Z; z++)
-			{
-				int yPos = y + coord.y * CHUNK_SIZE_Y;
-				int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
-				int noiseIndex = z + x * CHUNK_SIZE_Z;
-
-				int height = (int)floor(10.0f + noiseSet[noiseIndex] * 15.0f);
-
-				if (yPos == height)
-				{
-					blocks[index] = BlockType::GRASS;
-				}
-				else if (yPos > height - 3 && yPos < height)
-				{
-					blocks[index] = BlockType::DIRT;
-				}
-				else if (yPos <= height - 3)
-				{
-					blocks[index] = BlockType::STONE;
-				}
-			}
-		}
-	}
-
-	FastNoiseSIMD::FreeNoiseSet(noiseSet);
-}
-
 void Chunk::generateMesh(BlockData& blockData)
 {
 	faceData.clear();

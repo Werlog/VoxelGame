@@ -12,6 +12,12 @@
 
 class World;
 
+struct BlockMod
+{
+	int x, y, z;
+	BlockType block;
+};
+
 class ChunkManager
 {
 public:
@@ -23,6 +29,9 @@ public:
 	void update();
 	void remeshChunk(ChunkCoord coord, bool pushToFront = false);
 
+	void addBlockMod(ChunkCoord coord, BlockMod mod);
+	void resolveBlockMods(std::shared_ptr<Chunk> chunk);
+
 	const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& getLoadedChunks();
 	std::shared_ptr<Chunk> getLoadedChunk(ChunkCoord coordinate);
 	std::recursive_mutex& getChunkMutex();
@@ -31,6 +40,8 @@ private:
 
 	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> loadedChunks;
 
+	std::unordered_map<ChunkCoord, std::vector<BlockMod>> blockMods;
+
 	std::queue<ChunkCoord> chunksToGenerate;
 	std::deque<std::shared_ptr<Chunk>> chunksToMesh;
 	std::unordered_set<ChunkCoord> chunksToUnload;
@@ -38,6 +49,7 @@ private:
 	std::mutex meshMutex;
 	std::mutex genMutex;
 	std::recursive_mutex chunksMutex;
+	std::mutex blockModMutex;
 
 	std::thread generationThread;
 	std::thread meshingThread;

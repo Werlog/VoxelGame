@@ -47,5 +47,7 @@ void BlockData::init()
 	data.insert({ BlockType::COBBLESTONE, BlockProperties{"Cobblestone", 16, 16, 16, 16, 16, 16} });
 	data.insert({ BlockType::DIRT, BlockProperties{"Dirt", 2, 2, 2, 2, 2, 2} });
 	data.insert({ BlockType::GRASS, BlockProperties{"Grass", 3, 3, 3, 3, 0, 2} });
+	data.insert({ BlockType::OAK_LOG, BlockProperties{"Oak Log", 20, 20, 20, 20, 21, 21} });
+	data.insert({ BlockType::OAK_LEAVES, BlockProperties{"Oak Leaves", 22, 22, 22, 22, 22, 22} });
 	data.insert({ BlockType::BEDROCK, BlockProperties{"Bedrock", 17, 17, 17, 17, 17, 17} });
 }
