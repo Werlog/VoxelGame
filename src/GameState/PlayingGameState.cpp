@@ -48,7 +48,11 @@ void PlayingGameState::render()
 
 	const BlockProperties& block = world.getBlockData().getBlockProperties(player.getSelectedBlock());
 
-	game->getUIRenderer().renderText(minecraftFont, block.blockName + " selected", game->getUIRenderer().getWindowWidth() / 2, 150, 0.9f, glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
+	int width = game->getUIRenderer().getWindowWidth();
+	int height = game->getUIRenderer().getWindowHeight();
+
+	game->getUIRenderer().renderCrosshair(width / 2, height / 2, 21.0f);
+	game->getUIRenderer().renderText(minecraftFont, block.blockName + " selected", width / 2, 150, 0.9f, glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
 }
 
 void PlayingGameState::onEnter()
