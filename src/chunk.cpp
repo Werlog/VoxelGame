@@ -103,6 +103,11 @@ void Chunk::generateMesh(BlockData& blockData)
 
 void Chunk::createChunkMesh()
 {
+	if (faceCount <= 0)
+	{
+		return;
+	}
+
 	if (VAO == 0)
 		glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
@@ -113,6 +118,8 @@ void Chunk::createChunkMesh()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
 
 	glBufferData(GL_SHADER_STORAGE_BUFFER, faceData.size() * sizeof(int), faceData.data(), GL_DYNAMIC_DRAW);
+
+	faceData.clear();
 }
 
 void Chunk::render() const

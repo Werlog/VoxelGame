@@ -6,7 +6,7 @@
 PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager)
 	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader),
 	player(&(game->getCamera()), &world, resourceManager), terrainTexture(resourceManager.getTexture("textures\\terrain.png")), terrainSheet(16, 16, &terrainTexture),
-	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.45f, 1.0f), glm::vec3(0.3f, 0.9f, 1.0f), &skyboxShader)
+	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.45f, 1.0f), glm::vec3(0.3f, 0.9f, 1.0f), &skyboxShader), clouds(resourceManager)
 {
 	setupShader();
 
@@ -22,6 +22,7 @@ void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 
 	world.updateWorld(player);
 
+	clouds.update(deltaTime);
 	devMenuLogic(inputHandler);
 }
 
@@ -45,6 +46,8 @@ void PlayingGameState::render()
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	player.render();
+
+	clouds.render(&camera, player.getWorldPosition());
 
 	const BlockProperties& block = world.getBlockData().getBlockProperties(player.getSelectedBlock());
 

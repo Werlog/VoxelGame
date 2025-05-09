@@ -6,6 +6,7 @@
 #include "texturesheet.h"
 #include "skybox.h"
 #include "player.h"
+#include "clouds.h"
 
 class PlayingGameState : public BaseGameState
 {
@@ -28,6 +29,7 @@ private:
 
 	Shader& skyboxShader;
 	SkyBox skybox;
+	Clouds clouds;
 
 	bool enableDevMenu;
 	bool enableCollisionOption;
