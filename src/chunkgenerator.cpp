@@ -62,21 +62,27 @@ void ChunkGenerator::generateTrees()
 	std::mt19937 rng(seed);
 	std::uniform_int_distribution<> distr(1, 1000);
 
+	float* treeNoiseSet = world->getTreeNoise()->GetPerlinSet(coord.x * CHUNK_SIZE_X, 0, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, 1, CHUNK_SIZE_Z, 1.0f);
 	for (size_t x = 0; x < CHUNK_SIZE_X; x++)
 	{
 		for (size_t z = 0; z < CHUNK_SIZE_Z; z++)
 		{
+			float treeValue = treeNoiseSet[z + x * CHUNK_SIZE_Z];
+			if (treeValue < 0.0f)
+				continue;
 			int randomNumber = distr(rng);
-			if (randomNumber < 4)
+			if (randomNumber < 6)
 			{
 				int height = getHeightFromNoise(heightNoiseSet[z + x * CHUNK_SIZE_Z]);
 				int yPos = height + coord.y * CHUNK_SIZE_Y;
 
 				if (yPos == height && height + 1 < CHUNK_SIZE_Y)
-					generateTree(x, yPos + 1, z, std::max(randomNumber + 3, 5));
+					generateTree(x, yPos + 1, z, std::max(randomNumber + 1, 5));
 			}
 		}
 	}
+
+	FastNoiseSIMD::FreeNoiseSet(treeNoiseSet);
 }
 
 inline float ChunkGenerator::getHeightFromNoise(float noiseValue)

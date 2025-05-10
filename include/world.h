@@ -34,13 +34,21 @@ public:
 
 	std::shared_ptr<Chunk> getChunkByCoordinate(ChunkCoord coord);
 	FastNoiseSIMD* getNoise();
+	FastNoiseSIMD* getTreeNoise();
+	FastNoiseSIMD* getCaveNoise();
+	int getWorldSeed();
 	BlockData& getBlockData();
 private:
 	BlockData blockData;
 	ChunkManager chunkManager;
+	int seed;
 
 	ChunkCoord lastplayerCoord;
 
 	unsigned int shaderModelLoc;
 	FastNoiseSIMD* noise;
+	FastNoiseSIMD* treeDensityNoise;
+	FastNoiseSIMD* caveNoise;
+
+	void setupWorldGen();
 };

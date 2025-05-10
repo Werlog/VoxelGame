@@ -6,6 +6,8 @@
 
 class World;
 
+constexpr float caveSize = 3.0f;
+
 class ChunkGenerator
 {
 public:

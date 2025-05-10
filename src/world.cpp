@@ -5,15 +5,15 @@
 #include <iostream>
 #include "profiling/codetimer.h"
 #include <unordered_set>
+#include <random>
+#include <limits>
 
 World::World(const Shader& terrainShader)
 	: chunkManager(this)
 {
 	shaderModelLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "model");
 
-	srand(time(0));
-
-	noise = FastNoiseSIMD::NewFastNoiseSIMD(0);
+	setupWorldGen();
 
 	lastplayerCoord = ChunkCoord{ 0, 0, 0 };
 }
@@ -173,7 +173,37 @@ FastNoiseSIMD* World::getNoise()
 	return noise;
 }
 
+FastNoiseSIMD* World::getTreeNoise()
+{
+	return treeDensityNoise;
+}
+
+FastNoiseSIMD* World::getCaveNoise()
+{
+	return caveNoise;
+}
+
+int World::getWorldSeed()
+{
+	return seed;
+}
+
 BlockData& World::getBlockData()
 {
 	return blockData;
+}
+
+void World::setupWorldGen()
+{
+	std::random_device rd;
+	std::mt19937 rng(rd());
+	std::uniform_int_distribution<> distr(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::max());
+
+	seed = distr(rng);
+
+	noise = FastNoiseSIMD::NewFastNoiseSIMD(seed);
+	treeDensityNoise = FastNoiseSIMD::NewFastNoiseSIMD(seed + 1);
+	caveNoise = FastNoiseSIMD::NewFastNoiseSIMD(seed - 1);
+
+	std::cout << "World seed is: " << seed << std::endl;
 }
