@@ -43,7 +43,7 @@ void Chunk::generateMesh(BlockData& blockData)
 
 				if (blocks[index] == BlockType::AIR) continue;
 
-				const BlockProperties& textureData = blockData.getBlockProperties(blocks[index]);
+				const BlockProperties& blockProperties = blockData.getBlockProperties(blocks[index]);
 
 				for (int i = 0; i < 6; i++)
 				{
@@ -56,9 +56,9 @@ void Chunk::generateMesh(BlockData& blockData)
 					if (getBlockAt(checkX, checkY, checkZ) != BlockType::AIR)
 						continue;
 
-					int textureId = blockData.getTextureIdFromFaceIndex(textureData, i);
+					int textureId = blockData.getTextureIdFromFaceIndex(blockProperties, i);
 
-					faceData.push_back(createFace(x, y, z, textureId, i));
+					createFace(x, y, z, textureId, i, blockProperties.biomeMask, 0);
 				}
 			}
 		}
@@ -83,7 +83,7 @@ void Chunk::createChunkMesh()
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
 
-	glBufferData(GL_SHADER_STORAGE_BUFFER, faceData.size() * sizeof(int), faceData.data(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, faceData.size() * sizeof(ChunkFace), faceData.data(), GL_DYNAMIC_DRAW);
 
 	faceData.clear();
 }
@@ -122,7 +122,7 @@ bool Chunk::hasMesh() const
 	return VAO != 0;
 }
 
-inline int Chunk::createFace(int x, int y, int z, int textureId, int faceDirection)
+void Chunk::createFace(int x, int y, int z, int textureId, int faceDirection, int faceMask, int biomeColorIndex)
 {
-	return (x | y << 6 | z << 12 | textureId << 18 | faceDirection << 26);
+	faceData.push_back(ChunkFace{ (x | y << 6 | z << 12 | textureId << 18 | faceDirection << 26), (biomeColorIndex | faceMask << 4)});
 }

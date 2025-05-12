@@ -25,7 +25,17 @@ struct BlockProperties
 	unsigned char leftFaceTexId;
 	unsigned char topFaceTexId;
 	unsigned char bottomFaceTexId;
+	int biomeMask;
 };
+
+constexpr int biomeNoFaceMask = 0x00;
+constexpr int biomeFrontFaceMask = 0x01;
+constexpr int biomeRightFaceMask = 0x02;
+constexpr int biomeBackFaceMask = 0x04;
+constexpr int biomeLeftFaceMask = 0x08;
+constexpr int biomeTopFaceMask = 0x10;
+constexpr int biomeBottomFaceMask = 0x20;
+constexpr int biomeAllFaceMask = 0x3F;
 
 class BlockData
 {

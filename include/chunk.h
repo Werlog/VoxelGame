@@ -7,6 +7,12 @@
 
 class World;
 
+typedef struct
+{
+	int data;
+	int biomeData;
+} ChunkFace;
+
 class Chunk
 {
 public:
@@ -27,7 +33,7 @@ public:
 private:
 	BlockType blocks[CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z];
 	int faceCount;
-	std::vector<int> faceData;
+	std::vector<ChunkFace> faceData;
 	
 	World* world;
 
@@ -36,5 +42,5 @@ private:
 	unsigned int VAO;
 	unsigned int SSBO;
 
-	inline int createFace(int x, int y, int z, int textureId, int faceDirection);
+	void createFace(int x, int y, int z, int textureId, int faceDirection, int faceMask, int biomeColorIndex);
 };

@@ -12,9 +12,15 @@ uniform mat4 model;
 
 uniform vec3 lightDirection;
 
+struct FaceData
+{
+	uint data;
+	uint biomeData;
+};
+
 layout(std430, binding = 0) readonly buffer vertexPullBuffer
 {
-	uint meshData[];
+	FaceData meshData[];
 };
 
 const vec3 vertexPositions[24] = vec3[24]
@@ -100,14 +106,41 @@ vec3 voxelNormals[6] = vec3[6](
 	vec3(0, -1, 0)
 );
 
+vec3 biomeColors[1] = vec3[1](
+	vec3(0.25f, 0.9f, 0.25f)
+);
+
 out vec2 texCoord;
+out vec3 colorMod;
 out vec3 worldPosition;
 out float brightness;
+
+bool shouldUseBiomeColor(uint faceMask, uint faceDirection)
+{
+	switch (faceDirection)
+	{
+		case 0:
+			return (faceMask & 0x01) != 0;
+		case 1:
+			return (faceMask & 0x02) != 0;
+		case 2:
+			return (faceMask & 0x04) != 0;
+		case 3:
+			return (faceMask & 0x08) != 0;
+		case 4:
+			return (faceMask & 0x10) != 0;
+		case 5:
+			return (faceMask & 0x20) != 0;
+		default:
+			return false;
+	}
+}
 
 void main()
 {
 	int index = gl_VertexID / 6;
-	uint data = meshData[index];
+	uint data = meshData[index].data;
+	uint biomeData = meshData[index].biomeData;
 	int curVertexId = gl_VertexID % 6;
 
 	uint xPos = data & 63;
@@ -115,6 +148,9 @@ void main()
 	uint zPos = (data >> 12) & 63;
 	uint textureId = (data >> 18) & 255;
 	uint faceDirection = (data >> 26) & 7;
+
+	uint biomeColorIndex = biomeData & 15;
+	uint faceMask = (biomeData >> 4) & 63;
 
 	vec3 position = vec3(xPos, yPos, zPos);
 	int vertexIndex = curVertexId + 6 * int(faceDirection);
@@ -143,4 +179,11 @@ void main()
 
 	gl_Position = projection * view * model * vec4(position, 1.0f);
 	worldPosition = (model * vec4(position, 1.0f)).xyz;
+
+	colorMod = vec3(1);
+
+	if (biomeColorIndex < biomeColors.length() && shouldUseBiomeColor(faceMask, faceDirection))
+	{
+		colorMod = biomeColors[biomeColorIndex];
+	}
 }
