@@ -8,7 +8,7 @@ uniform vec3 cameraPosition;
 uniform float fogStart = 75.0f;
 uniform float fogEnd = 325.0f;
 uniform vec3 fogColor = vec3(0.2f, 0.7f, 1.0f);
-uniform vec3 minLightLevel = vec3(0.5f, 0.5f, 0.5f);
+uniform vec3 minLightLevel = vec3(0.25f, 0.25f, 0.25f);
 
 out vec4 outColor;
 in vec3 worldPosition;

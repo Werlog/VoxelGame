@@ -30,26 +30,81 @@ Chunk::~Chunk()
 
 void Chunk::updateLight()
 {
-	CodeTimer timer = CodeTimer("Light update");
-	std::memset(light, 15, sizeof(light));
+	std::memset(light, 0, sizeof(light));
+
+	int topBlocks[CHUNK_SIZE_X * CHUNK_SIZE_Z]; // Y levels of sky exposed air blocks
+	std::memset(topBlocks, 0, sizeof(topBlocks));
 
 	for (int x = 0; x < CHUNK_SIZE_X; x++)
 	{
 		for (int z = 0; z < CHUNK_SIZE_Z; z++)
 		{
-			bool hitBlock = false;
 			for (int y = CHUNK_SIZE_Y - 1; y >= 0; y--)
 			{
-				int index = x + y * CHUNK_SIZE_Y + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
-				if (!hitBlock)
+				if (getBlockAt(x, y, z) != BlockType::AIR)
 				{
-					light[index] = 15;
-
-					if (getBlockAt(x, y, z) != BlockType::AIR)
-						hitBlock = true;
-					continue;
+					topBlocks[x + z * CHUNK_SIZE_X] = y + 1;
+					break;
 				}
-				light[index] = 10;
+				light[x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y] = 15;
+			}
+		}
+	}
+
+	for (int x = 0; x < CHUNK_SIZE_X; x++)
+	{
+		for (int y = 0; y < CHUNK_SIZE_Y; y++)
+		{
+			for (int z = 0; z < CHUNK_SIZE_Z; z++)
+			{
+				if (y >= topBlocks[x + z * CHUNK_SIZE_X])
+					continue;
+
+				int blockIndex = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+
+				if (blocks[blockIndex] != BlockType::AIR)
+					continue;
+
+				std::queue<glm::ivec4> positions;
+				std::unordered_set<int> visited;
+				positions.push(glm::ivec4(x, y, z, 0));
+
+				while (!positions.empty())
+				{
+					glm::ivec4 pos = positions.front();
+					positions.pop();
+
+					int index = pos.x + pos.y * CHUNK_SIZE_X + pos.z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+
+					if (visited.find(index) != visited.end())
+						continue;
+
+					visited.insert(index);
+
+					if (index >= CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z || index < 0)
+						continue;
+
+					if (getBlockAt(pos.x, pos.y, pos.z) != BlockType::AIR)
+						continue;
+
+					if (pos.w >= 16)
+					{
+						light[blockIndex] = 0;
+						break;
+					}
+
+					if (topBlocks[pos.x + pos.z * CHUNK_SIZE_X] <= pos.y)
+					{
+						light[blockIndex] = 15 - pos.w;
+						break;
+					}
+
+					for (const auto& dir : worldDirections)
+					{
+						glm::ivec4 position = glm::ivec4(pos.x + dir[0], pos.y + dir[1], pos.z + dir[2], pos.w + 1);
+						positions.push(position);
+					}
+				}
 			}
 		}
 	}
