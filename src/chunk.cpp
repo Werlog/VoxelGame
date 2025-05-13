@@ -16,6 +16,7 @@ Chunk::Chunk(ChunkCoord coord, World* world)
 	faceCount = 0;
 
 	std::memset(blocks, BlockType::AIR, sizeof(blocks));
+	std::memset(light, 0, sizeof(light));
 	shouldUpdateMesh.store(false);
 }
 
@@ -25,6 +26,33 @@ Chunk::~Chunk()
 		glDeleteVertexArrays(1, &VAO);
 	if (SSBO != 0)
 		glDeleteBuffers(1, &SSBO);
+}
+
+void Chunk::updateLight()
+{
+	CodeTimer timer = CodeTimer("Light update");
+	std::memset(light, 15, sizeof(light));
+
+	for (int x = 0; x < CHUNK_SIZE_X; x++)
+	{
+		for (int z = 0; z < CHUNK_SIZE_Z; z++)
+		{
+			bool hitBlock = false;
+			for (int y = CHUNK_SIZE_Y - 1; y >= 0; y--)
+			{
+				int index = x + y * CHUNK_SIZE_Y + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+				if (!hitBlock)
+				{
+					light[index] = 15;
+
+					if (getBlockAt(x, y, z) != BlockType::AIR)
+						hitBlock = true;
+					continue;
+				}
+				light[index] = 10;
+			}
+		}
+	}
 }
 
 void Chunk::generateMesh(BlockData& blockData)
@@ -52,13 +80,12 @@ void Chunk::generateMesh(BlockData& blockData)
 					int checkY = faceChecks[checkIndex + 1] + y;
 					int checkZ = faceChecks[checkIndex + 2] + z;
 
-
 					if (getBlockAt(checkX, checkY, checkZ) != BlockType::AIR)
 						continue;
 
 					int textureId = blockData.getTextureIdFromFaceIndex(blockProperties, i);
 
-					createFace(x, y, z, textureId, i, blockProperties.biomeMask, 0);
+					createFace(x, y, z, textureId, i, blockProperties.biomeMask, 0, getLightLevelAt(checkX, checkY, checkZ));
 				}
 			}
 		}
@@ -112,6 +139,22 @@ void Chunk::setBlockAt(int x, int y, int z, BlockType newBlock)
 	blocks[index] = newBlock;
 }
 
+inline unsigned char Chunk::getLightLevelAt(int x, int y, int z)
+{
+	if (x > CHUNK_SIZE_X - 1 || x < 0 || y > CHUNK_SIZE_Y - 1 || y < 0 || z > CHUNK_SIZE_Z - 1 || z < 0)
+		return 15;
+	int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+	return light[index];
+}
+
+inline void Chunk::setLightLevelAt(int x, int y, int z, unsigned char lightLevel)
+{
+	if (x > CHUNK_SIZE_X - 1 || x < 0 || y > CHUNK_SIZE_Y - 1 || y < 0 || z > CHUNK_SIZE_Z - 1 || z < 0)
+		return;
+	int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+	light[index] = lightLevel;
+}
+
 const ChunkCoord& Chunk::getCoord()
 {
 	return coord;
@@ -122,7 +165,7 @@ bool Chunk::hasMesh() const
 	return VAO != 0;
 }
 
-void Chunk::createFace(int x, int y, int z, int textureId, int faceDirection, int faceMask, int biomeColorIndex)
+void Chunk::createFace(int x, int y, int z, int textureId, int faceDirection, int faceMask, int biomeColorIndex, int lightLevel)
 {
-	faceData.push_back(ChunkFace{ (x | y << 6 | z << 12 | textureId << 18 | faceDirection << 26), (biomeColorIndex | faceMask << 4)});
+	faceData.push_back(ChunkFace{ (x | y << 6 | z << 12 | textureId << 18 | faceDirection << 26), (biomeColorIndex | faceMask << 4 | lightLevel << 10)});
 }

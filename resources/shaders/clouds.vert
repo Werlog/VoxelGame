@@ -20,5 +20,5 @@ void main()
 
 	vec2 offset = vec2(playerPosition.x / planeSize, (playerPosition.z / planeSize) + time * (1.0f / planeSize));
 
-	texCoord = (aUV + offset) * 0.25f;
+	texCoord = (aUV + offset) * 0.15f;
 }

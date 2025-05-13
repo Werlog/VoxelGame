@@ -13,7 +13,7 @@ constexpr int RENDER_DISTANCE = 10;
 constexpr int RENDER_HEIGHT = 1;
 constexpr int MAX_UNLOAD_COUNT = 2; // Maximum amount of chunks to unload per frame
 
-constexpr int chunkLoadDirections[6][3] = { { 1, 0, 0 }, { 0, 0, 1 }, { -1, 0, 0, }, { 0, 0, -1 }, { 0, 1, 0 }, { 0, -1, 0 } };
+constexpr int worldDirections[6][3] = { { 1, 0, 0 }, { 0, 0, 1 }, { -1, 0, 0, }, { 0, 0, -1 }, { 0, 1, 0 }, { 0, -1, 0 } };
 
 class World
 {

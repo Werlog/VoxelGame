@@ -107,12 +107,13 @@ vec3 voxelNormals[6] = vec3[6](
 );
 
 vec3 biomeColors[1] = vec3[1](
-	vec3(0.25f, 0.9f, 0.25f)
+	vec3(0.55f, 0.95f, 0.35f)
 );
 
 out vec2 texCoord;
 out vec3 colorMod;
 out vec3 worldPosition;
+flat out uint lightLevel;
 out float brightness;
 
 bool shouldUseBiomeColor(uint faceMask, uint faceDirection)
@@ -151,6 +152,7 @@ void main()
 
 	uint biomeColorIndex = biomeData & 15;
 	uint faceMask = (biomeData >> 4) & 63;
+	lightLevel = (biomeData >> 10) & 15;
 
 	vec3 position = vec3(xPos, yPos, zPos);
 	int vertexIndex = curVertexId + 6 * int(faceDirection);

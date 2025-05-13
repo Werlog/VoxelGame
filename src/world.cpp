@@ -74,7 +74,7 @@ void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 				loadChunk(coord);
 		}
 		
-		for (const auto& direction : chunkLoadDirections)
+		for (const auto& direction : worldDirections)
 		{
 			ChunkCoord neighbour = ChunkCoord{ coord.x + direction[0], coord.y + direction[1], coord.z + direction[2] };
 
@@ -148,7 +148,7 @@ void World::modifyBlockAt(int x, int y, int z, BlockType newBlock)
 
 	chunkManager.remeshChunk(coord, true);
 
-	for (const auto& direction : chunkLoadDirections)
+	for (const auto& direction : worldDirections)
 	{
 		int relX = x + direction[0];
 		int relY = y + direction[1];

@@ -77,7 +77,7 @@ void ChunkGenerator::generateTrees()
 				int yPos = height + coord.y * CHUNK_SIZE_Y;
 
 				if (yPos == height && height + 1 < CHUNK_SIZE_Y)
-					generateTree(x, yPos + 1, z, std::max(randomNumber + 1, 5));
+					generateTree(x, yPos + 1, z, std::max(randomNumber + 2, 6));
 			}
 		}
 	}
@@ -94,9 +94,37 @@ void ChunkGenerator::generateTree(int xPos, int yPos, int zPos, int height)
 {
 	for (int y = 0; y <= height; y++)
 	{
-		if (y >= height - 2)
+		if (y >= height - 3)
 		{
-			int size = y == height ? 1 : 2;
+			int size = y == height - 1 ? 1 : 2;
+
+			if (y == height)
+			{
+				for (int x = -1; x <= 1; x++)
+				{
+					for (int z = -1; z <= 1; z++)
+					{
+						if (x != 0 && z != 0)
+							continue;
+
+						int leafX = xPos + x;
+						int leafY = yPos + y;
+						int leafZ = zPos + z;
+
+						if (leafX >= CHUNK_SIZE_X || leafX < 0
+							|| leafY >= CHUNK_SIZE_Y || leafY < 0
+							|| leafZ >= CHUNK_SIZE_Z || leafZ < 0)
+						{
+							createBlockMod(leafX, leafY, leafZ, BlockType::OAK_LEAVES);
+							continue;
+						}
+
+						chunk->setBlockAt(leafX, leafY, leafZ, BlockType::OAK_LEAVES);
+					}
+				}
+				continue;
+			}
+
 			for (int x = -size; x <= size; x++)
 			{
 				for (int z = -size; z <= size; z++)

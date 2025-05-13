@@ -62,7 +62,7 @@ void ChunkManager::update()
 
 		{
 			const ChunkCoord& coord = *it;
-			for (const auto& dir : chunkLoadDirections)
+			for (const auto& dir : worldDirections)
 			{
 				ChunkCoord neighbour = ChunkCoord{ coord.x + dir[0], coord.y + dir[1], coord.z + dir[2] };
 				std::lock_guard lock(blockModMutex);
@@ -177,7 +177,7 @@ void ChunkManager::genWorker()
 			loadedChunks.insert({ coord, chunk });
 		}
 
-		for (const auto& direction : chunkLoadDirections)
+		for (const auto& direction : worldDirections)
 		{
 			ChunkCoord nCoord = ChunkCoord{ coord.x + direction[0], coord.y + direction[1], coord.z + direction[2] };
 			remeshChunk(nCoord);
@@ -205,6 +205,7 @@ void ChunkManager::meshWorker()
 			continue;
 		}
 
+		chunk->updateLight();
 		chunk->generateMesh(world->getBlockData());
 		chunk->shouldUpdateMesh.store(true);
 	}

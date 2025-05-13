@@ -21,6 +21,7 @@ public:
 	Chunk(ChunkCoord coord, World* world);
 	~Chunk();
 
+	void updateLight();
 	void generateMesh(BlockData& blockData);
 	void createChunkMesh();
 	void render() const;
@@ -28,10 +29,14 @@ public:
 	inline BlockType getBlockAt(int x, int y, int z);
 	void setBlockAt(int x, int y, int z, BlockType newBlock);
 
+	inline unsigned char getLightLevelAt(int x, int y, int z);
+	inline void setLightLevelAt(int x, int y, int z, unsigned char lightLevel);
+
 	const ChunkCoord& getCoord();
 	bool hasMesh() const;
 private:
 	BlockType blocks[CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z];
+	unsigned char light[CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z];
 	int faceCount;
 	std::vector<ChunkFace> faceData;
 	
@@ -42,5 +47,5 @@ private:
 	unsigned int VAO;
 	unsigned int SSBO;
 
-	void createFace(int x, int y, int z, int textureId, int faceDirection, int faceMask, int biomeColorIndex);
+	void createFace(int x, int y, int z, int textureId, int faceDirection, int faceMask, int biomeColorIndex, int lightLevel);
 };
