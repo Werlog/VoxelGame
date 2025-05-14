@@ -29,8 +29,7 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	camera->update(deltaTime);
 
 	glm::vec3 friction = getFriction();
-	velocity = velocity + acceleration * friction * deltaTime;
-	acceleration = glm::vec3(0.0f);
+	velocity += acceleration * friction * deltaTime;
 
 
 	checkGround();

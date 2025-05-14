@@ -197,7 +197,7 @@ void Chunk::setBlockAt(int x, int y, int z, BlockType newBlock)
 inline unsigned char Chunk::getLightLevelAt(int x, int y, int z)
 {
 	if (x > CHUNK_SIZE_X - 1 || x < 0 || y > CHUNK_SIZE_Y - 1 || y < 0 || z > CHUNK_SIZE_Z - 1 || z < 0)
-		return 15;
+		return world->getLightLevelAt(x + coord.x * CHUNK_SIZE_X, y + coord.y * CHUNK_SIZE_Y, z + coord.z * CHUNK_SIZE_Z);
 	int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
 	return light[index];
 }

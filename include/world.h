@@ -29,6 +29,8 @@ public:
 	void renderWorld(const ChunkCoord& playerCoord, const glm::vec3& cameraPos);
 
 	BlockType getBlockAt(int x, int y, int z);
+	unsigned char getLightLevelAt(int x, int y, int z);
+
 	void setBlockAt(int x, int y, int z, BlockType newBlock);
 	void modifyBlockAt(int x, int y, int z, BlockType newBlock);
 

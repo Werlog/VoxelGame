@@ -131,6 +131,16 @@ BlockType World::getBlockAt(int x, int y, int z)
 	return chunk->getBlockAt(x - coord.x * CHUNK_SIZE_X, y - coord.y * CHUNK_SIZE_Y, z - coord.z * CHUNK_SIZE_Z);
 }
 
+unsigned char World::getLightLevelAt(int x, int y, int z)
+{
+	ChunkCoord coord = ChunkCoord::toChunkCoord(x, y, z);
+	std::shared_ptr<Chunk> chunk = getChunkByCoordinate(coord);
+	if (chunk == nullptr)
+		return 15;
+
+	return chunk->getLightLevelAt(x - coord.x * CHUNK_SIZE_X, y - coord.y * CHUNK_SIZE_Y, z - coord.z * CHUNK_SIZE_Z);
+}
+
 void World::setBlockAt(int x, int y, int z, BlockType newBlock)
 {
 	ChunkCoord coord = ChunkCoord::toChunkCoord(x, y, z);
@@ -146,20 +156,31 @@ void World::modifyBlockAt(int x, int y, int z, BlockType newBlock)
 
 	ChunkCoord coord = ChunkCoord::toChunkCoord(x, y, z);
 
-	chunkManager.remeshChunk(coord, true);
-
-	for (const auto& direction : worldDirections)
-	{
-		int relX = x + direction[0];
-		int relY = y + direction[1];
-		int relZ = z + direction[2];
-
-		ChunkCoord neighbourCoord = ChunkCoord::toChunkCoord(relX, relY, relZ);
-
-		if (neighbourCoord != coord)
+	auto remeshNeighbours = [this, x, y, z, coord]() -> void {
+		for (const auto& direction : worldDirections)
 		{
-			chunkManager.remeshChunk(neighbourCoord, true);
+			int relX = x + direction[0];
+			int relY = y + direction[1];
+			int relZ = z + direction[2];
+
+			ChunkCoord neighbourCoord = ChunkCoord::toChunkCoord(relX, relY, relZ);
+
+			if (neighbourCoord != coord)
+			{
+				chunkManager.remeshChunk(neighbourCoord, true);
+			}
 		}
+	};
+
+	if (newBlock == BlockType::AIR)
+	{
+		chunkManager.remeshChunk(coord, true);
+		remeshNeighbours();
+	}
+	else
+	{
+		remeshNeighbours();
+		chunkManager.remeshChunk(coord, true);
 	}
 }
 
