@@ -6,6 +6,7 @@
 #include "world.h"
 #include "blockdata.h"
 #include "GameState/PlayingGameState.h"
+#include "GameState/MainMenuGameState.h"
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
@@ -58,7 +59,7 @@ bool Game::init()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	SDL_SetRelativeMouseMode(SDL_TRUE);
+	//SDL_SetRelativeMouseMode(SDL_TRUE);
 	
 	enableReportGlErrors();
 
@@ -89,8 +90,8 @@ bool Game::init()
 	glLineWidth(3.0f);
 
 	// Game State Setup
-	PlayingGameState* playingState = new PlayingGameState(this, resourceManager);
-	switchToState(playingState);
+	MainMenuGameState* mainMenu = new MainMenuGameState(this);
+	switchToState(mainMenu);
 
 	return true;
 }
@@ -161,6 +162,11 @@ UIRenderer& Game::getUIRenderer()
 DebugRenderer& Game::getDebugRenderer()
 {
 	return debugRenderer;
+}
+
+ResourceManager& Game::getResourceManager()
+{
+	return resourceManager;
 }
 
 void Game::switchToState(BaseGameState* newState)

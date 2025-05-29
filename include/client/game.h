@@ -27,6 +27,7 @@ public:
 	Camera& getCamera();
 	UIRenderer& getUIRenderer();
 	DebugRenderer& getDebugRenderer();
+	ResourceManager& getResourceManager();
 
 	void switchToState(BaseGameState* newState);
 private:
