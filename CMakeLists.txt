@@ -1,5 +1,4 @@
 #https://github.com/meemknight/SDL2OpenglCMakeSetup
-#Version 1.0.0
 
 cmake_minimum_required(VERSION 3.16)
 
@@ -11,8 +10,6 @@ set(CMAKE_CXX_STANDARD 17)
 #! ! ! ! ! ! !
 #DELETE THE OUT FOLDER AFTER CHANGING THIS BECAUSE VISUAL STUDIO DOESN'T SEEM TO RECOGNIZE THIS CHANGE AND REBUILD!
 option(PRODUCTION_BUILD "Make this a production build" OFF)
-#DELETE THE OUT FOLDER AFTER CHANGING THIS BECAUSE VISUAL STUDIO DOESN'T SEEM TO RECOGNIZE THIS CHANGE AND REBUILD!
-
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -23,31 +20,48 @@ if(MSVC)
 add_compile_options(/arch:AVX2) #make sure SIMD optimizations take place
 endif()
 
-project(mygame)
-
-
+project(VoxelGame)
 
 set(SDL_STATIC ON)
 
 add_subdirectory(thirdparty/SDL-release-2.30.5)		#window opener
 add_subdirectory(thirdparty/glad)			#opengl loader
 add_subdirectory(thirdparty/stb_image)			#loading images
-add_subdirectory(thirdparty/stb_truetype)		#loading ttf files
 add_subdirectory(thirdparty/glm)			#math
 add_subdirectory(thirdparty/imgui-docking)		#ui
 add_subdirectory(thirdparty/FastNoiseSIMD)
-add_subdirectory(thirdparty/freetype)
+add_subdirectory(thirdparty/freetype) #loading ttf files
+add_subdirectory(thirdparty/enet)
 
 
-# MY_SOURCES is defined to be a list of all the source files for my game 
-# DON'T ADD THE SOURCES BY HAND, they are already added with this macro
-file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE CLIENT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/client/*.cpp")
+file(GLOB_RECURSE SERVER_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/server/*.cpp")
 
+# SHARED_SOURCES holds the source files that are used in both executables
+file(GLOB_RECURSE SHARED_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/shared/*.cpp")
 
 add_executable("${CMAKE_PROJECT_NAME}")
+add_executable(VoxelGameServer)
+
+# To ensure the server is built aswell when trying to run the client
+add_dependencies("${CMAKE_PROJECT_NAME}" VoxelGameServer)
+
+# BUILD SERVER
+
+set_property(TARGET VoxelGameServer PROPERTY CXX_STANDARD 17)
+
+target_sources(VoxelGameServer PRIVATE ${SERVER_SOURCES})
+target_sources(VoxelGameServer PRIVATE ${SHARED_SOURCES})
+
+target_include_directories(VoxelGameServer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/server/")
+target_include_directories(VoxelGameServer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/shared/")
+
+target_link_libraries(VoxelGameServer PRIVATE glm enet fastNoiseSIMD)
+
+
+# BUILD CLIENT
 
 set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY CXX_STANDARD 17)
-
 
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC GLFW_INCLUDE_NONE=1) 
 
@@ -63,10 +77,6 @@ else()
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION_BUILD=0) 
 
 endif()
-
-target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${MY_SOURCES} )
-
-
 if(MSVC) # If using the VS compiler...
 
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC _CRT_SECURE_NO_WARNINGS)
@@ -79,13 +89,11 @@ if(MSVC) # If using the VS compiler...
 
 endif()
 
-target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${CLIENT_SOURCES})
+target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${SHARED_SOURCES})
 
+target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/client/")
+target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/shared/")
 
-
-#target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE glm 
-#	glad stb_image stb_truetype gl2d imgui enet)
-
-#enet not working yet on linux for some reason
 target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE glm 
-	glad stb_image stb_truetype imgui SDL2-static fastNoiseSIMD freetype)
+	glad stb_image imgui SDL2-static fastNoiseSIMD freetype enet)

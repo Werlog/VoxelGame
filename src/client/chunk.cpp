@@ -30,7 +30,6 @@ Chunk::~Chunk()
 
 void Chunk::updateLight()
 {
-	CodeTimer timer = CodeTimer("Light update");
 	std::memset(light, 15, sizeof(light));
 
 	for (int x = 0; x < CHUNK_SIZE_X; x++)
@@ -49,7 +48,7 @@ void Chunk::updateLight()
 						hitBlock = true;
 					continue;
 				}
-				light[index] = 10;
+				light[index] = 12;
 			}
 		}
 	}

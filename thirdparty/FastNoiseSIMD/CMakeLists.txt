@@ -11,8 +11,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -msse4.1")
 endif (UNIX)
 
 # Define MY_SOURCES to be a list of all the source files for my game 
-file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/FastNoiseSIMD/*.cpp")
+file(GLOB_RECURSE CLIENT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/FastNoiseSIMD/*.cpp")
 
 add_library(fastNoiseSIMD)
-target_sources(fastNoiseSIMD PRIVATE ${MY_SOURCES})
+target_sources(fastNoiseSIMD PRIVATE ${CLIENT_SOURCES})
 target_include_directories(fastNoiseSIMD PUBLIC "FastNoiseSIMD")
