@@ -6,26 +6,49 @@
 MainMenuGameState::MainMenuGameState(Game* game) : BaseGameState(game),
 	minecraftFont(game->getResourceManager().getFont("fonts\\MinecraftRegular.otf"))
 {
+	multiplayerMenuOpen = false;
 
+	std::memset(usernameText, 0, sizeof(usernameText));
+	std::memset(ipText, 0, sizeof(ipText));
 }
 
 void MainMenuGameState::update(float deltaTime, InputHandler& inputHandler)
 {
-	ImGui::Begin("Main Menu Options");
-
-	ImGui::Text("This is a temporary main menu");
-
-	if (ImGui::Button("Play singleplayer"))
+	if (!multiplayerMenuOpen)
 	{
-		PlayingGameState* playingState = new PlayingGameState(game, game->getResourceManager());
-		game->switchToState(playingState);
-	}
-	if (ImGui::Button("Play multiplayer"))
-	{
-		std::cout << "Multiplayer has not been implemented yet!" << std::endl;
-	}
+		ImGui::Begin("Main Menu Options");
 
-	ImGui::End();
+		ImGui::Text("This is a temporary main menu");
+
+		if (ImGui::Button("Play singleplayer"))
+		{
+			PlayingGameState* playingState = new PlayingGameState(game, game->getResourceManager());
+			game->switchToState(playingState);
+		}
+		if (ImGui::Button("Play multiplayer"))
+		{
+			multiplayerMenuOpen = true;
+		}
+
+		ImGui::End();
+	}
+	else
+	{
+		ImGui::Begin("Play Multiplayer");
+		ImGui::InputText("Username", usernameText, IM_ARRAYSIZE(usernameText));
+		ImGui::InputText("IP Address", ipText, IM_ARRAYSIZE(ipText));
+		
+		if (ImGui::Button("Connect to server"))
+		{
+			std::cout << "Not implemented yet" << std::endl;
+		}
+		if (ImGui::Button("Back"))
+		{
+			multiplayerMenuOpen = false;
+		}
+
+		ImGui::End();
+	}
 }
 
 void MainMenuGameState::render()

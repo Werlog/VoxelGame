@@ -16,4 +16,9 @@ public:
 	void onExit() override;
 private:
 	Font& minecraftFont;
+
+	char usernameText[128];
+	char ipText[128];
+
+	bool multiplayerMenuOpen;
 };
