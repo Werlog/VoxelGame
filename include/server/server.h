@@ -15,4 +15,6 @@ public:
 private:
 	ENetAddress address;
 	ENetHost* host;
+
+	void processEvents();
 };

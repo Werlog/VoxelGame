@@ -33,9 +33,38 @@ bool Server::init()
 	}
 
 	logger::log("Server started on port 2589");
+	return true;
 }
 
 void Server::startServer()
 {
+	logger::log("Waiting for connections...");
 
+	while (true)
+	{
+		processEvents();
+	}
+}
+
+void Server::processEvents()
+{
+	ENetEvent event;
+	while (enet_host_service(host, &event, 0) > 0)
+	{
+		switch (event.type)
+		{
+		case ENET_EVENT_TYPE_CONNECT:
+			char ip[16];
+
+			if (enet_address_get_host_ip(&event.peer->address, ip, sizeof(ip)) != 0)
+			{
+				logger::log("Failed to get IP address of peer", logger::ERR);
+			}
+			else
+			{
+				logger::log("Incomming connection from " + std::string(ip) + ":" + std::to_string(event.peer->address.port));
+			}
+			break;
+		}
+	}
 }

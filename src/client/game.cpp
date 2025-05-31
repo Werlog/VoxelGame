@@ -45,6 +45,11 @@ bool Game::init()
 		return false;
 	}
 
+	if (!connectionHandler.init())
+	{
+		return false;
+	}
+
 	const GLubyte* version = glGetString(GL_VERSION);
 	std::cout << "OpenGL Version: " << version << std::endl;
 
@@ -109,9 +114,11 @@ void Game::gameLoop()
 		uiRenderer.updateProjectionMatrix(w, h);
 
 		inputHandler.update();
+		connectionHandler.update(timer.deltaTime);
 		timer.tick();
 
 		handleEvents();
+		connectionHandler.handleEvents();
 
 		if (inputHandler.getKeyUp(SDLK_ESCAPE))
 		{
@@ -167,6 +174,11 @@ DebugRenderer& Game::getDebugRenderer()
 ResourceManager& Game::getResourceManager()
 {
 	return resourceManager;
+}
+
+ConnectionHandler& Game::getConnectionHandler()
+{
+	return connectionHandler;
 }
 
 void Game::switchToState(BaseGameState* newState)

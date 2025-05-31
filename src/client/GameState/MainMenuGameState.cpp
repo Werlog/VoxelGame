@@ -40,7 +40,7 @@ void MainMenuGameState::update(float deltaTime, InputHandler& inputHandler)
 		
 		if (ImGui::Button("Connect to server"))
 		{
-			std::cout << "Not implemented yet" << std::endl;
+			game->getConnectionHandler().connect(std::string(ipText), 2589);
 		}
 		if (ImGui::Button("Back"))
 		{

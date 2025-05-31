@@ -15,10 +15,11 @@ void ChunkManager::loadChunk(ChunkCoord coord)
 		std::lock_guard lock(chunksMutex);
 		if (loadedChunks.find(coord) != loadedChunks.end()) return;
 	}
-
+	/*
 	std::lock_guard genLock(genMutex);
 	chunksToGenerate.push(coord);
 	genCondition.notify_one();
+	*/
 }
 
 void ChunkManager::unloadChunk(ChunkCoord coord)
@@ -147,10 +148,10 @@ std::recursive_mutex& ChunkManager::getChunkMutex()
 
 void ChunkManager::init()
 {
-	std::thread genThread(&ChunkManager::genWorker, this);
+	//std::thread genThread(&ChunkManager::genWorker, this);
 	std::thread meshThread(&ChunkManager::meshWorker, this);
 
-	genThread.detach();
+	//genThread.detach();
 	meshThread.detach();
 }
 

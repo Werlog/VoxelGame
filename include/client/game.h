@@ -8,6 +8,7 @@
 #include "resourcemanager.h"
 #include "UI/uirenderer.h"
 #include "debugRenderer.h"
+#include "networking/connectionhandler.h"
 
 constexpr int windowWidth = 1280;
 constexpr int windowHeight = 720;
@@ -28,6 +29,7 @@ public:
 	UIRenderer& getUIRenderer();
 	DebugRenderer& getDebugRenderer();
 	ResourceManager& getResourceManager();
+	ConnectionHandler& getConnectionHandler();
 
 	void switchToState(BaseGameState* newState);
 private:
@@ -40,6 +42,7 @@ private:
 	ResourceManager resourceManager;
 	UIRenderer uiRenderer;
 	DebugRenderer debugRenderer;
+	ConnectionHandler connectionHandler;
 	
 	Camera camera;
 
