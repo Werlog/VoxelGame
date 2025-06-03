@@ -1,11 +1,15 @@
 #include "server.h"
 #include <iostream>
 #include "logger.h"
-#include "packet.h"
 
 Server::Server()
 {
 	host = nullptr;
+	currentClientId = 0;
+
+	dispatcher.subscribe(ClientToServer::C_LOGIN, [this](Packet& packet, unsigned short fromClientId) {
+		this->onClientLogin(packet, fromClientId);
+	});
 }
 
 Server::~Server()
@@ -37,6 +41,37 @@ bool Server::init()
 	return true;
 }
 
+void Server::sendPacket(Packet& packet, unsigned short toClient, bool reliable)
+{
+	auto it = clients.find(toClient);
+	if (it == clients.end())
+		return;
+
+	ENetPacket* enetPacket = enet_packet_create(packet.getData(), packet.getLength(), reliable ? ENET_PACKET_FLAG_RELIABLE : ENET_PACKET_FLAG_UNSEQUENCED);
+	enet_peer_send(it->second.getPeer(), 0, enetPacket);
+}
+
+void Server::sendToAll(Packet& packet, bool reliable)
+{
+	for (auto it = clients.begin(); it != clients.end(); it++)
+	{
+		ENetPacket* enetPacket = enet_packet_create(packet.getData(), packet.getLength(), reliable ? ENET_PACKET_FLAG_RELIABLE : ENET_PACKET_FLAG_UNSEQUENCED);
+		enet_peer_send(it->second.getPeer(), 0, enetPacket);
+	}
+}
+
+Client* Server::getClientFromPeer(ENetPeer* peer)
+{
+	for (auto it = clients.begin(); it != clients.end(); it++)
+	{
+		if (it->second.getPeer() == peer)
+		{
+			return &it->second;
+		}
+	}
+	return nullptr;
+}
+
 void Server::startServer()
 {
 	logger::log("Waiting for connections...");
@@ -60,16 +95,39 @@ void Server::processEvents()
 			if (enet_address_get_host_ip(&event.peer->address, ip, sizeof(ip)) != 0)
 			{
 				logger::log("Failed to get IP address of peer", logger::ERR);
+				enet_peer_disconnect(event.peer, 0);
 			}
 			else
 			{
-				logger::log("Incomming connection from " + std::string(ip) + ":" + std::to_string(event.peer->address.port));
+				Client* newClient = addNewClient(event.peer);
+				if (newClient != nullptr)
+					logger::log(std::string(ip) + ":" + std::to_string(event.peer->address.port) + " successfully connected and is now client ID " + std::to_string(newClient->getId()));
+				else
+					enet_peer_disconnect(event.peer, 0);
 			}
 			break;
 		case ENET_EVENT_TYPE_RECEIVE:
 		{
-			Packet received = Packet(reinterpret_cast<char*>(event.packet->data), event.packet->dataLength);
-			logger::log("Received packet with ID: " + std::to_string(received.getPacketId()));
+			Client* client = getClientFromPeer(event.peer);
+
+			if (client != nullptr)
+			{
+				try
+				{
+					Packet packet = Packet(reinterpret_cast<char*>(event.packet->data), event.packet->dataLength);
+					dispatcher.dispatch(packet, client->getId());
+				}
+				catch (...)
+				{
+					logger::log("Failed to dispatch packet from client " + std::to_string(client->getId()) + ", disconnecting it.", logger::ERR);
+					enet_peer_disconnect(event.peer, 0);
+				}
+			}
+			else
+			{
+				logger::log("Received packet from peer without an assigned ID, disconnecting it.", logger::ERR);
+				enet_peer_disconnect(event.peer, 0);
+			}
 		}
 			enet_packet_destroy(event.packet);
 			break;
@@ -78,4 +136,39 @@ void Server::processEvents()
 			break;
 		}
 	}
+}
+
+unsigned short Server::getNextClientId()
+{
+	currentClientId++;
+	return currentClientId;
+}
+
+Client* Server::addNewClient(ENetPeer* peer)
+{
+	unsigned short id = getNextClientId();
+	auto inserted = clients.try_emplace(id, peer, id);
+
+	if (!inserted.second)
+	{
+		logger::log("Failed to add new client with id " + std::to_string(id) + "!", logger::ERR);
+		return nullptr;
+	}
+
+	for (auto it = clients.begin(); it != clients.end(); it++)
+	{
+		Packet packet = Packet(ServerToClient::S_ADD_CLIENT);
+		packet.writeUShort(id);
+		packet.writeByte(it->first == id ? 1 : 0); // Tells the client whether it is the newly added client
+		sendPacket(packet, it->first, true);
+	}
+
+	return &inserted.first->second;
+}
+
+void Server::onClientLogin(Packet& packet, unsigned short fromClientId)
+{
+	std::string username = packet.readString();
+
+	logger::log("Client " + std::to_string(fromClientId) + " logged in with the username \"" + username + "\"");
 }

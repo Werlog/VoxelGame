@@ -2,7 +2,10 @@
 
 #include <enet/enet.h>
 #include <string>
+#include <unordered_map>
 #include "packet.h"
+#include "packetdispatcher.h"
+#include "client.h"
 
 constexpr float CONNECTION_TIMEOUT_TIME = 5.0f;
 
@@ -11,6 +14,7 @@ class ConnectionHandler
 public:
 
 	ConnectionHandler();
+	~ConnectionHandler();
 
 	bool init();
 	bool isConnected() const;
@@ -20,13 +24,23 @@ public:
 
 	void sendPacket(Packet& packet, bool reliable);
 
-	void connect(const std::string& ipAddress, unsigned short port);
+	void connect(const std::string& ipAddress, const std::string& username, unsigned short port);
 	void handleEvents();
 private:
 	ENetHost* client;
-	ENetPeer* peer;
+	ENetPeer* serverPeer;
+	PacketDispatcher dispatcher;
+
+	std::unordered_map<unsigned short, Client> clients;
+
+	Client* localClient;
+
+	std::string playerName;
 
 	bool connected;
 	
 	float sinceStartedConnecting;
+
+	void sendLogin();
+	void onAddClient(Packet& packet);
 };

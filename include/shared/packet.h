@@ -6,11 +6,14 @@
 enum ClientToServer : unsigned short
 {
 	C_KEEP_ALIVE,
+	C_LOGIN,
 };
 
 enum ServerToClient : unsigned short
 {
 	S_KEEP_ALIVE,
+	S_ADD_CLIENT,
+	S_ADD_PLAYER,
 };
 
 class Packet
