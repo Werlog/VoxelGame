@@ -2,6 +2,7 @@
 
 #include <enet/enet.h>
 #include <string>
+#include "packet.h"
 
 constexpr float CONNECTION_TIMEOUT_TIME = 5.0f;
 
@@ -16,6 +17,8 @@ public:
 	bool canConnect() const;
 
 	void update(float deltaTime);
+
+	void sendPacket(Packet& packet, bool reliable);
 
 	void connect(const std::string& ipAddress, unsigned short port);
 	void handleEvents();

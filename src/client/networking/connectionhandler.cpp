@@ -54,6 +54,15 @@ void ConnectionHandler::update(float deltaTime)
 	}
 }
 
+void ConnectionHandler::sendPacket(Packet& packet, bool reliable)
+{
+	if (!isConnected()) return;
+
+	ENetPacket* enetPacket = enet_packet_create(packet.getData(), packet.getLength(), reliable ? ENET_PACKET_FLAG_RELIABLE : ENET_PACKET_FLAG_UNSEQUENCED);
+	enet_peer_send(peer, 0, enetPacket);
+	std::cout << "Packet sent" << std::endl;
+}
+
 void ConnectionHandler::connect(const std::string& ipAddress, unsigned short port)
 {
 	if (!canConnect()) return;
@@ -82,6 +91,13 @@ void ConnectionHandler::handleEvents()
 		case ENET_EVENT_TYPE_CONNECT:
 			std::cout << "Successfully connected to the server" << std::endl;
 			connected = true;
+
+			{
+				Packet packet = Packet(ClientToServer::C_KEEP_ALIVE);
+				sendPacket(packet, false);
+			}
+			break;
+		case ENET_EVENT_TYPE_RECEIVE:
 			break;
 		case ENET_EVENT_TYPE_DISCONNECT:
 			std::cout << "Disconnected from the server" << std::endl;

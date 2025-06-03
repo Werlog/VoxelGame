@@ -1,6 +1,7 @@
 #include "server.h"
 #include <iostream>
 #include "logger.h"
+#include "packet.h"
 
 Server::Server()
 {
@@ -64,6 +65,16 @@ void Server::processEvents()
 			{
 				logger::log("Incomming connection from " + std::string(ip) + ":" + std::to_string(event.peer->address.port));
 			}
+			break;
+		case ENET_EVENT_TYPE_RECEIVE:
+		{
+			Packet received = Packet(reinterpret_cast<char*>(event.packet->data), event.packet->dataLength);
+			logger::log("Received packet with ID: " + std::to_string(received.getPacketId()));
+		}
+			enet_packet_destroy(event.packet);
+			break;
+		case ENET_EVENT_TYPE_DISCONNECT:
+			logger::log("Client disconnected.");
 			break;
 		}
 	}

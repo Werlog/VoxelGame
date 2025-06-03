@@ -2,9 +2,18 @@
 #include <stdexcept>
 #include "endianutil.h"
 
-Packet::Packet()
+Packet::Packet(unsigned short packetId)
 {
+	this->packetId = packetId;
 
+	writeUShort(this->packetId);
+}
+
+Packet::Packet(char* data, size_t dataSize) : buffer(dataSize)
+{
+	std::memcpy(buffer.data(), data, dataSize);
+
+	packetId = readUShort();
 }
 
 void Packet::writeInt(int value)
@@ -75,9 +84,24 @@ std::string Packet::readString()
 	{
 		throw std::out_of_range("String length is negative");
 	}
-	std::vector<char> buffer(length);
-	readBuffer(buffer.data(), length);
-	return std::string(buffer.begin(), buffer.end());
+	std::vector<char> strBuffer(length);
+	readBuffer(strBuffer.data(), length);
+	return std::string(strBuffer.begin(), strBuffer.end());
+}
+
+unsigned short Packet::getPacketId()
+{
+	return packetId;
+}
+
+const char* Packet::getData()
+{
+	return buffer.data();
+}
+
+size_t Packet::getLength()
+{
+	return buffer.size();
 }
 
 void Packet::writeBuffer(const char* data, size_t size)
