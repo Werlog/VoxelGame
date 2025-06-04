@@ -80,6 +80,11 @@ Client* Server::getClientById(unsigned short clientId)
 	return &it->second;
 }
 
+PacketDispatcher& Server::getDispatcher()
+{
+	return dispatcher;
+}
+
 void Server::startServer()
 {
 	logger::log("Waiting for connections...");
@@ -171,8 +176,6 @@ Client* Server::addNewClient(ENetPeer* peer)
 		sendPacket(packet, it->first, true);
 	}
 
-	syncNewClient(&inserted.first->second);
-
 	return &inserted.first->second;
 }
 
@@ -180,10 +183,16 @@ void Server::onClientLogin(Packet& packet, unsigned short fromClientId)
 {
 	std::string username = packet.readString();
 
+	Client* client = getClientById(fromClientId);
+	if (client == nullptr)
+		return;
+
 	Packet addPacket = Packet(ServerToClient::S_ADD_PLAYER);
 	addPacket.writeUShort(fromClientId);
 	addPacket.writeString(username);
 	sendToAll(addPacket, true);
+
+	syncNewClient(client);
 
 	logger::log("Client " + std::to_string(fromClientId) + " logged in with the username \"" + username + "\"");
 }

@@ -1,11 +1,15 @@
 #include "networking/connectionhandler.h"
 #include <iostream>
+#include "GameState/PlayingGameState.h"
+#include "game.h"
 
-ConnectionHandler::ConnectionHandler()
+ConnectionHandler::ConnectionHandler(Game* game)
 {
 	client = nullptr;
 	serverPeer = nullptr;
 	localClient = nullptr;
+
+	this->game = game;
 
 	connected = false;
 	sinceStartedConnecting = 0.0f;
@@ -16,10 +20,6 @@ ConnectionHandler::ConnectionHandler()
 
 	dispatcher.subscribe(ServerToClient::S_REMOVE_CLIENT, [this](Packet& packet) {
 		this->onRemoveClient(packet);
-		});
-
-	dispatcher.subscribe(ServerToClient::S_ADD_PLAYER, [this](Packet& packet) {
-		std::cout << "Received add player packet" << std::endl;
 		});
 }
 
@@ -95,6 +95,16 @@ Client* ConnectionHandler::getClientById(unsigned short clientId)
 	return &it->second;
 }
 
+Client* ConnectionHandler::getLocalClient()
+{
+	return localClient;
+}
+
+PacketDispatcher& ConnectionHandler::getDispatcher()
+{
+	return dispatcher;
+}
+
 void ConnectionHandler::connect(const std::string& ipAddress, const std::string& username, unsigned short port)
 {
 	if (!canConnect()) return;
@@ -164,6 +174,9 @@ void ConnectionHandler::onAddClient(Packet& packet)
 	{
 		localClient = &inserted.first->second;
 		std::cout << "We are now client ID " << std::to_string(clientId) << std::endl;
+
+		PlayingGameState* playingState = new PlayingGameState(game, game->getResourceManager());
+		game->switchToState(playingState);
 
 		sendLogin();
 	}

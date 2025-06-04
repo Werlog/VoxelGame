@@ -13,7 +13,7 @@
 #include "imguiThemes.h"
 
 Game::Game() 
-	: camera(glm::vec3(0), 60.0f, (float)windowWidth / (float)windowHeight)
+	: camera(glm::vec3(0), 60.0f, (float)windowWidth / (float)windowHeight), connectionHandler(this)
 {
 	running = true;
 	currentState = nullptr;

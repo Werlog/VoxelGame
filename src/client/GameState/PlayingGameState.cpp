@@ -13,6 +13,10 @@ PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager)
 	enableDevMenu = false;
 	enableCollisionOption = true;
 	enableFlightOption = false;
+
+	game->getConnectionHandler().getDispatcher().subscribe(ServerToClient::S_ADD_PLAYER, [this](Packet& packet) {
+		this->onReceiveAddPlayer(packet);
+	});
 }
 
 void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
@@ -46,6 +50,17 @@ void PlayingGameState::render()
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	player.render();
+
+	for (auto it = players.begin(); it != players.end(); it++)
+	{
+		RemotePlayer& rmPlayer = it->second;
+		if (rmPlayer.getId() == game->getConnectionHandler().getLocalClient()->getId())
+		{
+			continue;
+		}
+		
+		it->second.render(player.getChunkPosition(), camera.position);
+	}
 
 	clouds.render(&camera, player.getWorldPosition());
 
@@ -123,4 +138,15 @@ void PlayingGameState::devMenuLogic(InputHandler& inputHandler)
 		player.setEnableFlight(enableFlightOption);
 		player.setEnableCollision(enableCollisionOption);
 	}
+}
+
+void PlayingGameState::onReceiveAddPlayer(Packet& packet)
+{
+	unsigned short clientId = packet.readUShort();
+	std::string username = packet.readString();
+	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	Client* client = game->getConnectionHandler().getClientById(clientId);
+
+	auto inserted = players.try_emplace(clientId, client, game, username, position);
 }

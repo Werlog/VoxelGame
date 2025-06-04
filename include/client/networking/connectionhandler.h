@@ -9,11 +9,13 @@
 
 constexpr float CONNECTION_TIMEOUT_TIME = 5.0f;
 
+class Game;
+
 class ConnectionHandler
 {
 public:
 
-	ConnectionHandler();
+	ConnectionHandler(Game* game);
 	~ConnectionHandler();
 
 	bool init();
@@ -25,6 +27,9 @@ public:
 	void sendPacket(Packet& packet, bool reliable);
 
 	Client* getClientById(unsigned short clientId);
+	Client* getLocalClient();
+
+	PacketDispatcher& getDispatcher();
 
 	void connect(const std::string& ipAddress, const std::string& username, unsigned short port);
 	void handleEvents();
@@ -32,6 +37,8 @@ private:
 	ENetHost* client;
 	ENetPeer* serverPeer;
 	PacketDispatcher dispatcher;
+
+	Game* game;
 
 	std::unordered_map<unsigned short, Client> clients;
 

@@ -21,6 +21,8 @@ public:
 	Client* getClientFromPeer(ENetPeer* peer);
 	Client* getClientById(unsigned short clientId);
 
+	PacketDispatcher& getDispatcher();
+
 	void startServer();
 private:
 	std::unordered_map<unsigned short, Client> clients;
