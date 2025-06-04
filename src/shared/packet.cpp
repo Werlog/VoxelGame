@@ -47,6 +47,13 @@ void Packet::writeString(const std::string& string)
 	writeBuffer(string.c_str(), string.size());
 }
 
+void Packet::writeVec3(const glm::vec3& value)
+{
+	writeFloat(value.x);
+	writeFloat(value.y);
+	writeFloat(value.z);
+}
+
 int Packet::readInt()
 {
 	int value;
@@ -87,6 +94,15 @@ std::string Packet::readString()
 	std::vector<char> strBuffer(length);
 	readBuffer(strBuffer.data(), length);
 	return std::string(strBuffer.begin(), strBuffer.end());
+}
+
+glm::vec3 Packet::readVec3()
+{
+	float x = readFloat();
+	float y = readFloat();
+	float z = readFloat();
+
+	return glm::vec3(x, y, z);
 }
 
 unsigned short Packet::getPacketId()

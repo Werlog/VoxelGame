@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <glm/glm.hpp>
 
 enum ClientToServer : unsigned short
 {
@@ -29,12 +30,14 @@ public:
 	void writeFloat(float value);
 	void writeByte(char value);
 	void writeString(const std::string& string);
+	void writeVec3(const glm::vec3& value);
 
 	int readInt();
 	unsigned short readUShort();
 	float readFloat();
 	char readByte();
 	std::string readString();
+	glm::vec3 readVec3();
 
 	unsigned short getPacketId();
 

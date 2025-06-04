@@ -2,7 +2,9 @@
 
 Player::Player(Client* client, const std::string& username, const glm::vec3 position)
 {
-
+	this->client = client;
+	this->username = username;
+	this->position = position;
 }
 
 void Player::setPosition(const glm::vec3& newPos)

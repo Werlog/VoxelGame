@@ -2,14 +2,10 @@
 #include <iostream>
 #include "logger.h"
 
-Server::Server()
+Server::Server() : gameManager(this)
 {
 	host = nullptr;
 	currentClientId = 0;
-
-	dispatcher.subscribe(ClientToServer::C_LOGIN, [this](Packet& packet, unsigned short fromClientId) {
-		this->onClientLogin(packet, fromClientId);
-	});
 }
 
 Server::~Server()
@@ -179,24 +175,6 @@ Client* Server::addNewClient(ENetPeer* peer)
 	return &inserted.first->second;
 }
 
-void Server::onClientLogin(Packet& packet, unsigned short fromClientId)
-{
-	std::string username = packet.readString();
-
-	Client* client = getClientById(fromClientId);
-	if (client == nullptr)
-		return;
-
-	Packet addPacket = Packet(ServerToClient::S_ADD_PLAYER);
-	addPacket.writeUShort(fromClientId);
-	addPacket.writeString(username);
-	sendToAll(addPacket, true);
-
-	syncNewClient(client);
-
-	logger::log("Client " + std::to_string(fromClientId) + " logged in with the username \"" + username + "\"");
-}
-
 void Server::handleClientDisconnect(ENetEvent* event)
 {
 	Client* client = getClientFromPeer(event->peer);
@@ -210,6 +188,7 @@ void Server::handleClientDisconnect(ENetEvent* event)
 	logger::log("Client " + std::to_string(client->getId()) + " disconnected");
 
 	clients.erase(client->getId());
+	gameManager.handleClientDisconnect(client);
 }
 
 void Server::syncNewClient(Client* client)
@@ -224,5 +203,15 @@ void Server::syncNewClient(Client* client)
 		packet.writeUShort(c.getId());
 		packet.writeByte(0);
 		sendPacket(packet, client->getId(), true);
+
+		Player* player = gameManager.getPlayerById(c.getId());
+		if (player != nullptr)
+		{
+			Packet playerPacket = Packet(ServerToClient::S_ADD_PLAYER);
+			playerPacket.writeUShort(c.getId());
+			playerPacket.writeString(player->getUsername());
+			playerPacket.writeVec3(player->getPosition());
+			sendPacket(playerPacket, client->getId(), true);
+		}
 	}
 }

@@ -13,7 +13,7 @@ namespace logger
 		ERR,
 	};
 
-	void log(const std::string& info, LogType logType = LogType::INFO)
+	inline void log(const std::string& info, LogType logType = LogType::INFO)
 	{
 		auto t = std::time(nullptr);
 		auto time = *std::localtime(&t);

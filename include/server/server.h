@@ -4,6 +4,7 @@
 #include "client.h"
 #include "packet.h"
 #include "packetdispatcher.h"
+#include "gamemanager.h"
 
 class Server
 {
@@ -24,10 +25,13 @@ public:
 	PacketDispatcher& getDispatcher();
 
 	void startServer();
+
+	void syncNewClient(Client* client);
 private:
 	std::unordered_map<unsigned short, Client> clients;
 
 	PacketDispatcher dispatcher;
+	GameManager gameManager;
 
 	ENetAddress address;
 	ENetHost* host;
@@ -37,7 +41,5 @@ private:
 	unsigned short getNextClientId();
 	Client* addNewClient(ENetPeer* peer);
 
-	void onClientLogin(Packet& packet, unsigned short fromClientId);
 	void handleClientDisconnect(ENetEvent* event);
-	void syncNewClient(Client* client);
 };

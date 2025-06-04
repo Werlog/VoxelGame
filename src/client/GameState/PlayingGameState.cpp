@@ -144,7 +144,7 @@ void PlayingGameState::onReceiveAddPlayer(Packet& packet)
 {
 	unsigned short clientId = packet.readUShort();
 	std::string username = packet.readString();
-	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 position = packet.readVec3();
 
 	Client* client = game->getConnectionHandler().getClientById(clientId);
 
