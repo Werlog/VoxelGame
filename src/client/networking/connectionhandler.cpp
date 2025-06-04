@@ -12,7 +12,15 @@ ConnectionHandler::ConnectionHandler()
 
 	dispatcher.subscribe(ServerToClient::S_ADD_CLIENT, [this](Packet& packet) {
 		this->onAddClient(packet);
-	});
+		});
+
+	dispatcher.subscribe(ServerToClient::S_REMOVE_CLIENT, [this](Packet& packet) {
+		this->onRemoveClient(packet);
+		});
+
+	dispatcher.subscribe(ServerToClient::S_ADD_PLAYER, [this](Packet& packet) {
+		std::cout << "Received add player packet" << std::endl;
+		});
 }
 
 ConnectionHandler::~ConnectionHandler()
@@ -77,6 +85,16 @@ void ConnectionHandler::sendPacket(Packet& packet, bool reliable)
 	enet_peer_send(serverPeer, 0, enetPacket);
 }
 
+Client* ConnectionHandler::getClientById(unsigned short clientId)
+{
+	auto it = clients.find(clientId);
+
+	if (it == clients.end())
+		return nullptr;
+
+	return &it->second;
+}
+
 void ConnectionHandler::connect(const std::string& ipAddress, const std::string& username, unsigned short port)
 {
 	if (!canConnect()) return;
@@ -116,10 +134,7 @@ void ConnectionHandler::handleEvents()
 			enet_packet_destroy(event.packet);
 			break;
 		case ENET_EVENT_TYPE_DISCONNECT:
-			std::cout << "Disconnected from the server" << std::endl;
-			connected = false;
-			enet_peer_reset(serverPeer);
-			serverPeer = nullptr;
+			disconnectCleanup();
 			break;
 		}
 	}
@@ -152,4 +167,23 @@ void ConnectionHandler::onAddClient(Packet& packet)
 
 		sendLogin();
 	}
+}
+
+void ConnectionHandler::onRemoveClient(Packet& packet)
+{
+	unsigned short clientId = packet.readUShort();
+
+	std::cout << "Client " << clientId << " disconnected." << std::endl;
+
+	clients.erase(clientId);
+}
+
+void ConnectionHandler::disconnectCleanup()
+{
+	std::cout << "Disconnected from the server" << std::endl;
+	connected = false;
+	enet_peer_reset(serverPeer);
+	serverPeer = nullptr;
+
+	clients.clear();
 }

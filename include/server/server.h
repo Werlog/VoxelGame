@@ -19,6 +19,7 @@ public:
 	void sendToAll(Packet& packet, bool reliable);
 
 	Client* getClientFromPeer(ENetPeer* peer);
+	Client* getClientById(unsigned short clientId);
 
 	void startServer();
 private:
@@ -35,4 +36,6 @@ private:
 	Client* addNewClient(ENetPeer* peer);
 
 	void onClientLogin(Packet& packet, unsigned short fromClientId);
+	void handleClientDisconnect(ENetEvent* event);
+	void syncNewClient(Client* client);
 };

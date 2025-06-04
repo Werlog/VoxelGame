@@ -24,6 +24,8 @@ public:
 
 	void sendPacket(Packet& packet, bool reliable);
 
+	Client* getClientById(unsigned short clientId);
+
 	void connect(const std::string& ipAddress, const std::string& username, unsigned short port);
 	void handleEvents();
 private:
@@ -43,4 +45,6 @@ private:
 
 	void sendLogin();
 	void onAddClient(Packet& packet);
+	void onRemoveClient(Packet& packet);
+	void disconnectCleanup();
 };

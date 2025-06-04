@@ -14,6 +14,7 @@ enum ServerToClient : unsigned short
 	S_KEEP_ALIVE,
 	S_ADD_CLIENT,
 	S_ADD_PLAYER,
+	S_REMOVE_CLIENT,
 };
 
 class Packet

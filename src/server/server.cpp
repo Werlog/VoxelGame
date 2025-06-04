@@ -72,6 +72,14 @@ Client* Server::getClientFromPeer(ENetPeer* peer)
 	return nullptr;
 }
 
+Client* Server::getClientById(unsigned short clientId)
+{
+	auto it = clients.find(clientId);
+	if (it == clients.end())
+		return nullptr;
+	return &it->second;
+}
+
 void Server::startServer()
 {
 	logger::log("Waiting for connections...");
@@ -132,7 +140,7 @@ void Server::processEvents()
 			enet_packet_destroy(event.packet);
 			break;
 		case ENET_EVENT_TYPE_DISCONNECT:
-			logger::log("Client disconnected.");
+			handleClientDisconnect(&event);
 			break;
 		}
 	}
@@ -163,6 +171,8 @@ Client* Server::addNewClient(ENetPeer* peer)
 		sendPacket(packet, it->first, true);
 	}
 
+	syncNewClient(&inserted.first->second);
+
 	return &inserted.first->second;
 }
 
@@ -170,5 +180,40 @@ void Server::onClientLogin(Packet& packet, unsigned short fromClientId)
 {
 	std::string username = packet.readString();
 
+	Packet addPacket = Packet(ServerToClient::S_ADD_PLAYER);
+	addPacket.writeUShort(fromClientId);
+	addPacket.writeString(username);
+	sendToAll(addPacket, true);
+
 	logger::log("Client " + std::to_string(fromClientId) + " logged in with the username \"" + username + "\"");
+}
+
+void Server::handleClientDisconnect(ENetEvent* event)
+{
+	Client* client = getClientFromPeer(event->peer);
+	if (client == nullptr)
+		return;
+
+	Packet packet = Packet(ServerToClient::S_REMOVE_CLIENT);
+	packet.writeUShort(client->getId());
+	sendToAll(packet, true);
+
+	logger::log("Client " + std::to_string(client->getId()) + " disconnected");
+
+	clients.erase(client->getId());
+}
+
+void Server::syncNewClient(Client* client)
+{
+	for (auto it = clients.begin(); it != clients.end(); it++)
+	{
+		Client& c = it->second;
+		if (it->second.getId() == client->getId())
+			continue;
+
+		Packet packet = Packet(ServerToClient::S_ADD_CLIENT);
+		packet.writeUShort(c.getId());
+		packet.writeByte(0);
+		sendPacket(packet, client->getId(), true);
+	}
 }
