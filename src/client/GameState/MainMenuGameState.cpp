@@ -9,14 +9,59 @@ MainMenuGameState::MainMenuGameState(Game* game) : BaseGameState(game),
 	titleTexture(game->getResourceManager().getTexture("textures\\title.png"))
 {
 	multiplayerMenuOpen = false;
+	singleplayerMenuOpen = false;
 
-	std::memset(usernameText, 0, sizeof(usernameText));
-	std::memset(ipText, 0, sizeof(ipText));
+	std::memset(seedText, 0, sizeof(seedText));
 }
 
 void MainMenuGameState::update(float deltaTime, InputHandler& inputHandler)
 {
-	if (!multiplayerMenuOpen)
+	if (singleplayerMenuOpen)
+	{
+		ImGui::Begin("Play Singleplayer");
+
+		ImGui::Text("You can either enter a world seed below");
+		ImGui::Text("or leave it blank for a random seed.");
+
+		ImGui::InputText("World Seed", seedText, IM_ARRAYSIZE(seedText));
+
+		if (ImGui::Button("Create world"))
+		{
+			int seed = 0;
+			if (seedText[0] != 0) // Input field is not empty
+			{
+				try
+				{
+					seed = std::stoi(std::string(seedText));
+				}
+				catch (...)
+				{
+					// Don't care, random seed
+				}
+			}
+
+			PlayingGameState* playingState = new PlayingGameState(game, game->getResourceManager(), seed);
+			game->switchToState(playingState);
+		}
+		if (ImGui::Button("Back"))
+		{
+			singleplayerMenuOpen = false;
+		}
+
+		ImGui::End();
+	}
+	else if (multiplayerMenuOpen)
+	{
+		ImGui::Begin("Play Multiplayer");
+		ImGui::Text("Multiplayer has not been implemented yet.");
+		if (ImGui::Button("Back"))
+		{
+			multiplayerMenuOpen = false;
+		}
+
+		ImGui::End();
+	}
+	else
 	{
 		ImGui::Begin("Main Menu Options");
 
@@ -24,29 +69,11 @@ void MainMenuGameState::update(float deltaTime, InputHandler& inputHandler)
 
 		if (ImGui::Button("Play singleplayer"))
 		{
-			PlayingGameState* playingState = new PlayingGameState(game, game->getResourceManager());
-			game->switchToState(playingState);
+			singleplayerMenuOpen = true;
 		}
 		if (ImGui::Button("Play multiplayer"))
 		{
 			multiplayerMenuOpen = true;
-		}
-
-		ImGui::End();
-	}
-	else
-	{
-		ImGui::Begin("Play Multiplayer");
-		ImGui::InputText("Username", usernameText, IM_ARRAYSIZE(usernameText));
-		ImGui::InputText("IP Address", ipText, IM_ARRAYSIZE(ipText));
-		
-		if (ImGui::Button("Connect to server"))
-		{
-			std::cout << "Not implemented yet" << std::endl;
-		}
-		if (ImGui::Button("Back"))
-		{
-			multiplayerMenuOpen = false;
 		}
 
 		ImGui::End();

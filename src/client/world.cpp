@@ -8,10 +8,12 @@
 #include <random>
 #include <limits>
 
-World::World(const Shader& terrainShader)
+World::World(const Shader& terrainShader, int worldSeed)
 	: chunkManager(this)
 {
 	shaderModelLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "model");
+
+	this->seed = worldSeed;
 
 	setupWorldGen();
 
@@ -195,11 +197,14 @@ BlockData& World::getBlockData()
 
 void World::setupWorldGen()
 {
-	std::random_device rd;
-	std::mt19937 rng(rd());
-	std::uniform_int_distribution<> distr(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::max());
+	if (seed == 0)
+	{
+		std::random_device rd;
+		std::mt19937 rng(rd());
+		std::uniform_int_distribution<> distr(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::max());
 
-	seed = distr(rng);
+		seed = distr(rng);
+	}
 
 	noise = FastNoiseSIMD::NewFastNoiseSIMD(seed);
 	treeDensityNoise = FastNoiseSIMD::NewFastNoiseSIMD(seed + 1);

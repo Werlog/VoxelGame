@@ -20,8 +20,8 @@ private:
 	Texture& backgroundTexture;
 	Texture& titleTexture;
 
-	char usernameText[128];
-	char ipText[128];
+	char seedText[32];
 
 	bool multiplayerMenuOpen;
+	bool singleplayerMenuOpen;
 };

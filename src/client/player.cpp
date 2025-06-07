@@ -42,7 +42,7 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	if (glm::length(velocity) < 0.05f)
 		velocity = glm::vec3(0);
 
-	if (!enableFlight)
+	if (!enableFlight && deltaTime < 1.0f) // Temporary fix for the player flying high when there is a big lag spike
 		velocity.y -= gravity * deltaTime;
 
 	acceleration = glm::vec3(0.0f);

@@ -11,7 +11,7 @@
 class PlayingGameState : public BaseGameState
 {
 public:
-	PlayingGameState(Game* game, ResourceManager& resourceManager);
+	PlayingGameState(Game* game, ResourceManager& resourceManager, int worldSeed);
 
 	void update(float deltaTime, InputHandler& inputHandler) override;
 

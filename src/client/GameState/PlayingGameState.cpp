@@ -3,8 +3,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "imgui.h"
 
-PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager)
-	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader),
+PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager, int worldSeed = 0)
+	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader, worldSeed),
 	player(&(game->getCamera()), &world, resourceManager), terrainTexture(resourceManager.getTexture("textures\\terrain.png")), terrainSheet(16, 16, &terrainTexture),
 	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.3f, 1.0f), glm::vec3(0.7f, 0.9f, 1.0f), &skyboxShader), clouds(resourceManager)
 {

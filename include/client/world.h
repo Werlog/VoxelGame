@@ -19,7 +19,7 @@ class World
 {
 public:
 
-	World(const Shader& terrainShader);
+	World(const Shader& terrainShader, int worldSeed);
 
 	void updateLoadedChunks(ChunkCoord& newCoordinate);
 	void loadChunk(ChunkCoord coordinate);
