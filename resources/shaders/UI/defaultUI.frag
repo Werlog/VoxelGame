@@ -8,4 +8,7 @@ uniform sampler2D tex;
 void main()
 {
 	aColor = texture(tex, texCoord);
+
+	if (aColor.a < 0.1f)
+		discard;
 }

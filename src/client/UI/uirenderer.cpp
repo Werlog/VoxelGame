@@ -11,9 +11,9 @@ UIRenderer::UIRenderer()
 	textVAO = 0;
 	textVBO = 0;
 
-	crosshairVAO = 0;
-	crosshairVBO = 0;
-	crosshairEBO = 0;
+	quadVAO = 0;
+	quadVBO = 0;
+	quadEBO = 0;
 
 	windowWidth = 0;
 	windowHeight = 0;
@@ -111,8 +111,29 @@ void UIRenderer::renderCrosshair(float x, float y, float scale)
 	glBindTexture(GL_TEXTURE_2D, crosshairTexture->getTextureHandle());
 
 	glUniformMatrix4fv(defaultModelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	glUniform2f(defaultUvScalerLoc, 1.0f, 1.0f);
 
-	glBindVertexArray(crosshairVAO);
+	glBindVertexArray(quadVAO);
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glUseProgram(0);
+}
+
+void UIRenderer::renderTexturedQuad(Texture& texture, glm::vec2 position, glm::vec2 scale, glm::vec2 uvMultiplier)
+{
+	glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(position.x, position.y, 0.0f));
+	model = glm::scale(model, glm::vec3(scale.x, scale.y, 0.0f));
+
+	glUseProgram(defaultShader->getProgramHandle());
+	glBindTexture(GL_TEXTURE_2D, texture.getTextureHandle());
+
+	glUniformMatrix4fv(defaultModelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	glUniform2fv(defaultUvScalerLoc, 1, glm::value_ptr(uvMultiplier));
+
+	glBindVertexArray(quadVAO);
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -181,14 +202,14 @@ void UIRenderer::setup()
 		1, 3, 2,
 	};
 
-	glGenVertexArrays(1, &crosshairVAO);
-	glBindVertexArray(crosshairVAO);
+	glGenVertexArrays(1, &quadVAO);
+	glBindVertexArray(quadVAO);
 
-	glGenBuffers(1, &crosshairVBO);
-	glGenBuffers(1, &crosshairEBO);
+	glGenBuffers(1, &quadVBO);
+	glGenBuffers(1, &quadEBO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, crosshairVBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, crosshairEBO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO);
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), &indices, GL_STATIC_DRAW);
@@ -208,6 +229,7 @@ void UIRenderer::setup()
 
 	defaultProjectionLoc = glGetUniformLocation(defaultShader->getProgramHandle(), "projection");
 	defaultModelLoc = glGetUniformLocation(defaultShader->getProgramHandle(), "model");
+	defaultUvScalerLoc = glGetUniformLocation(defaultShader->getProgramHandle(), "uvScaler");
 
 	glUseProgram(0);
 }

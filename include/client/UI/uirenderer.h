@@ -27,6 +27,8 @@ public:
 
 	void renderCrosshair(float x, float y, float scale);
 
+	void renderTexturedQuad(Texture& texture, glm::vec2 position, glm::vec2 scale, glm::vec2 uvMultiplier);
+
 	float getTextWidth(Font& font, const std::string& text, float scale);
 
 	int getWindowWidth();
@@ -43,15 +45,16 @@ private:
 	unsigned int textVAO;
 	unsigned int textVBO;
 
-	unsigned int crosshairVAO;
-	unsigned int crosshairVBO;
-	unsigned int crosshairEBO;
+	unsigned int quadVAO;
+	unsigned int quadVBO;
+	unsigned int quadEBO;
 
 	unsigned int textProjectionLoc;
 	unsigned int textColorLoc;
 
 	unsigned int defaultProjectionLoc;
 	unsigned int defaultModelLoc;
+	unsigned int defaultUvScalerLoc;
 
 	glm::mat4 uiProjection;
 

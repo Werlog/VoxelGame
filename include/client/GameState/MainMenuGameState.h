@@ -17,6 +17,9 @@ public:
 private:
 	Font& minecraftFont;
 
+	Texture& backgroundTexture;
+	Texture& titleTexture;
+
 	char usernameText[128];
 	char ipText[128];
 

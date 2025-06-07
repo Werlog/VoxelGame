@@ -4,7 +4,9 @@
 #include <SDL2/SDL.h>
 
 MainMenuGameState::MainMenuGameState(Game* game) : BaseGameState(game),
-	minecraftFont(game->getResourceManager().getFont("fonts\\MinecraftRegular.otf"))
+	minecraftFont(game->getResourceManager().getFont("fonts\\MinecraftRegular.otf")),
+	backgroundTexture(game->getResourceManager().getTexture("textures\\menuBackground.png")),
+	titleTexture(game->getResourceManager().getTexture("textures\\title.png"))
 {
 	multiplayerMenuOpen = false;
 
@@ -56,17 +58,19 @@ void MainMenuGameState::render()
 	int width = game->getUIRenderer().getWindowWidth();
 	int height = game->getUIRenderer().getWindowHeight();
 
-	game->getUIRenderer().renderText(minecraftFont, "MAIN MENU", width / 2, height - 150, 2.0f, glm::vec3(1), TextAlignment::ALIGN_CENTER);
+	glm::vec2 halfScreen = glm::vec2(width / 2, height / 2);
+	glm::vec2 uvScaler = glm::vec2(width / 60, height / 60);
+
+	game->getUIRenderer().renderTexturedQuad(titleTexture, glm::vec2(width / 2, height - 100), glm::vec2(343, 47), glm::vec2(1.0f));
+	game->getUIRenderer().renderTexturedQuad(backgroundTexture, halfScreen, halfScreen, uvScaler);
 }
 
 void MainMenuGameState::onEnter()
 {
-	glClearColor(0.1f, 0.5f, 1.0f, 0.5f);
 	SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
 void MainMenuGameState::onExit()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 }
