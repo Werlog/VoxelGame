@@ -39,3 +39,8 @@ Right Shift - Open Dev Menu (Allows to toggle flight/collisions)
 ## How to build
 Open the project folder with Visual Studio, open CMakeLists.txt and press <kbd>Ctrl + S</kbd>.
 Select **VoxelGame.exe** from the run dropdown, then press <kbd>Ctrl + F5</kbd> to build and run.
+
+## Screenshots
+
+![In-Game Screenshot](https://github.com/Werlog/VoxelGame/blob/1c354ab01821943649911ab68ea33b55d894ce40/screenshots/1.JPG)
+![In-Game Screenshot](https://github.com/Werlog/VoxelGame/blob/1c354ab01821943649911ab68ea33b55d894ce40/screenshots/2.png)
