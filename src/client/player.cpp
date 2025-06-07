@@ -28,14 +28,28 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 {
 	camera->update(deltaTime);
 
+	movement(inputHandler, deltaTime);
+
 	glm::vec3 friction = getFriction();
-	velocity = velocity + acceleration * friction * deltaTime;
+
+	velocity += acceleration * friction * deltaTime;
+
+	// Damping
+	glm::vec3 dampingFactor = glm::exp(-friction * deltaTime);
+	dampingFactor = glm::clamp(dampingFactor, 0.0f, 1.0f);
+	velocity = glm::mix(velocity, glm::vec3(0.0f), glm::vec3(1.0f) - dampingFactor);
+
+	if (glm::length(velocity) < 0.05f)
+		velocity = glm::vec3(0);
+
+	if (!enableFlight)
+		velocity.y -= gravity * deltaTime;
+
 	acceleration = glm::vec3(0.0f);
 
-
 	checkGround();
-	movement(inputHandler, deltaTime);
 	resolveCollisions(deltaTime);
+
 	relPosition += velocity * deltaTime;
 	playerMoved();
 	glm::vec3 worldPos = getWorldPosition();
@@ -121,18 +135,14 @@ void Player::movement(InputHandler& inputHandler, float deltaTime)
 	glm::vec3 right = glm::cross(forward, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	acceleration = input.y * forward + input.x * right;
+
 	if (acceleration != glm::vec3(0))
 	{
 		acceleration = glm::normalize(acceleration);
 		acceleration *= enableFlight ? flightSpeed : playerSpeed;
 	}
 
-	glm::vec3 friction = getFriction();
-
-	if (!enableFlight)
-		velocity.y -= gravity * deltaTime;
-
-	velocity -= minAbsVector(velocity, velocity * friction * deltaTime);
+	//velocity -= minAbsVector(velocity, velocity * friction * deltaTime);
 
 	if (enableFlight && inputHandler.getKey(SDLK_SPACE))
 	{
@@ -291,15 +301,15 @@ glm::vec3 Player::getFriction()
 
 	if (isGrounded)
 	{
-		return glm::vec3(18.0f);
+		return glm::vec3(10.2f);
 	}
 
 	if (velocity.y > 0.0f)
 	{
-		return glm::vec3(1.8f, 0.0f, 1.8f);
+		return glm::vec3(1.0f, 0.0f, 1.0f);
 	}
 
-	return glm::vec3(1.8f, 0.0f, 1.8f);
+	return glm::vec3(1.0f, 0.0f, 1.0f);
 }
 
 glm::vec3 Player::minAbsVector(const glm::vec3& vec1, const glm::vec3& vec2)
