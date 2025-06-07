@@ -15,6 +15,8 @@ Right Click - Place block
 
 Mouse Scroll - Swap between blocks
 
+Right Shift - Open Dev Menu (Allows to toggle flight/collisions)
+
 ## Current Features
 
 - Procedural World Generation
