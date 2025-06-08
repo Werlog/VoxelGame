@@ -58,6 +58,15 @@ void MainMenuGameState::switchToGUI(std::shared_ptr<GUI> newGUI)
 
 void MainMenuGameState::enterGame(const std::string& seedText)
 {
+	auto hashCode = [seedText]() -> int {
+		int total = 0;
+		for (size_t i = 0; i < seedText.size(); i++)
+		{
+			total += seedText[i] * pow(31, seedText.size() - (i + 1));
+		}
+		return total;
+	};
+
 	int seed = 0;
 	if (seedText.size() > 0)
 	{
@@ -67,7 +76,7 @@ void MainMenuGameState::enterGame(const std::string& seedText)
 		}
 		catch (...)
 		{
-
+			seed = hashCode();
 		}
 	}
 
