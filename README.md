@@ -23,7 +23,7 @@ Right Shift - Open Dev Menu (Allows to toggle flight/collisions)
 	- Infinite world generation
 	- Trees
 - Block Placing and Breaking
-- Simple main menu
+- Main menu
 - Clouds
 - Player Movement and Player collision
 - Really basic lighting
@@ -35,10 +35,12 @@ Right Shift - Open Dev Menu (Allows to toggle flight/collisions)
 - Smoother player movement
 - Improved collision
 - Breaks less at larger distances
+- Added UI
 
 ## How to build
 Open the project folder with Visual Studio, open CMakeLists.txt and press <kbd>Ctrl + S</kbd>.
 Select **VoxelGame.exe** from the run dropdown, then press <kbd>Ctrl + F5</kbd> to build and run.
+All dependencies are already included in the thirdparty directory.
 
 ## Screenshots
 
