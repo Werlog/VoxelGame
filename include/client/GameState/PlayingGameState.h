@@ -7,6 +7,7 @@
 #include "skybox.h"
 #include "player.h"
 #include "clouds.h"
+#include "UI/pauseMenuGUI.h"
 
 class PlayingGameState : public BaseGameState
 {
@@ -19,6 +20,8 @@ public:
 
 	void onEnter() override;
 	void onExit() override;
+
+	void SetPaused(bool paused);
 private:
 	Shader& terrainShader;
 	Font& minecraftFont;
@@ -31,9 +34,12 @@ private:
 	SkyBox skybox;
 	Clouds clouds;
 
+	PauseMenuGUI pauseGUI;
+
 	bool enableDevMenu;
 	bool enableCollisionOption;
 	bool enableFlightOption;
+	bool paused;
 
 	unsigned int shaderViewLoc;
 	unsigned int shaderProjectionLoc;

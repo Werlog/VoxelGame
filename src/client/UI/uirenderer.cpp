@@ -112,6 +112,7 @@ void UIRenderer::renderCrosshair(float x, float y, float scale)
 
 	glUniformMatrix4fv(defaultModelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glUniform2f(defaultUvScalerLoc, 1.0f, 1.0f);
+	glUniform1i(defaultTexAssignedLoc, 1);
 
 	glBindVertexArray(quadVAO);
 
@@ -132,6 +133,7 @@ void UIRenderer::renderTexturedQuad(Texture& texture, glm::vec2 position, glm::v
 
 	glUniformMatrix4fv(defaultModelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glUniform2fv(defaultUvScalerLoc, 1, glm::value_ptr(uvMultiplier));
+	glUniform1i(defaultTexAssignedLoc, 1);
 
 	glBindVertexArray(quadVAO);
 
@@ -139,6 +141,26 @@ void UIRenderer::renderTexturedQuad(Texture& texture, glm::vec2 position, glm::v
 
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glUseProgram(0);
+}
+
+void UIRenderer::renderColoredQuad(const glm::vec4& color, glm::vec2 position, glm::vec2 scale)
+{
+	glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(position.x, position.y, 0.0f));
+	model = glm::scale(model, glm::vec3(scale.x, scale.y, 0.0f));
+
+	glUseProgram(defaultShader->getProgramHandle());
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glUniformMatrix4fv(defaultModelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	glUniform1i(defaultTexAssignedLoc, 0);
+	glUniform4fv(defaultColorLoc, 1, glm::value_ptr(color));
+
+	glBindVertexArray(quadVAO);
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	glBindVertexArray(0);
 	glUseProgram(0);
 }
 
@@ -230,6 +252,8 @@ void UIRenderer::setup()
 	defaultProjectionLoc = glGetUniformLocation(defaultShader->getProgramHandle(), "projection");
 	defaultModelLoc = glGetUniformLocation(defaultShader->getProgramHandle(), "model");
 	defaultUvScalerLoc = glGetUniformLocation(defaultShader->getProgramHandle(), "uvScaler");
+	defaultTexAssignedLoc = glGetUniformLocation(defaultShader->getProgramHandle(), "textureAssigned");
+	defaultColorLoc = glGetUniformLocation(defaultShader->getProgramHandle(), "color");
 
 	glUseProgram(0);
 }

@@ -113,11 +113,6 @@ void Game::gameLoop()
 
 		handleEvents();
 
-		if (inputHandler.getKeyUp(SDLK_ESCAPE))
-		{
-			SDL_SetRelativeMouseMode(SDL_GetRelativeMouseMode() == SDL_TRUE ? SDL_FALSE : SDL_TRUE);
-		}
-
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL2_NewFrame(window);
 		ImGui::NewFrame();
@@ -183,6 +178,11 @@ void Game::switchToState(BaseGameState* newState)
 void Game::quitGame()
 {
 	running = false;
+}
+
+void Game::setMousePosition(int x, int y)
+{
+	SDL_WarpMouseInWindow(window, x, y);
 }
 
 void Game::handleEvents()

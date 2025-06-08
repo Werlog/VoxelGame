@@ -55,12 +55,13 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	glm::vec3 worldPos = getWorldPosition();
 	camera->position = relPosition + glm::vec3(0.0f, cameraHeight, 0.0f);
 
+	/*
 	ImGui::Begin("Test GUI");
 	ImGui::Text("Position: %f, %f, %f", worldPos.x, worldPos.y, worldPos.z);
 	ImGui::Text("Rel Position: %f, %f, %f", relPosition.x, relPosition.y, relPosition.z);
 	ImGui::Text("Chunk Coord: %d, %d, %d", chunkPosition.x, chunkPosition.y, chunkPosition.z);
 	ImGui::End();
-
+	*/
 	if (inputHandler.getMouseButtonDown(SDL_BUTTON_LEFT))
 	{
 		blockBreakLogic();

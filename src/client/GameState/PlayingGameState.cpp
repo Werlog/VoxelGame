@@ -6,24 +6,41 @@
 PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager, int worldSeed = 0)
 	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader, worldSeed),
 	player(&(game->getCamera()), &world, resourceManager), terrainTexture(resourceManager.getTexture("textures\\terrain.png")), terrainSheet(16, 16, &terrainTexture),
-	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.3f, 1.0f), glm::vec3(0.7f, 0.9f, 1.0f), &skyboxShader), clouds(resourceManager)
+	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.3f, 1.0f), glm::vec3(0.7f, 0.9f, 1.0f), &skyboxShader), clouds(resourceManager),
+	pauseGUI(game, this)
 {
 	setupShader();
 
 	enableDevMenu = false;
 	enableCollisionOption = true;
 	enableFlightOption = false;
+	paused = false;
 }
 
 void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 {
-	if (!enableDevMenu)
-		player.update(inputHandler, deltaTime);
+	if (paused)
+	{
+		pauseGUI.update(inputHandler);
+		return;
+	}
+	if (enableDevMenu)
+	{
+		devMenuLogic(inputHandler);
+		return;
+	}
+
+	player.update(inputHandler, deltaTime);
 
 	world.updateWorld(player);
 
 	clouds.update(deltaTime);
 	devMenuLogic(inputHandler);
+
+	if (inputHandler.getKeyDown(SDLK_ESCAPE))
+	{
+		SetPaused(true);
+	}
 }
 
 void PlayingGameState::render()
@@ -54,6 +71,11 @@ void PlayingGameState::render()
 	int width = game->getUIRenderer().getWindowWidth();
 	int height = game->getUIRenderer().getWindowHeight();
 
+	if (paused)
+	{
+		pauseGUI.render();
+	}
+
 	game->getUIRenderer().renderCrosshair(width / 2, height / 2, 21.0f);
 	game->getUIRenderer().renderText(minecraftFont, block.blockName + " selected", width / 2, 150, 0.9f, glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
 }
@@ -68,6 +90,22 @@ void PlayingGameState::onEnter()
 void PlayingGameState::onExit()
 {
 
+}
+
+void PlayingGameState::SetPaused(bool paused)
+{
+	this->paused = paused;
+	game->getCamera().resetFirstMouse();
+
+	if (paused)
+	{
+		int width = game->getUIRenderer().getWindowWidth();
+		int height = game->getUIRenderer().getWindowHeight();
+
+		game->setMousePosition(width / 2, height / 2);
+	}
+
+	SDL_SetRelativeMouseMode(paused ? SDL_FALSE : SDL_TRUE);
 }
 
 void PlayingGameState::setupShader()

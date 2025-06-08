@@ -29,6 +29,8 @@ public:
 
 	void renderTexturedQuad(Texture& texture, glm::vec2 position, glm::vec2 scale, glm::vec2 uvMultiplier);
 
+	void renderColoredQuad(const glm::vec4& color, glm::vec2 position, glm::vec2 scale);
+
 	float getTextWidth(Font& font, const std::string& text, float scale);
 
 	int getWindowWidth();
@@ -55,6 +57,8 @@ private:
 	unsigned int defaultProjectionLoc;
 	unsigned int defaultModelLoc;
 	unsigned int defaultUvScalerLoc;
+	unsigned int defaultTexAssignedLoc;
+	unsigned int defaultColorLoc;
 
 	glm::mat4 uiProjection;
 

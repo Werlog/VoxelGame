@@ -32,6 +32,7 @@ public:
 	void switchToState(BaseGameState* newState);
 
 	void quitGame();
+	void setMousePosition(int x, int y);
 private:
 	SDL_Window* window;
 	SDL_GLContext context;
