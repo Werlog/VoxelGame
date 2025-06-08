@@ -103,7 +103,7 @@ void PlayingGameState::devMenuLogic(InputHandler& inputHandler)
 	if (inputHandler.getKeyDown(SDLK_RSHIFT))
 	{
 		enableDevMenu = !enableDevMenu;
-
+		game->getCamera().resetFirstMouse();
 		if (!enableDevMenu)
 		{
 			SDL_SetRelativeMouseMode(SDL_TRUE);

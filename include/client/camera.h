@@ -34,6 +34,8 @@ public:
 	void update(float deltaTime);
 	void ProccessMouse(float mouseX, float mouseY, bool constrainPitch = true);
 	void updateProjectionMatrix(float aspectRatio);
+
+	void resetFirstMouse();
 private:
 	float lastMouseX, lastMouseY;
 	bool firstMouse;

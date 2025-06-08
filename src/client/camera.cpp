@@ -40,6 +40,7 @@ void Camera::ProccessMouse(float mouseX, float mouseY, bool constrainPitch)
 		lastMouseX = mouseX;
 		lastMouseY = mouseY;
 		firstMouse = false;
+		return;
 	}
 
 	float xOffset = mouseX;
@@ -69,6 +70,11 @@ void Camera::ProccessMouse(float mouseX, float mouseY, bool constrainPitch)
 void Camera::updateProjectionMatrix(float aspectRatio)
 {
 	projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+}
+
+void Camera::resetFirstMouse()
+{
+	firstMouse = true;
 }
 
 glm::mat4 Camera::getProjectionMatrix()
