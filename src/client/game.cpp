@@ -123,11 +123,11 @@ void Game::gameLoop()
 		ImGui::NewFrame();
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-		// Rendering
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		// Game Updates
 		currentState->update(timer.deltaTime, inputHandler);
+
+		// Rendering
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		currentState->render();
 
@@ -180,6 +180,11 @@ void Game::switchToState(BaseGameState* newState)
 	currentState->onEnter();
 }
 
+void Game::quitGame()
+{
+	running = false;
+}
+
 void Game::handleEvents()
 {
 	SDL_Event e;
@@ -205,6 +210,9 @@ void Game::handleEvents()
 			break;
 		case SDL_MOUSEWHEEL:
 			inputHandler.scrollUpdate(e);
+			break;
+		case SDL_TEXTINPUT:
+			inputHandler.textInputUpdate(e);
 			break;
 		}
 	}

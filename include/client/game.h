@@ -30,6 +30,8 @@ public:
 	ResourceManager& getResourceManager();
 
 	void switchToState(BaseGameState* newState);
+
+	void quitGame();
 private:
 	SDL_Window* window;
 	SDL_GLContext context;

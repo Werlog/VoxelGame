@@ -3,6 +3,7 @@
 InputHandler::InputHandler()
 {
 	scrollValue = 0;
+	std::memset(textInputBuffer, 0, sizeof(textInputBuffer));
 }
 
 void InputHandler::update()
@@ -27,6 +28,8 @@ void InputHandler::update()
 			state = KeyState::NOT_PRESSED;
 	}
 
+	std::memset(textInputBuffer, 0, sizeof(textInputBuffer));
+
 	scrollValue = 0;
 }
 
@@ -47,6 +50,11 @@ void InputHandler::mouseUpdate(SDL_Event& event)
 void InputHandler::scrollUpdate(SDL_Event& event)
 {
 	scrollValue = event.wheel.y;
+}
+
+void InputHandler::textInputUpdate(SDL_Event& event)
+{
+	std::memcpy(textInputBuffer, event.text.text, sizeof(textInputBuffer));
 }
 
 bool InputHandler::getKey(int keycode) const
@@ -97,7 +105,31 @@ bool InputHandler::getMouseButtonUp(unsigned char button) const
 	return it->second == KeyState::KEYUP;
 }
 
+glm::vec2 InputHandler::getMousePosition()
+{
+	int x = 0;
+	int y = 0;
+	SDL_GetMouseState(&x, &y);
+
+	return glm::vec2(x, y);
+}
+
 int InputHandler::getMouseScroll() const
 {
 	return scrollValue;
+}
+
+char* InputHandler::getTextInput()
+{
+	return textInputBuffer;
+}
+
+void InputHandler::startTextInput()
+{
+	SDL_StartTextInput();
+}
+
+void InputHandler::endTextInput()
+{
+	SDL_StopTextInput();
 }

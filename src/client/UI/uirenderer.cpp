@@ -187,7 +187,7 @@ void UIRenderer::setup()
 
 	glBindVertexArray(0);
 
-	// Setup crosshair
+	// Setup Quad
 
 	float vertices[] = {
 		-1.0f, -1.0f, 0.0f, 0.0f,

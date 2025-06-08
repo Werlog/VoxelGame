@@ -10,4 +10,7 @@ void main()
 {
 	vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, texCoord).r);
     aColor = vec4(textColor, 1.0) * sampled;
+
+	if (aColor.a < 0.2f)
+		discard;
 }
