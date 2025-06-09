@@ -5,12 +5,12 @@ GUI::GUI(Game* game)
 	this->game = game;
 }
 
-void GUI::update(InputHandler& inputHandler)
+void GUI::update(InputHandler& inputHandler, float deltaTime)
 {
 	for (auto it = uiElements.begin(); it != uiElements.end(); it++)
 	{
 		std::shared_ptr<UIElement> element = *it;
-		element->update(inputHandler);
+		element->update(inputHandler, deltaTime);
 	}
 }
 

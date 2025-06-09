@@ -5,9 +5,11 @@ InputField::InputField(Game* game, glm::vec2 relPos, glm::vec2 offset, glm::vec2
 		inputFieldTexture(game->getResourceManager().getTexture("textures\\UI\\inputField.png"))
 {
 	isSelected = false;
+	showCursor = true;
+	cursorTimer = 0.0f;
 }
 
-void InputField::update(InputHandler& inputHandler)
+void InputField::update(InputHandler& inputHandler, float deltaTime)
 {
 	if (inputHandler.getMouseButtonDown(SDL_BUTTON_LEFT))
 	{
@@ -21,6 +23,8 @@ void InputField::update(InputHandler& inputHandler)
 			else
 			{
 				inputHandler.endTextInput();
+				showCursor = true;
+				cursorTimer = 0.0f;
 			}
 			isSelected = shouldSelect;
 		}
@@ -28,10 +32,21 @@ void InputField::update(InputHandler& inputHandler)
 
 	if (isSelected)
 	{
+		cursorTimer += deltaTime;
+		if (cursorTimer >= 0.5f)
+		{
+			showCursor = !showCursor;
+			cursorTimer = 0.0f;
+		}
+
 		if (inputHandler.getKeyDown(SDLK_BACKSPACE))
 		{
 			if (text.size() > 0)
+			{
 				this->text.pop_back();
+				showCursor = true;
+				cursorTimer = 0.0f;
+			}
 		}
 		else
 		{
@@ -39,6 +54,8 @@ void InputField::update(InputHandler& inputHandler)
 			if (strlen(text) <= 0 || this->text.size() >= 24 || containsNonASCIIChars(text))
 				return;
 			this->text += std::string(text);
+			showCursor = true;
+			cursorTimer = 0.0f;
 		}
 	}
 }
@@ -47,7 +64,7 @@ void InputField::render(UIRenderer* uiRenderer)
 {
 	glm::vec2 position = getPosition();
 
-	uiRenderer->renderText(minecraftFont, isSelected ? text + "_" : text, position.x - scale.x + 10, position.y - (scale.y / 3), 0.7f, glm::vec3(1.0f));
+	uiRenderer->renderText(minecraftFont, (isSelected && showCursor) ? text + "_" : text, position.x - scale.x + 10, position.y - (scale.y / 3), 0.7f, glm::vec3(1.0f));
 	uiRenderer->renderTexturedQuad(inputFieldTexture, position, scale, glm::vec2(1.0f));
 }
 

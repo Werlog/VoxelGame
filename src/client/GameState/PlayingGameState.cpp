@@ -21,7 +21,7 @@ void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 {
 	if (paused)
 	{
-		pauseGUI.update(inputHandler);
+		pauseGUI.update(inputHandler, deltaTime);
 		return;
 	}
 	if (enableDevMenu)

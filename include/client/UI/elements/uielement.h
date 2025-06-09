@@ -10,7 +10,7 @@ class UIElement
 public:
 	UIElement(Game* game, glm::vec2 relPos, glm::vec2 offset, glm::vec2 size);
 
-	virtual void update(InputHandler& inputHandler) = 0;
+	virtual void update(InputHandler& inputHandler, float deltaTime) = 0;
 	virtual void render(UIRenderer* uiRenderer) = 0;
 
 	glm::vec2 getPosition();

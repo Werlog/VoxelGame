@@ -9,7 +9,7 @@ public:
 
 	Button(Game* game, glm::vec2 relPos, glm::vec2 offset, glm::vec2 size, const std::string& buttonText, std::function<void()> pressedCallback);
 
-	void update(InputHandler& inputHandler) override;
+	void update(InputHandler& inputHandler, float deltaTime) override;
 	void render(UIRenderer* uiRenderer) override;
 private:
 	std::string text;

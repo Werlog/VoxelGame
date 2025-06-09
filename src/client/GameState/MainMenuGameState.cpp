@@ -23,7 +23,7 @@ void MainMenuGameState::update(float deltaTime, InputHandler& inputHandler)
 	checkNextGUI();
 
 	if (currentGUI != nullptr)
-		currentGUI->update(inputHandler);
+		currentGUI->update(inputHandler, deltaTime);
 }
 
 void MainMenuGameState::render()

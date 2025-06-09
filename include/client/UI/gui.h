@@ -12,7 +12,7 @@ public:
 
 	GUI(Game* game);
 
-	void update(InputHandler& inputHandler);
+	void update(InputHandler& inputHandler, float deltaTime);
 	void render();
 protected:
 	Game* game;

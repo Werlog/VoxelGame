@@ -9,7 +9,7 @@ Button::Button(Game* game, glm::vec2 relPos, glm::vec2 offset, glm::vec2 size, c
 	this->callback = pressedCallback;
 }
 
-void Button::update(InputHandler& inputHandler)
+void Button::update(InputHandler& inputHandler, float deltaTime)
 {
 	isHovered = checkHovered(inputHandler);
 

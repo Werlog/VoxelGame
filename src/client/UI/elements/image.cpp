@@ -8,7 +8,7 @@ Image::Image(Game* game, glm::vec2 relPos, glm::vec2 offset, glm::vec2 size, Tex
 	this->fillScreen = fillScreen;
 }
 
-void Image::update(InputHandler& inputHandler)
+void Image::update(InputHandler& inputHandler, float deltaTime)
 {
 	if (fillScreen)
 	{

@@ -8,7 +8,7 @@ Label::Label(Game* game, glm::vec2 relPos, glm::vec2 offset, glm::vec2 size, con
 	this->alignment = alignment;
 }
 
-void Label::update(InputHandler& inputHandler)
+void Label::update(InputHandler& inputHandler, float deltaTime)
 {
 
 }
