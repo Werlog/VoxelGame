@@ -87,7 +87,7 @@ bool Game::init()
 	uiRenderer.init(resourceManager, windowWidth, windowHeight);
 	debugRenderer.init(resourceManager, &camera);
 
-	glLineWidth(3.0f);
+	glLineWidth(2.0f);
 
 	// Game State Setup
 	MainMenuGameState* mainMenu = new MainMenuGameState(this);

@@ -24,6 +24,8 @@ Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
 	selectedBlock = BlockType::STONE;
 }
 
+bool lineMode = false;
+
 void Player::update(InputHandler& inputHandler, float deltaTime)
 {
 	camera->update(deltaTime);
@@ -54,6 +56,12 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	playerMoved();
 	glm::vec3 worldPos = getWorldPosition();
 	camera->position = relPosition + glm::vec3(0.0f, cameraHeight, 0.0f);
+
+	if (inputHandler.getKeyDown(SDLK_k))
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, lineMode ? GL_FILL : GL_LINE);
+		lineMode = !lineMode;
+	}
 
 	/*
 	ImGui::Begin("Test GUI");
@@ -141,6 +149,11 @@ void Player::movement(InputHandler& inputHandler, float deltaTime)
 	{
 		acceleration = glm::normalize(acceleration);
 		acceleration *= enableFlight ? flightSpeed : playerSpeed;
+
+		if (enableFlight && inputHandler.getKey(SDLK_LCTRL))
+		{
+			acceleration *= 5.0f;
+		}
 	}
 
 	//velocity -= minAbsVector(velocity, velocity * friction * deltaTime);
@@ -302,7 +315,7 @@ glm::vec3 Player::getFriction()
 
 	if (isGrounded)
 	{
-		return glm::vec3(10.2f);
+		return glm::vec3(12.0f, 0.0f, 12.0f);
 	}
 
 	if (velocity.y > 0.0f)

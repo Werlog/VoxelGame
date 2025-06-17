@@ -5,9 +5,9 @@ in vec2 texCoord;
 uniform sampler2D terrainTexture;
 uniform vec3 cameraPosition;
 
-uniform float fogStart = 75.0f;
+uniform float fogStart = 150.0f;
 uniform float fogEnd = 325.0f;
-uniform vec3 fogColor = vec3(0.2f, 0.7f, 1.0f);
+uniform vec3 fogColor = vec3(0.1f, 0.62f, 1.0f);
 uniform vec3 minLightLevel = vec3(0.5f, 0.5f, 0.5f);
 
 out vec4 outColor;

@@ -12,8 +12,6 @@ MainMenuGameState::MainMenuGameState(Game* game) : BaseGameState(game),
 	multiplayerMenuOpen = false;
 	singleplayerMenuOpen = false;
 
-	std::memset(seedText, 0, sizeof(seedText));
-
 	std::shared_ptr<MainMenuGUI> mainMenu = std::make_shared<MainMenuGUI>(game, this);
 	switchToGUI(mainMenu);
 }

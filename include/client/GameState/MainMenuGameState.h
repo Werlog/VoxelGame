@@ -28,8 +28,6 @@ private:
 	Texture& backgroundTexture;
 	Texture& titleTexture;
 
-	char seedText[32];
-
 	bool multiplayerMenuOpen;
 	bool singleplayerMenuOpen;
 
