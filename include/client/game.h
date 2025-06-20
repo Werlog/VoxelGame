@@ -8,6 +8,7 @@
 #include "resourcemanager.h"
 #include "UI/uirenderer.h"
 #include "debugRenderer.h"
+#include "fpscounter.h"
 
 constexpr int windowWidth = 1280;
 constexpr int windowHeight = 720;
@@ -43,6 +44,8 @@ private:
 	ResourceManager resourceManager;
 	UIRenderer uiRenderer;
 	DebugRenderer debugRenderer;
+
+	FpsCounter fpsCounter;
 	
 	Camera camera;
 

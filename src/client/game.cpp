@@ -12,7 +12,7 @@
 #include "backends/imgui_impl_sdl2.h"
 #include "imguiThemes.h"
 
-Game::Game() 
+Game::Game()
 	: camera(glm::vec3(0), 60.0f, (float)windowWidth / (float)windowHeight)
 {
 	running = true;
@@ -33,11 +33,11 @@ bool Game::init()
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 
-	SDL_GL_SetSwapInterval(1);
-
 	window = SDL_CreateWindow("I am almost Minecraft", 100, 100, windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
 	context = SDL_GL_CreateContext(window);
+
+	SDL_GL_SetSwapInterval(0);
 
 	if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
 	{
@@ -86,6 +86,7 @@ bool Game::init()
 
 	uiRenderer.init(resourceManager, windowWidth, windowHeight);
 	debugRenderer.init(resourceManager, &camera);
+	fpsCounter.init(resourceManager);
 
 	glLineWidth(2.0f);
 
@@ -110,6 +111,7 @@ void Game::gameLoop()
 
 		inputHandler.update();
 		timer.tick();
+		fpsCounter.update(timer.deltaTime);
 
 		handleEvents();
 
@@ -123,6 +125,8 @@ void Game::gameLoop()
 
 		// Rendering
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		fpsCounter.render(uiRenderer);
 
 		currentState->render();
 
