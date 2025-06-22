@@ -32,8 +32,10 @@ void World::updateWorld(Player& player)
 	chunkManager.update();
 }
 
-void World::renderWorld(const ChunkCoord& playerCoord, const glm::vec3& cameraPos)
+void World::renderWorld(const ChunkCoord& playerCoord, Camera& camera)
 {
+	const glm::vec3& cameraPos = camera.getPosition();
+
 	const auto& loadedChunks = chunkManager.getLoadedChunks();
 	std::lock_guard lock(chunkManager.getChunkMutex());
 	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
@@ -45,8 +47,13 @@ void World::renderWorld(const ChunkCoord& playerCoord, const glm::vec3& cameraPo
 		glm::mat4 model = glm::mat4(1.0f);
 
 		ChunkCoord relative = coord - playerCoord;
-
-		model = glm::translate(model, glm::vec3(relative.x * CHUNK_SIZE_X, relative.y * CHUNK_SIZE_Y, relative.z * CHUNK_SIZE_Z + 1));
+		glm::vec3 relativePos = glm::vec3(relative.x * CHUNK_SIZE_X, relative.y * CHUNK_SIZE_Y, relative.z * CHUNK_SIZE_Z + 1);
+		
+		AABB aabb = AABB(relativePos, relativePos + glm::vec3(32));
+		if (!camera.isInsideFrustum(aabb))
+			continue;
+		
+		model = glm::translate(model, relativePos);
 
 		glUniformMatrix4fv(shaderModelLoc, 1, GL_FALSE, glm::value_ptr(model));
 

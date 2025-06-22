@@ -53,11 +53,11 @@ void PlayingGameState::render()
 
 	glUniformMatrix4fv(shaderProjectionLoc, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
 	glUniformMatrix4fv(shaderViewLoc, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
-	glUniform3fv(shaderCameraPositionLoc, 1, glm::value_ptr(camera.position));
+	glUniform3fv(shaderCameraPositionLoc, 1, glm::value_ptr(camera.getPosition()));
 
 	glBindTexture(GL_TEXTURE_2D, terrainTexture.getTextureHandle());
 
-	world.renderWorld(player.getChunkPosition(), camera.position);
+	world.renderWorld(player.getChunkPosition(), camera);
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glBindTexture(GL_TEXTURE_2D, 0);

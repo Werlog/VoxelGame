@@ -1,5 +1,6 @@
 #include "camera.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_access.hpp>
 #include <iostream>
 
 Camera::Camera(glm::vec3 position, float fov, float aspectRatio) 
@@ -13,11 +14,41 @@ Camera::Camera(glm::vec3 position, float fov, float aspectRatio)
 
 	mouseSensitivity = 0.15f;
 
+	aspectRatio = 1.0f;
+
 	yaw = 0;
 	pitch = 0;
 
 	updateProjectionMatrix(aspectRatio);
 	updateCameraVectors();
+	updateFrustum();
+}
+
+const Frustum& Camera::getFrustum()
+{
+	return frustum;
+}
+
+const glm::vec3& Camera::getPosition() const
+{
+	return position;
+}
+
+void Camera::setPosition(glm::vec3 newPosition)
+{
+	position = newPosition;
+
+	updateFrustum();
+}
+
+bool Camera::isInsideFrustum(AABB& aabb)
+{
+	return frustum.nearPlane.isOnOrForwardPlane(aabb) &&
+		frustum.farPlane.isOnOrForwardPlane(aabb) &&
+		frustum.leftPlane.isOnOrForwardPlane(aabb) &&
+		frustum.rightPlane.isOnOrForwardPlane(aabb) &&
+		frustum.topPlane.isOnOrForwardPlane(aabb) &&
+		frustum.bottomPlane.isOnOrForwardPlane(aabb);
 }
 
 glm::mat4 Camera::getViewMatrix()
@@ -65,10 +96,12 @@ void Camera::ProccessMouse(float mouseX, float mouseY, bool constrainPitch)
 	}
 
 	updateCameraVectors();
+	updateFrustum();
 }
 
 void Camera::updateProjectionMatrix(float aspectRatio)
 {
+	aspectRatio = aspectRatio;
 	projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 }
 
@@ -92,4 +125,52 @@ void Camera::updateCameraVectors()
 
 	right = glm::normalize(glm::cross(front, worldUp));
 	up = glm::normalize(glm::cross(right, front));
+}
+
+void Camera::updateFrustum()
+{
+	glm::mat4 viewProjectionMatrix = projectionMatrix * getViewMatrix();
+
+	glm::vec4 row0 = glm::row(viewProjectionMatrix, 0);
+	glm::vec4 row1 = glm::row(viewProjectionMatrix, 1);
+	glm::vec4 row2 = glm::row(viewProjectionMatrix, 2);
+	glm::vec4 row3 = glm::row(viewProjectionMatrix, 3);
+
+	// Left
+	frustum.leftPlane.normal.x = row3.x + row0.x;
+	frustum.leftPlane.normal.y = row3.y + row0.y;
+	frustum.leftPlane.normal.z = row3.z + row0.z;
+	frustum.leftPlane.distance = row3.w + row0.w;
+
+	// Right
+	frustum.rightPlane.normal.x = row3.x - row0.x;
+	frustum.rightPlane.normal.y = row3.y - row0.y;
+	frustum.rightPlane.normal.z = row3.z - row0.z;
+	frustum.rightPlane.distance = row3.w - row0.w;
+
+	// Bottom
+	frustum.bottomPlane.normal.x = row3.x + row1.x;
+	frustum.bottomPlane.normal.y = row3.y + row1.y;
+	frustum.bottomPlane.normal.z = row3.z + row1.z;
+	frustum.bottomPlane.distance = row3.w + row1.w;
+
+	// Top
+	frustum.topPlane.normal.x = row3.x - row1.x;
+	frustum.topPlane.normal.y = row3.y - row1.y;
+	frustum.topPlane.normal.z = row3.z - row1.z;
+	frustum.topPlane.distance = row3.w - row1.w;
+
+	// Near
+	frustum.nearPlane.normal.x = row3.x + row2.x;
+	frustum.nearPlane.normal.y = row3.y + row2.y;
+	frustum.nearPlane.normal.z = row3.z + row2.z;
+	frustum.nearPlane.distance = row3.w + row2.w;
+
+	// Far
+	frustum.farPlane.normal.x = row3.x - row2.x;
+	frustum.farPlane.normal.y = row3.y - row2.y;
+	frustum.farPlane.normal.z = row3.z - row2.z;
+	frustum.farPlane.distance = row3.w - row2.w;
+
+	frustum.normalize();
 }

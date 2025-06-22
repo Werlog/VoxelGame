@@ -55,7 +55,7 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	relPosition += velocity * deltaTime;
 	playerMoved();
 	glm::vec3 worldPos = getWorldPosition();
-	camera->position = relPosition + glm::vec3(0.0f, cameraHeight, 0.0f);
+	camera->setPosition(relPosition + glm::vec3(0.0f, cameraHeight, 0.0f));
 
 	if (inputHandler.getKeyDown(SDLK_k))
 	{
@@ -419,7 +419,7 @@ void Player::blockSwitchLogic(InputHandler& inputHandler)
 std::unique_ptr<glm::vec3> Player::getLookingAtPosition()
 {
 	const glm::vec3& direction = camera->front;
-	const glm::vec3& startPosition = camera->position + glm::vec3(chunkPosition.x * CHUNK_SIZE_X, chunkPosition.y * CHUNK_SIZE_Y, chunkPosition.z * CHUNK_SIZE_Z);
+	const glm::vec3& startPosition = camera->getPosition() + glm::vec3(chunkPosition.x * CHUNK_SIZE_X, chunkPosition.y * CHUNK_SIZE_Y, chunkPosition.z * CHUNK_SIZE_Z);
 	for (float dist = 0.0f; dist < 5.0f; dist += 0.03f)
 	{
 		glm::vec3 checkPos = startPosition + direction * dist;
