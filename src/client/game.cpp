@@ -13,7 +13,7 @@
 #include "imguiThemes.h"
 
 Game::Game()
-	: camera(glm::vec3(0), 60.0f, (float)windowWidth / (float)windowHeight)
+	: camera(glm::vec3(0), 65.0f, (float)windowWidth / (float)windowHeight)
 {
 	running = true;
 	currentState = nullptr;
@@ -37,7 +37,7 @@ bool Game::init()
 
 	context = SDL_GL_CreateContext(window);
 
-	SDL_GL_SetSwapInterval(0);
+	SDL_GL_SetSwapInterval(1);
 
 	if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
 	{

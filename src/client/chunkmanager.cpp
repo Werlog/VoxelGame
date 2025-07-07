@@ -14,6 +14,14 @@ void ChunkManager::loadChunk(ChunkCoord coord)
 	{
 		std::lock_guard lock(chunksMutex);
 		if (loadedChunks.find(coord) != loadedChunks.end()) return;
+
+		auto it = savedChunks.find(coord);
+		if (it != savedChunks.end())
+		{
+			loadedChunks.insert({ coord, it->second });
+			remeshChunk(it->first);
+			savedChunks.erase(it);
+		}
 	}
 
 	std::lock_guard genLock(genMutex);
@@ -58,7 +66,12 @@ void ChunkManager::update()
 		{
 			std::lock_guard lock(chunksMutex);
 			loadedChunks.erase(*it);
+			if (chunk->wasModified())
+			{
+				savedChunks.insert({ chunk->getCoord(), chunk });
+			}
 		}
+		chunk->unloadMesh();
 
 		{
 			const ChunkCoord& coord = *it;

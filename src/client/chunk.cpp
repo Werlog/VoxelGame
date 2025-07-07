@@ -11,6 +11,8 @@ Chunk::Chunk(ChunkCoord coord, World* world)
 	this->coord = coord;
 	this->world = world;
 
+	modified = false;
+
 	VAO = 0;
 	SSBO = 0;
 	faceCount = 0;
@@ -22,10 +24,7 @@ Chunk::Chunk(ChunkCoord coord, World* world)
 
 Chunk::~Chunk()
 {
-	if (VAO != 0)
-		glDeleteVertexArrays(1, &VAO);
-	if (SSBO != 0)
-		glDeleteBuffers(1, &SSBO);
+	unloadMesh();
 }
 
 void Chunk::updateLight()
@@ -130,12 +129,16 @@ inline BlockType Chunk::getBlockAt(int x, int y, int z)
 	return blocks[index];
 }
 
-void Chunk::setBlockAt(int x, int y, int z, BlockType newBlock)
+void Chunk::setBlockAt(int x, int y, int z, BlockType newBlock, bool isModification)
 {
 	if (x > CHUNK_SIZE_X - 1 || x < 0 || y > CHUNK_SIZE_Y - 1 || y < 0 || z > CHUNK_SIZE_Z - 1 || z < 0)
 		return;
 	int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
 	blocks[index] = newBlock;
+	if (isModification)
+	{
+		modified = true;
+	}
 }
 
 inline unsigned char Chunk::getLightLevelAt(int x, int y, int z)
@@ -159,9 +162,25 @@ const ChunkCoord& Chunk::getCoord()
 	return coord;
 }
 
+bool Chunk::wasModified() const
+{
+	return modified;
+}
+
 bool Chunk::hasMesh() const
 {
 	return VAO != 0;
+}
+
+void Chunk::unloadMesh()
+{
+	if (VAO != 0)
+		glDeleteVertexArrays(1, &VAO);
+	if (SSBO != 0)
+		glDeleteBuffers(1, &SSBO);
+
+	VAO = 0;
+	SSBO = 0;
 }
 
 void Chunk::createFace(int x, int y, int z, int textureId, int faceDirection, int faceMask, int biomeColorIndex, int lightLevel)

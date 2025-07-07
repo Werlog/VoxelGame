@@ -146,7 +146,7 @@ void World::setBlockAt(int x, int y, int z, BlockType newBlock)
 	std::shared_ptr<Chunk> chunk = getChunkByCoordinate(coord);
 	if (chunk == nullptr)
 		return;
-	chunk->setBlockAt(x - coord.x * CHUNK_SIZE_X, y - coord.y * CHUNK_SIZE_Y, z - coord.z * CHUNK_SIZE_Z, newBlock);
+	chunk->setBlockAt(x - coord.x * CHUNK_SIZE_X, y - coord.y * CHUNK_SIZE_Y, z - coord.z * CHUNK_SIZE_Z, newBlock, true);
 }
 
 void World::modifyBlockAt(int x, int y, int z, BlockType newBlock)

@@ -39,6 +39,7 @@ private:
 	World* world;
 
 	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> loadedChunks;
+	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> savedChunks;
 
 	std::unordered_map<ChunkCoord, std::vector<BlockMod>> blockMods;
 

@@ -27,18 +27,24 @@ public:
 	void render() const;
 
 	inline BlockType getBlockAt(int x, int y, int z);
-	void setBlockAt(int x, int y, int z, BlockType newBlock);
+	void setBlockAt(int x, int y, int z, BlockType newBlock, bool isModification = false);
 
 	inline unsigned char getLightLevelAt(int x, int y, int z);
 	inline void setLightLevelAt(int x, int y, int z, unsigned char lightLevel);
 
 	const ChunkCoord& getCoord();
+
+	bool wasModified() const;
+
 	bool hasMesh() const;
+	void unloadMesh();
 private:
 	BlockType blocks[CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z];
 	unsigned char light[CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z];
 	int faceCount;
 	std::vector<ChunkFace> faceData;
+
+	bool modified;
 	
 	World* world;
 
