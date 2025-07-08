@@ -150,7 +150,6 @@ void SelectView::init()
 	float charHeight = minecraftFont.getCharacter('W').size.y;
 
 	fontScale = std::min(segmentHeight / charHeight, selectViewMaxFontScale);
-	std::cout << fontScale << std::endl;
 }
 
 bool SelectView::shouldShowScrollbar()
