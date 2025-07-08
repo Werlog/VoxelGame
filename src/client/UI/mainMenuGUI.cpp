@@ -3,6 +3,7 @@
 #include "UI/mainMenuGUI.h"
 #include "UI/elements/button.h"
 #include "UI/singleplayerGUI.h"
+#include "UI/worldSelectGUI.h"
 
 MainMenuGUI::MainMenuGUI(Game* game, MainMenuGameState* mainMenu) : GUI(game)
 {
@@ -13,7 +14,7 @@ MainMenuGUI::MainMenuGUI(Game* game, MainMenuGameState* mainMenu) : GUI(game)
 void MainMenuGUI::constructGUI()
 {
 	std::shared_ptr<Button> singleplayerButton = std::make_shared<Button>(game, glm::vec2(0.5f), glm::vec2(0, 40), glm::vec2(300, 30), "Play Singleplayer", [this]() {
-		std::shared_ptr<SingleplayerGUI> gui = std::make_shared<SingleplayerGUI>(game, mainMenu);
+		std::shared_ptr<WorldSelectGUI> gui = std::make_shared<WorldSelectGUI>(game, mainMenu);
 		mainMenu->switchToGUI(gui);
 	});
 

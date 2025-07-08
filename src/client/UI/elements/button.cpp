@@ -7,6 +7,7 @@ Button::Button(Game* game, glm::vec2 relPos, glm::vec2 offset, glm::vec2 size, c
 {
 	this->text = buttonText;
 	this->callback = pressedCallback;
+	this->isHovered = false;
 }
 
 void Button::update(InputHandler& inputHandler, float deltaTime)
