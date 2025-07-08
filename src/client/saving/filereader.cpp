@@ -2,7 +2,7 @@
 
 FileReader::FileReader(const std::string& filePath)
 {
-	this->stream = std::ofstream(std::string(RESOURCES_PATH + filePath), std::ios::binary);
+	this->stream = std::ifstream(std::string(RESOURCES_PATH + filePath), std::ios::binary);
 }
 
 uint64_t FileReader::getStreamPosition()
@@ -28,6 +28,8 @@ std::string FileReader::readString()
 
 	std::string str = std::string(' ', size);
 	readData(str.data(), size);
+
+	return str;
 }
 
 template<typename T>
