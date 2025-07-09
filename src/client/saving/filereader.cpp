@@ -2,7 +2,12 @@
 
 FileReader::FileReader(const std::string& filePath)
 {
-	this->stream = std::ifstream(std::string(RESOURCES_PATH + filePath), std::ios::binary);
+	this->stream = std::ifstream(std::string(RESOURCES_PATH "\\" + filePath), std::ios::binary);
+}
+
+FileReader::~FileReader()
+{
+	stream.close();
 }
 
 uint64_t FileReader::getStreamPosition()
@@ -30,10 +35,4 @@ std::string FileReader::readString()
 	readData(str.data(), size);
 
 	return str;
-}
-
-template<typename T>
-inline void FileReader::readRaw(T& type)
-{
-	readData((char*)&type, sizeof(T));
 }

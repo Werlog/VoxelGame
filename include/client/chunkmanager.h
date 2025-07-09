@@ -33,6 +33,7 @@ public:
 	void resolveBlockMods(std::shared_ptr<Chunk> chunk);
 
 	const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& getLoadedChunks();
+	const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& getSavedChunks();
 	std::shared_ptr<Chunk> getLoadedChunk(ChunkCoord coordinate);
 	std::recursive_mutex& getChunkMutex();
 private:

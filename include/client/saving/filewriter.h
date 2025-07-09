@@ -9,6 +9,7 @@ class FileWriter
 public:
 
 	FileWriter(const std::string& filePath);
+	~FileWriter();
 
 	uint64_t getStreamPosition();
 	void setStreamPosition(uint64_t position);
@@ -21,3 +22,9 @@ public:
 private:
 	std::ofstream stream;
 };
+
+template<typename T>
+void FileWriter::writeRaw(const T& type)
+{
+	writeData((char*)&type, sizeof(T));
+}

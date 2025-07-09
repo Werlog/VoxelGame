@@ -2,7 +2,12 @@
 
 FileWriter::FileWriter(const std::string& filePath)
 {
-	this->stream = std::ofstream(std::string(RESOURCES_PATH + filePath), std::ios::binary);
+	this->stream = std::ofstream(std::string(RESOURCES_PATH "\\" + filePath), std::ios::binary);
+}
+
+FileWriter::~FileWriter()
+{
+	stream.close();
 }
 
 uint64_t FileWriter::getStreamPosition()
@@ -26,10 +31,4 @@ void FileWriter::writeString(const std::string& value)
 	writeRaw(value.size());
 
 	writeData(value.data(), value.size() * sizeof(char));
-}
-
-template<typename T>
-inline void FileWriter::writeRaw(const T& type)
-{
-	writeData((char*)&type, sizeof(T));
 }

@@ -104,6 +104,13 @@ void Player::setEnableFlight(bool enable)
 	enableFlight = enable;
 }
 
+void Player::setWorldPosition(glm::vec3 position)
+{
+	chunkPosition = ChunkCoord{ 0, 0, 0 };
+	relPosition = position;
+	playerMoved();
+}
+
 BlockType Player::getSelectedBlock() const
 {
 	return selectedBlock;

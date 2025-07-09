@@ -2,6 +2,7 @@
 #include "GameState/PlayingGameState.h"
 #include "imgui.h"
 #include <SDL2/SDL.h>
+#include "saving/worldsaveutil.h"
 
 MainMenuGameState::MainMenuGameState(Game* game) : BaseGameState(game),
 	minecraftFont(game->getResourceManager().getFont("fonts\\MinecraftRegular.otf")),
@@ -54,7 +55,7 @@ void MainMenuGameState::switchToGUI(std::shared_ptr<GUI> newGUI)
 	nextGUI = newGUI;
 }
 
-void MainMenuGameState::enterGame(const std::string& seedText)
+void MainMenuGameState::enterGame(const std::string& seedText, const std::string& worldName)
 {
 	auto hashCode = [seedText]() -> int {
 		int total = 0;
@@ -78,7 +79,22 @@ void MainMenuGameState::enterGame(const std::string& seedText)
 		}
 	}
 
-	PlayingGameState* state = new PlayingGameState(game, game->getResourceManager(), seed);
+	PlayingGameState* state = new PlayingGameState(game, game->getResourceManager(), worldName, seed);
+	game->switchToState(state);
+}
+
+void MainMenuGameState::enterSavedGame(const std::string& worldName)
+{
+	SavedWorldInfo info = {};
+	bool success = saveutil::getWorldInfo(worldName, &info);
+	if (!success)
+	{
+		std::cout << "Cannot enter saved game, invalid world.bin file." << std::endl;
+		return;
+	}
+
+	PlayingGameState* state = new PlayingGameState(game, game->getResourceManager(), worldName, info.worldSeed);
+	state->getPlayer().setWorldPosition(glm::vec3(info.playerX, info.playerY, info.playerZ));
 	game->switchToState(state);
 }
 

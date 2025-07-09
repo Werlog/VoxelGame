@@ -3,14 +3,16 @@
 #include "gui.h"
 #include "GameState/MainMenuGameState.h"
 
-class SingleplayerGUI : public GUI
+class CreateWorldGUI : public GUI
 {
 public:
 
-	SingleplayerGUI(Game* game, MainMenuGameState* mainMenu);
+	CreateWorldGUI(Game* game, MainMenuGameState* mainMenu);
 
 protected:
 	MainMenuGameState* mainMenu;
 
 	void constructGUI() override;
+
+	bool checkWorldName(const std::string& worldName);
 };

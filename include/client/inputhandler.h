@@ -39,9 +39,11 @@ public:
 	char* getTextInput();
 	void startTextInput();
 	void endTextInput();
+	bool isReceivingTextInput() const;
 private:
 	std::unordered_map<int, KeyState> keyStates;
 	std::unordered_map<unsigned char, KeyState> mouseStates;
+	bool receivingTextInput;
 
 	char textInputBuffer[32];
 

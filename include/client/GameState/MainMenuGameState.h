@@ -18,7 +18,8 @@ public:
 
 	void switchToGUI(std::shared_ptr<GUI> newGUI);
 
-	void enterGame(const std::string& seedText);
+	void enterGame(const std::string& seedText, const std::string& worldName);
+	void enterSavedGame(const std::string& worldName);
 private:
 	Font& minecraftFont;
 

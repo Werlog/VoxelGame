@@ -3,6 +3,7 @@
 InputHandler::InputHandler()
 {
 	scrollValue = 0;
+	receivingTextInput = false;
 	std::memset(textInputBuffer, 0, sizeof(textInputBuffer));
 }
 
@@ -127,9 +128,16 @@ char* InputHandler::getTextInput()
 void InputHandler::startTextInput()
 {
 	SDL_StartTextInput();
+	receivingTextInput = true;
 }
 
 void InputHandler::endTextInput()
 {
 	SDL_StopTextInput();
+	receivingTextInput = false;
+}
+
+bool InputHandler::isReceivingTextInput() const
+{
+	return receivingTextInput;
 }

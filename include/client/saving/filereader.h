@@ -9,6 +9,7 @@ class FileReader
 public:
 
 	FileReader(const std::string& filePath);
+	~FileReader();
 
 	uint64_t getStreamPosition();
 	void setStreamPosition(uint64_t position);
@@ -21,3 +22,9 @@ public:
 private:
 	std::ifstream stream;
 };
+
+template<typename T>
+inline void FileReader::readRaw(T& type)
+{
+	readData((char*)&type, sizeof(T));
+}

@@ -35,6 +35,8 @@ public:
 	void setEnableCollision(bool enable);
 	void setEnableFlight(bool enable);
 
+	void setWorldPosition(glm::vec3 position);
+
 	BlockType getSelectedBlock() const;
 	const glm::vec3& getRelPosition() const;
 	const ChunkCoord& getChunkPosition() const;

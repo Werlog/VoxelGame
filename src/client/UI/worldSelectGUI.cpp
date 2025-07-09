@@ -3,7 +3,8 @@
 #include "UI/elements/label.h"
 #include "UI/elements/button.h"
 #include "UI/mainMenuGUI.h"
-#include "UI/singleplayerGUI.h"
+#include "UI/createWorldGUI.h"
+#include "saving/worldsaveutil.h"
 
 
 WorldSelectGUI::WorldSelectGUI(Game* game, MainMenuGameState* mainMenu)
@@ -17,8 +18,7 @@ WorldSelectGUI::WorldSelectGUI(Game* game, MainMenuGameState* mainMenu)
 
 void WorldSelectGUI::constructGUI()
 {
-	auto testList = { "Placeholder" };
-	std::shared_ptr<SelectView> worldSelect = std::make_shared<SelectView>(game, glm::vec2(0.5f, 0.55f), glm::vec2(0.0f), glm::vec2(250.0f, 125.0f), testList);
+	std::shared_ptr<SelectView> worldSelect = std::make_shared<SelectView>(game, glm::vec2(0.5f, 0.55f), glm::vec2(0.0f), glm::vec2(250.0f, 125.0f), saveutil::getSavedWorlds());
 
 	std::shared_ptr<Label> label = std::make_shared<Label>(game, glm::vec2(0.5f, 0.55f), glm::vec2(-245.0f, 135.0f), glm::vec2(0.6f), "Select a world:", glm::vec3(0.8f), TextAlignment::ALIGN_LEFT);
 
@@ -28,7 +28,7 @@ void WorldSelectGUI::constructGUI()
 			std::cout << "No world selected" << std::endl;
 			return;
 		}
-		std::cout << "Selected world: " << worldSelect->getSelectedOption() << std::endl;
+		mainMenu->enterSavedGame(worldSelect->getSelectedOption());
 	});
 
 	std::shared_ptr<Button> cancelButton = std::make_shared<Button>(game, glm::vec2(0.5f, 0.06f), glm::vec2(-155.0f, 80.0f), glm::vec2(145, 30), "Cancel", [this] {
@@ -37,8 +37,8 @@ void WorldSelectGUI::constructGUI()
 	});
 
 	std::shared_ptr<Button> newWorldButton = std::make_shared<Button>(game, glm::vec2(0.5f, 0.06f), glm::vec2(155.0f, 80.0f), glm::vec2(145, 30), "New world", [this] {
-		std::shared_ptr<SingleplayerGUI> singleplayerGUI = std::make_shared<SingleplayerGUI>(game, mainMenu);
-		mainMenu->switchToGUI(singleplayerGUI);
+		std::shared_ptr<CreateWorldGUI> createWorldGUI = std::make_shared<CreateWorldGUI>(game, mainMenu);
+		mainMenu->switchToGUI(createWorldGUI);
 	});
 
 	uiElements.push_back(worldSelect);

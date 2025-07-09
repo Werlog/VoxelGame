@@ -12,7 +12,7 @@
 class PlayingGameState : public BaseGameState
 {
 public:
-	PlayingGameState(Game* game, ResourceManager& resourceManager, int worldSeed);
+	PlayingGameState(Game* game, ResourceManager& resourceManager, const std::string& worldName, int worldSeed = 0);
 
 	void update(float deltaTime, InputHandler& inputHandler) override;
 
@@ -22,6 +22,9 @@ public:
 	void onExit() override;
 
 	void SetPaused(bool paused);
+
+	Player& getPlayer();
+	World& getWorld();
 private:
 	Shader& terrainShader;
 	Font& minecraftFont;

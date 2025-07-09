@@ -3,8 +3,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "imgui.h"
 
-PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager, int worldSeed = 0)
-	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader, worldSeed),
+PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager, const std::string& worldName, int worldSeed)
+	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader, this, worldName, worldSeed),
 	player(&(game->getCamera()), &world, resourceManager), terrainTexture(resourceManager.getTexture("textures\\terrain.png")), terrainSheet(16, 16, &terrainTexture),
 	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.3f, 1.0f), glm::vec3(0.7f, 0.9f, 1.0f), &skyboxShader), clouds(resourceManager),
 	pauseGUI(game, this)
@@ -106,6 +106,16 @@ void PlayingGameState::SetPaused(bool paused)
 	}
 
 	SDL_SetRelativeMouseMode(paused ? SDL_FALSE : SDL_TRUE);
+}
+
+Player& PlayingGameState::getPlayer()
+{
+	return player;
+}
+
+World& PlayingGameState::getWorld()
+{
+	return world;
 }
 
 void PlayingGameState::setupShader()

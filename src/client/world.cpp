@@ -8,12 +8,13 @@
 #include <random>
 #include <limits>
 
-World::World(const Shader& terrainShader, int worldSeed)
-	: chunkManager(this)
+World::World(const Shader& terrainShader, PlayingGameState* playingState, const std::string& worldName, int worldSeed)
+	: chunkManager(this), worldSaver(this, playingState)
 {
 	shaderModelLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "model");
 
 	this->seed = worldSeed;
+	this->worldName = worldName;
 
 	setupWorldGen();
 
@@ -170,6 +171,21 @@ void World::modifyBlockAt(int x, int y, int z, BlockType newBlock)
 			chunkManager.remeshChunk(neighbourCoord, true);
 		}
 	}
+}
+
+ChunkManager& World::getChunkManager()
+{
+	return chunkManager;
+}
+
+const std::string& World::getWorldName()
+{
+	return worldName;
+}
+
+void World::saveWorld()
+{
+	worldSaver.saveWorld();
 }
 
 std::shared_ptr<Chunk> World::getChunkByCoordinate(ChunkCoord coord)

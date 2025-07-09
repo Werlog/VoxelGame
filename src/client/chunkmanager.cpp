@@ -143,6 +143,11 @@ const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& ChunkManager::getL
 	return loadedChunks;
 }
 
+const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& ChunkManager::getSavedChunks()
+{
+	return savedChunks;
+}
+
 std::shared_ptr<Chunk> ChunkManager::getLoadedChunk(ChunkCoord coordinate)
 {
 	std::lock_guard lock(chunksMutex);

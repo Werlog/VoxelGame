@@ -32,6 +32,9 @@ void InputField::update(InputHandler& inputHandler, float deltaTime)
 
 	if (isSelected)
 	{
+		if (!inputHandler.isReceivingTextInput())
+			inputHandler.startTextInput();
+
 		cursorTimer += deltaTime;
 		if (cursorTimer >= 0.5f)
 		{

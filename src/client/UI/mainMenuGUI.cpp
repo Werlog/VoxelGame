@@ -2,7 +2,6 @@
 
 #include "UI/mainMenuGUI.h"
 #include "UI/elements/button.h"
-#include "UI/singleplayerGUI.h"
 #include "UI/worldSelectGUI.h"
 
 MainMenuGUI::MainMenuGUI(Game* game, MainMenuGameState* mainMenu) : GUI(game)
