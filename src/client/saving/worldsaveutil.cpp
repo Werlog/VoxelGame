@@ -10,10 +10,11 @@ namespace saveutil
 	{
 		std::vector<std::string> worlds = std::vector<std::string>();
 
-		fs::path worldsPath = fs::path(RESOURCES_PATH "\\saves");
+		fs::path worldsPath = fs::path(RESOURCES_PATH "/saves");
 
 		if (!fs::is_directory(worldsPath))
 		{
+			fs::create_directory(worldsPath);
 			return worlds;
 		}
 
@@ -30,9 +31,9 @@ namespace saveutil
 
 	bool getWorldInfo(std::string worldName, SavedWorldInfo* worldInfo)
 	{
-		fs::path path = fs::path("saves\\" + worldName + "\\world.bin");
+		fs::path path = fs::path("saves/" + worldName + "/world.bin");
 
-		if (!fs::exists(RESOURCES_PATH "\\" + path.string()))
+		if (!fs::exists(RESOURCES_PATH "/" + path.string()))
 		{
 			return false;
 		}

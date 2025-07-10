@@ -157,6 +157,11 @@ inline void Chunk::setLightLevelAt(int x, int y, int z, unsigned char lightLevel
 	light[index] = lightLevel;
 }
 
+const BlockType* Chunk::getChunkData()
+{
+	return blocks;
+}
+
 const ChunkCoord& Chunk::getCoord()
 {
 	return coord;

@@ -32,6 +32,8 @@ public:
 	inline unsigned char getLightLevelAt(int x, int y, int z);
 	inline void setLightLevelAt(int x, int y, int z, unsigned char lightLevel);
 
+	const BlockType* getChunkData();
+
 	const ChunkCoord& getCoord();
 
 	bool wasModified() const;

@@ -4,6 +4,8 @@ class World;
 class PlayingGameState;
 
 #include <string>
+#include "saving/worldRegion.h"
+#include "chunk.h"
 
 class WorldSaver
 {
@@ -20,4 +22,10 @@ private:
 
 	void ensureDirectory();
 	void saveWorldInfoFile();
+	void ensureChunksDirectory();
+	void saveChunks();
+
+	void saveChunk(std::shared_ptr<Chunk> chunk);
+	std::string getRegionPath(WorldRegion region);
+	void createEmptyRegionFile(const std::string& filePath);
 };

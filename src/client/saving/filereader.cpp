@@ -1,13 +1,16 @@
 #include "saving/filereader.h"
 
-FileReader::FileReader(const std::string& filePath)
+FileReader::FileReader(const std::string& filePath, bool isResourceFile)
 {
-	this->stream = std::ifstream(std::string(RESOURCES_PATH "\\" + filePath), std::ios::binary);
+	if (isResourceFile)
+		this->stream = std::ifstream(std::string(RESOURCES_PATH "/" + filePath), std::ios::binary);
+	else
+		this->stream = std::ifstream(filePath, std::ios::binary);
 }
 
 FileReader::~FileReader()
 {
-	stream.close();
+	close();
 }
 
 uint64_t FileReader::getStreamPosition()
@@ -18,6 +21,18 @@ uint64_t FileReader::getStreamPosition()
 void FileReader::setStreamPosition(uint64_t position)
 {
 	stream.seekg(position);
+}
+
+uint64_t FileReader::getFileSize()
+{
+	std::streampos current = stream.tellg();
+
+	stream.seekg(0, std::ios::end);
+	uint64_t size = stream.tellg();
+
+	stream.seekg(current);
+
+	return size;
 }
 
 bool FileReader::readData(char* destination, size_t size)
@@ -35,4 +50,10 @@ std::string FileReader::readString()
 	readData(str.data(), size);
 
 	return str;
+}
+
+void FileReader::close()
+{
+	if (stream.is_open())
+		stream.close();
 }
