@@ -2,7 +2,7 @@
 #include "UI/elements/button.h"
 #include "UI/elements/label.h"
 #include "UI/elements/inputfield.h"
-#include "UI/mainMenuGUI.h"
+#include "UI/worldSelectGUI.h"
 #include "GameState/MainMenuGameState.h"
 
 CreateWorldGUI::CreateWorldGUI(Game* game, MainMenuGameState* mainMenu) : GUI(game)
@@ -16,7 +16,7 @@ CreateWorldGUI::CreateWorldGUI(Game* game, MainMenuGameState* mainMenu) : GUI(ga
 void CreateWorldGUI::constructGUI()
 {
 	std::shared_ptr<Button> backButton = std::make_shared<Button>(game, glm::vec2(0.5f, 0.05f), glm::vec2(0.0f, 80.0f), glm::vec2(300, 30), "Cancel", [this]() {
-		std::shared_ptr<MainMenuGUI> gui = std::make_shared<MainMenuGUI>(game, mainMenu);
+		std::shared_ptr<WorldSelectGUI> gui = std::make_shared<WorldSelectGUI>(game, mainMenu);
 		mainMenu->switchToGUI(gui);
 	});
 
