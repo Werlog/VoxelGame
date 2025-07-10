@@ -26,6 +26,7 @@ Right Shift - Open Dev Menu (Allows to toggle flight/collisions)
 - Main menu
 - Clouds
 - Player Movement and Player collision
+- World saving
 - Really basic lighting
 
 ## Improvements over the old project
@@ -35,6 +36,7 @@ Right Shift - Open Dev Menu (Allows to toggle flight/collisions)
 - Smoother player movement
 - Improved collision
 - Breaks less at larger distances
+- Added world saving
 - Added UI
 
 ## How to build
