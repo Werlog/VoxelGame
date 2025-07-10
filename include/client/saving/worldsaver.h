@@ -26,6 +26,5 @@ private:
 	void saveChunks();
 
 	void saveChunk(std::shared_ptr<Chunk> chunk);
-	std::string getRegionPath(WorldRegion region);
 	void createEmptyRegionFile(const std::string& filePath);
 };

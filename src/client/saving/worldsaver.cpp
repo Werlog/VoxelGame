@@ -4,8 +4,8 @@
 #include "saving/filewriter.h"
 #include "saving/filereader.h"
 #include "saving/savedworldinfo.h"
+#include "saving/worldsaveutil.h"
 #include <filesystem>
-#include <sstream>
 
 WorldSaver::WorldSaver(World* world, PlayingGameState* playingState)
 {
@@ -15,7 +15,7 @@ WorldSaver::WorldSaver(World* world, PlayingGameState* playingState)
 
 void WorldSaver::saveWorld()
 {
-	savePath = "saves\\" + world->getWorldName();
+	savePath = "saves/" + world->getWorldName();
 
 	ensureDirectory();
 	saveWorldInfoFile();
@@ -39,13 +39,13 @@ void WorldSaver::saveWorldInfoFile()
 
 	SavedWorldInfo info = SavedWorldInfo{ world->getWorldSeed(), playerPos.x, playerPos.y, playerPos.z };
 
-	FileWriter writer = FileWriter(savePath + "\\world.bin");
+	FileWriter writer = FileWriter(savePath + "/world.bin");
 	writer.writeRaw(info);
 }
 
 void WorldSaver::ensureChunksDirectory()
 {
-	std::string path = std::string(RESOURCES_PATH + savePath + "\\regions");
+	std::string path = std::string(RESOURCES_PATH + savePath + "/regions");
 	if (!std::filesystem::is_directory(path))
 	{
 		std::filesystem::create_directory(path);
@@ -72,20 +72,22 @@ void WorldSaver::saveChunks()
 	{
 		saveChunk(it->second);
 	}
+
+	world->getChunkManager().clearSavedChunks();
 }
 
 void WorldSaver::saveChunk(std::shared_ptr<Chunk> chunk)
 {
 	WorldRegion region = WorldRegion::toWorldRegion(chunk->getCoord());
-	std::string regionPath = getRegionPath(region);
+	std::string regionPath = saveutil::getRegionPath(region, savePath);
 
 	if (!std::filesystem::exists(regionPath))
 	{
 		createEmptyRegionFile(regionPath);
 	}
 
-	glm::ivec3 chunkPos = region.getRelativeChunkPosition(chunk->getCoord());
-	int32_t lookupOffset = chunkPos.x + chunkPos.y * WORLD_REGION_SIZE + chunkPos.z * WORLD_REGION_SIZE * WORLD_REGION_SIZE;
+	glm::ivec3 relPos = region.getRelativeChunkPosition(chunk->getCoord());
+	int32_t lookupOffset = relPos.x + relPos.y * WORLD_REGION_SIZE + relPos.z * WORLD_REGION_SIZE * WORLD_REGION_SIZE;
 	if (lookupOffset < 0)
 	{
 		return;
@@ -111,14 +113,6 @@ void WorldSaver::saveChunk(std::shared_ptr<Chunk> chunk)
 	writer.setStreamPosition(chunkDataOffset);
 	writer.writeData((const char*)(chunk->getChunkData()), CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z * sizeof(BlockType));
 	writer.close();
-}
-
-std::string WorldSaver::getRegionPath(WorldRegion region)
-{
-	std::ostringstream oss;
-	oss << RESOURCES_PATH << savePath << "/regions/" << "r." << region.x << "." << region.y << "." << region.z << ".bin";
-
-	return oss.str();
 }
 
 void WorldSaver::createEmptyRegionFile(const std::string& filePath)

@@ -9,6 +9,7 @@
 #include "chunk.h"
 #include <queue>
 #include <deque>
+#include "saving/worldloader.h"
 
 class World;
 
@@ -36,8 +37,11 @@ public:
 	const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& getSavedChunks();
 	std::shared_ptr<Chunk> getLoadedChunk(ChunkCoord coordinate);
 	std::recursive_mutex& getChunkMutex();
+
+	void clearSavedChunks();
 private:
 	World* world;
+	WorldLoader saveLoader;
 
 	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> loadedChunks;
 	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> savedChunks;

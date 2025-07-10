@@ -3,6 +3,7 @@
 #include "chunkgenerator.h"
 
 ChunkManager::ChunkManager(World* world)
+	: saveLoader(world)
 {
 	this->world = world;
 
@@ -163,6 +164,11 @@ std::recursive_mutex& ChunkManager::getChunkMutex()
 	return chunksMutex;
 }
 
+void ChunkManager::clearSavedChunks()
+{
+	savedChunks.clear();
+}
+
 void ChunkManager::init()
 {
 	std::thread genThread(&ChunkManager::genWorker, this);
@@ -186,9 +192,14 @@ void ChunkManager::genWorker()
 		lock.unlock();
 
 		std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>(coord, world);
-		ChunkGenerator generator = ChunkGenerator(chunk, world, this);
-		generator.generate();
-		resolveBlockMods(chunk);
+
+		bool loaded = saveLoader.loadChunk(chunk);
+		if (!loaded)
+		{
+			ChunkGenerator generator = ChunkGenerator(chunk, world, this);
+			generator.generate();
+			resolveBlockMods(chunk);
+		}
 
 		{
 			std::lock_guard chunksLock(chunksMutex);

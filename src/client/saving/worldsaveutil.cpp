@@ -1,6 +1,7 @@
 #include "saving/worldsaveutil.h"
 #include <filesystem>
 #include "saving/filereader.h"
+#include <sstream>
 
 namespace saveutil
 {
@@ -41,5 +42,13 @@ namespace saveutil
 		FileReader reader = FileReader(path.string());
 		reader.readRaw(*worldInfo);
 		return true;
+	}
+
+	std::string getRegionPath(WorldRegion region, const std::string& worldPath)
+	{
+		std::ostringstream oss;
+		oss << RESOURCES_PATH << worldPath << "/regions/" << "r." << region.x << "." << region.y << "." << region.z << ".bin";
+
+		return oss.str();
 	}
 }
