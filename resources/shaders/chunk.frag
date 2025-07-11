@@ -32,5 +32,10 @@ void main()
 
 	vec3 lightMultiplier = mix(minLightLevel, vec3(1), lightLevel / 15.0f);
 
-	outColor = mix(vec4(fogColor, 1.0f), vec4((texture(terrainTexture, texCoord) * brightness).xyz * colorMod * lightMultiplier, 1.0f), fogFactor);
+	vec4 texColor = texture(terrainTexture, texCoord);
+
+	if (texColor.a < 0.2f)
+		discard;
+
+	outColor = mix(vec4(fogColor, 1.0f), vec4((texColor * brightness).xyz * colorMod * lightMultiplier, 1.0f), fogFactor);
 }

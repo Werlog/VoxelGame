@@ -13,6 +13,7 @@ enum BlockType : unsigned char
 	GRASS,
 	OAK_LOG,
 	OAK_LEAVES,
+	GLASS,
 	BEDROCK,
 };
 
@@ -26,6 +27,7 @@ struct BlockProperties
 	unsigned char topFaceTexId;
 	unsigned char bottomFaceTexId;
 	int biomeMask;
+	bool isTransparent;
 };
 
 constexpr int biomeNoFaceMask = 0x00;

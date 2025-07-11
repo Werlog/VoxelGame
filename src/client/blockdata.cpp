@@ -41,13 +41,14 @@ const std::unordered_map<BlockType, BlockProperties>& BlockData::getData()
 
 void BlockData::init()
 {
-	data.insert({ BlockType::AIR, BlockProperties{"Air", 0, 0, 0, 0, 0, 0, biomeNoFaceMask} });
-	data.insert({ BlockType::STONE, BlockProperties{"Stone", 1, 1, 1, 1, 1, 1, biomeNoFaceMask} });
-	data.insert({ BlockType::OAK_PLANKS, BlockProperties{"Oak Planks", 4, 4, 4, 4, 4, 4, biomeNoFaceMask} });
-	data.insert({ BlockType::COBBLESTONE, BlockProperties{"Cobblestone", 16, 16, 16, 16, 16, 16, biomeNoFaceMask} });
-	data.insert({ BlockType::DIRT, BlockProperties{"Dirt", 2, 2, 2, 2, 2, 2, biomeNoFaceMask} });
-	data.insert({ BlockType::GRASS, BlockProperties{"Grass", 3, 3, 3, 3, 0, 2, biomeTopFaceMask} });
-	data.insert({ BlockType::OAK_LOG, BlockProperties{"Oak Log", 20, 20, 20, 20, 21, 21, biomeNoFaceMask} });
-	data.insert({ BlockType::OAK_LEAVES, BlockProperties{"Oak Leaves", 53, 53, 53, 53, 53, 53, biomeAllFaceMask} });
-	data.insert({ BlockType::BEDROCK, BlockProperties{"Bedrock", 17, 17, 17, 17, 17, 17, biomeNoFaceMask} });
+	data.insert({ BlockType::AIR, BlockProperties{"Air", 0, 0, 0, 0, 0, 0, biomeNoFaceMask, true} });
+	data.insert({ BlockType::STONE, BlockProperties{"Stone", 1, 1, 1, 1, 1, 1, biomeNoFaceMask, false} });
+	data.insert({ BlockType::OAK_PLANKS, BlockProperties{"Oak Planks", 4, 4, 4, 4, 4, 4, biomeNoFaceMask, false} });
+	data.insert({ BlockType::COBBLESTONE, BlockProperties{"Cobblestone", 16, 16, 16, 16, 16, 16, biomeNoFaceMask, false} });
+	data.insert({ BlockType::DIRT, BlockProperties{"Dirt", 2, 2, 2, 2, 2, 2, biomeNoFaceMask, false} });
+	data.insert({ BlockType::GRASS, BlockProperties{"Grass", 3, 3, 3, 3, 0, 2, biomeTopFaceMask, false} });
+	data.insert({ BlockType::OAK_LOG, BlockProperties{"Oak Log", 20, 20, 20, 20, 21, 21, biomeNoFaceMask, false} });
+	data.insert({ BlockType::OAK_LEAVES, BlockProperties{"Oak Leaves", 53, 53, 53, 53, 53, 53, biomeAllFaceMask, false} });
+	data.insert({ BlockType::BEDROCK, BlockProperties{"Bedrock", 17, 17, 17, 17, 17, 17, biomeNoFaceMask, false} });
+	data.insert({ BlockType::GLASS, BlockProperties{"Glass", 49, 49, 49, 49, 49, 49, biomeNoFaceMask, true} });
 }

@@ -78,7 +78,10 @@ void Chunk::generateMesh(BlockData& blockData)
 					int checkY = faceChecks[checkIndex + 1] + y;
 					int checkZ = faceChecks[checkIndex + 2] + z;
 
-					if (getBlockAt(checkX, checkY, checkZ) != BlockType::AIR)
+					BlockType neighbour = getBlockAt(checkX, checkY, checkZ);
+					const BlockProperties& neighbourProperties = blockData.getBlockProperties(neighbour);
+
+					if (!neighbourProperties.isTransparent || blocks[index] == neighbour)
 						continue;
 
 					int textureId = blockData.getTextureIdFromFaceIndex(blockProperties, i);
