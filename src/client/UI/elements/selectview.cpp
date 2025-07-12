@@ -43,15 +43,16 @@ void SelectView::update(InputHandler& inputHandler, float deltaTime)
 		if (clickedIndex < 0 || clickedIndex >= options.size())
 		{
 			selectedIndex = -1;
-			return;
 		}
-		if (clickedIndex == selectedIndex)
+		else if (clickedIndex == selectedIndex)
 		{
 			selectedIndex = -1;
-			return;
 		}
-
-		selectedIndex = clickedIndex;
+		else
+		{
+			selectedIndex = clickedIndex;
+		}
+		if (selectionChangedCallback) selectionChangedCallback(selectedIndex, getSelectedOption());
 	}
 	else if (hovered)
 	{
@@ -73,6 +74,11 @@ void SelectView::render(UIRenderer* uiRenderer)
 	renderOptions(uiRenderer);
 
 	uiRenderer->renderColoredQuad(glm::vec4(0.0f), position, scale);
+}
+
+void SelectView::setSelectionChangedCallback(const std::function<void(int, const std::string&)>& func)
+{
+	this->selectionChangedCallback = func;
 }
 
 int SelectView::getSelectedIndex() const

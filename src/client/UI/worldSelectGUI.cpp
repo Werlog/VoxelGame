@@ -30,6 +30,11 @@ void WorldSelectGUI::constructGUI()
 		}
 		mainMenu->enterSavedGame(worldSelect->getSelectedOption());
 	});
+	selectButton->setDisabled(true);
+
+	worldSelect->setSelectionChangedCallback([selectButton](int selectedOption, const std::string& optionText) {
+		selectButton->setDisabled(selectedOption == -1);
+	});
 
 	std::shared_ptr<Button> cancelButton = std::make_shared<Button>(game, glm::vec2(0.5f, 0.06f), glm::vec2(-155.0f, 80.0f), glm::vec2(145, 30), "Cancel", [this] {
 		std::shared_ptr<MainMenuGUI> mainGUI = std::make_shared<MainMenuGUI>(game, mainMenu);

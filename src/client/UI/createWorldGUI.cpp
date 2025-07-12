@@ -27,7 +27,7 @@ void CreateWorldGUI::constructGUI()
 	std::shared_ptr<InputField> nameField = std::make_shared<InputField>(game, glm::vec2(0.5f), glm::vec2(0.0f, 110.0f), glm::vec2(300, 30));
 	std::shared_ptr<Label> nameLabel = std::make_shared<Label>(game, glm::vec2(0.5f), glm::vec2(-295.0f, 150.0f), glm::vec2(0.6f), "World Name:", glm::vec3(0.8f), TextAlignment::ALIGN_LEFT);
 
-	std::shared_ptr<Button> button = std::make_shared<Button>(game, glm::vec2(0.5f, 0.05f), glm::vec2(0.0f, 150.0f), glm::vec2(300, 30), "Create world", [this, inputField, nameField]() {
+	std::shared_ptr<Button> createButton = std::make_shared<Button>(game, glm::vec2(0.5f, 0.05f), glm::vec2(0.0f, 150.0f), glm::vec2(300, 30), "Create world", [this, inputField, nameField]() {
 		std::string worldName = nameField->getText();
 		if (!checkWorldName(worldName))
 		{
@@ -37,8 +37,13 @@ void CreateWorldGUI::constructGUI()
 
 		mainMenu->enterGame(inputField->getText(), nameField->getText());
 	});
+	createButton->setDisabled(true);
 
-	uiElements.push_back(button);
+	nameField->setOnChangedCallback([this, createButton](const std::string& fieldText) {
+		createButton->setDisabled(!checkWorldName(fieldText));
+	});
+
+	uiElements.push_back(createButton);
 	uiElements.push_back(backButton);
 	uiElements.push_back(nameLabel);
 	uiElements.push_back(nameField);

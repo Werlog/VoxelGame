@@ -3,6 +3,7 @@
 #include "uielement.h"
 #include <vector>
 #include <initializer_list>
+#include <functional>
 
 constexpr int selectViewItemCount = 5;
 constexpr float selectViewMaxFontScale = 0.7f;
@@ -17,10 +18,14 @@ public:
 	void update(InputHandler& inputHandler, float deltaTime) override;
 	void render(UIRenderer* uiRenderer) override;
 
+	void setSelectionChangedCallback(const std::function<void(int, const std::string&)>& func);
+
 	int getSelectedIndex() const;
 	std::string getSelectedOption() const;
 private:
 	std::vector<std::string> options;
+	std::function<void(int, const std::string&)> selectionChangedCallback;
+
 	Font& minecraftFont;
 
 	size_t scrollIndex;

@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include "UI/elements/uielement.h"
 #include "UI/uirenderer.h"
+#include <functional>
 
 class InputField : public UIElement
 {
@@ -12,9 +13,12 @@ public:
 	void update(InputHandler& inputHandler, float deltaTime) override;
 	void render(UIRenderer* uiRenderer) override;
 
+	void setOnChangedCallback(const std::function<void(const std::string&)>& func);
+
 	std::string getText();
 private:
 	std::string text;
+	std::function<void(const std::string&)> changedCallback;
 
 	bool isSelected;
 	bool showCursor;

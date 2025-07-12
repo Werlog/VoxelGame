@@ -49,6 +49,7 @@ void InputField::update(InputHandler& inputHandler, float deltaTime)
 				this->text.pop_back();
 				showCursor = true;
 				cursorTimer = 0.0f;
+				if (changedCallback) changedCallback(text);
 			}
 		}
 		else
@@ -57,6 +58,7 @@ void InputField::update(InputHandler& inputHandler, float deltaTime)
 			if (strlen(text) <= 0 || this->text.size() >= 24 || containsNonASCIIChars(text))
 				return;
 			this->text += std::string(text);
+			if (changedCallback) changedCallback(text);
 			showCursor = true;
 			cursorTimer = 0.0f;
 		}
@@ -69,6 +71,11 @@ void InputField::render(UIRenderer* uiRenderer)
 
 	uiRenderer->renderText(minecraftFont, (isSelected && showCursor) ? text + "_" : text, position.x - scale.x + 10, position.y - (scale.y / 3), 0.7f, glm::vec3(1.0f));
 	uiRenderer->renderTexturedQuad(inputFieldTexture, position, scale, glm::vec2(1.0f));
+}
+
+void InputField::setOnChangedCallback(const std::function<void(const std::string&)>& func)
+{
+	this->changedCallback = func;
 }
 
 std::string InputField::getText()
