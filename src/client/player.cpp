@@ -3,7 +3,7 @@
 #include "world.h"
 #include "imgui.h"
 
-Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
+Player::Player(Camera* camera, World* world, Hotbar* hotbar, ResourceManager& resourceManager)
 	: blockOutline(&(resourceManager.getShader("shaders\\outline"))),
 		collider(glm::vec3(0), glm::vec3(0))
 {
@@ -12,6 +12,7 @@ Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
 	this->world = world;
 	this->velocity = glm::vec3(0);
 	this->acceleration = glm::vec3(0);
+	this->hotbar = hotbar;
 
 	this->chunkPosition = ChunkCoord{ 0, 0, 0 };
 	playerMoved();
@@ -20,8 +21,6 @@ Player::Player(Camera* camera, World* world, ResourceManager& resourceManager)
 
 	enableCollision = true;
 	enableFlight = false;
-
-	selectedBlock = BlockType::STONE;
 }
 
 bool lineMode = false;
@@ -78,7 +77,6 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	{
 		blockPlaceLogic();
 	}
-	blockSwitchLogic(inputHandler);
 }
 
 void Player::render()
@@ -109,11 +107,6 @@ void Player::setWorldPosition(glm::vec3 position)
 	chunkPosition = ChunkCoord{ 0, 0, 0 };
 	relPosition = position;
 	playerMoved();
-}
-
-BlockType Player::getSelectedBlock() const
-{
-	return selectedBlock;
 }
 
 const glm::vec3& Player::getRelPosition() const
@@ -403,24 +396,8 @@ void Player::blockPlaceLogic()
 		if (enableCollision && blockAABB.isOverlapping(collider))
 			return;
 
-		world->modifyBlockAt(placeX, placeY, placeZ, selectedBlock);
+		world->modifyBlockAt(placeX, placeY, placeZ, hotbar->getSelectedBlock());
 	}
-}
-
-void Player::blockSwitchLogic(InputHandler& inputHandler)
-{
-	unsigned char block = ((unsigned char)selectedBlock) + inputHandler.getMouseScroll();
-
-	if (block >= world->getBlockData().getData().size())
-	{
-		block = 1;
-	}
-	else if (block < 1)
-	{
-		block = world->getBlockData().getData().size() - 1;
-	}
-
-	selectedBlock = (BlockType)block;
 }
 
 std::unique_ptr<glm::vec3> Player::getLookingAtPosition()

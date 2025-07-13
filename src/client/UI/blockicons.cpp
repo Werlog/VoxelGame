@@ -22,19 +22,31 @@ void BlockIcons::init(BlockData& blockData)
     Camera camera = Camera(glm::vec3(1.9f, 1.9f, -1.9f), 45.0f, 1.0f);
 
     Shader iconShader = Shader("shaders\\blockIcon.vert", "shaders\\blockIcon.frag");
+	glm::vec3 lightDirection = glm::normalize(glm::vec3(0.5f, 1.0f, 1.0f));
+
     glUseProgram(iconShader.getProgramHandle());
 
     glm::mat4 modelMatrix = glm::mat4(1.0f);
 	glm::mat4 viewMatrix = glm::lookAt(camera.getPosition(), glm::vec3(0.5f, 0.5f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
 
+
+
     unsigned int viewLoc = glGetUniformLocation(iconShader.getProgramHandle(), "view");
     unsigned int modelLoc = glGetUniformLocation(iconShader.getProgramHandle(), "model");
     unsigned int projectionLoc = glGetUniformLocation(iconShader.getProgramHandle(), "projection");
-    unsigned int texIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "textureId");
+	unsigned int lightDirLoc = glGetUniformLocation(iconShader.getProgramHandle(), "lightDirection");
+
+    unsigned int frontFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "frontFaceId");
+    unsigned int rightFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "rightFaceId");
+    unsigned int backFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "backFaceId");
+    unsigned int leftFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "leftFaceId");
+    unsigned int topFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "topFaceId");
+    unsigned int bottomFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "bottomFaceId");
 
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+	glUniform3fv(lightDirLoc, 1, glm::value_ptr(lightDirection));
 
 	glGenFramebuffers(1, &FBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -75,14 +87,18 @@ void BlockIcons::init(BlockData& blockData)
 
 		const BlockProperties& properties = blockData.getBlockProperties(type);
 
-        glUniform1i(texIdLoc, (int)properties.frontFaceTexId);
-        glDisable(GL_CULL_FACE);
+        glUniform1i(frontFaceIdLoc, (int)properties.frontFaceTexId);
+		glUniform1i(rightFaceIdLoc, (int)properties.rightFaceTexId);
+		glUniform1i(backFaceIdLoc, (int)properties.backFaceTexId);
+		glUniform1i(leftFaceIdLoc, (int)properties.leftFaceTexId);
+		glUniform1i(topFaceIdLoc, (int)properties.topFaceTexId);
+		glUniform1i(bottomFaceIdLoc, (int)properties.bottomFaceTexId);
+
         glBindVertexArray(blockVAO);
 
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
-        glEnable(GL_CULL_FACE);
 
 		iconMap.insert({ type, iconTexture });
     }
@@ -104,43 +120,44 @@ unsigned int BlockIcons::getTextureForBlock(BlockType block) const
 
 void BlockIcons::setupBlock()
 {
-	constexpr float vertices[] =
+	
+	constexpr IconVertex vertices[] =
 	{
 		// Front Face
-		0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+		{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
+		{ 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f },
+		{ 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
+		{ 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f },
 
 		// Right Face
-		1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		1.0f, 1.0f, -1.0f, 1.0f, 1.0f,
+		{ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f },
+		{ 1.0f, 0.0f, -1.0f, 1.0f, 0.0f, 1.0f },
+		{ 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f },
+		{ 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f },
 
 		// Back Face
-		1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, -1.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, -1.0f, 1.0f, 1.0f,
+		{ 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 2.0f },
+		{ 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 2.0f },
+		{ 1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 2.0f },
+		{ 0.0f, 1.0f, -1.0f, 1.0f, 1.0f, 2.0f },
 
 		// Left Face
-		0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-		0.0f, 1.0f, -1.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 0.0f,  1.0f, 1.0f,
+		{ 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 3.0f },
+		{ 0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 3.0f },
+		{ 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 3.0f },
+		{ 0.0f, 1.0f, 0.0f,  1.0f, 1.0f, 3.0f },
 
 		// Top Face
-		0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-		1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, -1.0f, 0.0f, 1.0f,
-		1.0f, 1.0f, -1.0f, 1.0f, 1.0f,
+		{ 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 4.0f },
+		{ 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 4.0f },
+		{ 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 4.0f },
+		{ 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 4.0f },
 
 		// Bottom Face
-		0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-		1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+		{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f },
+		{ 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 5.0f },
+		{ 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 5.0f },
+		{ 1.0f, 0.0f, -1.0f, 1.0f, 1.0f, 5.0f },
 	};
 
 	constexpr int indices[] =
@@ -170,6 +187,7 @@ void BlockIcons::setupBlock()
 		21, 23, 22,
 	};
 
+	
     glGenVertexArrays(1, &blockVAO);
     glBindVertexArray(blockVAO);
 
@@ -181,12 +199,14 @@ void BlockIcons::setupBlock()
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), &indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(IconVertex), (void*)offsetof(IconVertex, x));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(IconVertex), (void*)offsetof(IconVertex, u));
+	glVertexAttribIPointer(2, 1, GL_INT, sizeof(IconVertex), (void*)offsetof(IconVertex, faceId));
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
 }

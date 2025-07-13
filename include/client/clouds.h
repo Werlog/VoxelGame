@@ -4,7 +4,7 @@
 #include "resourcemanager.h"
 #include "camera.h"
 
-constexpr float cloudPlaneSize = 400.0f;
+constexpr float cloudPlaneSize = 700.0f;
 
 class Clouds
 {

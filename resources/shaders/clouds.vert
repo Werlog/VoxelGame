@@ -14,11 +14,11 @@ out vec2 texCoord;
 
 void main()
 {
-	float height = 120.0f - playerPosition.y;
+	float height = 150.0f - playerPosition.y;
 
 	gl_Position = projection * mat4(mat3(view)) * vec4(aPosition.x, height, aPosition.z, 1.0f);
 
 	vec2 offset = vec2(playerPosition.x / planeSize, (playerPosition.z / planeSize) + time * (1.0f / planeSize));
 
-	texCoord = (aUV + offset) * 0.15f;
+	texCoord = (aUV + offset) * 0.22f;
 }

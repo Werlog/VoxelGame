@@ -5,6 +5,13 @@
 
 constexpr int blockIconResolution = 256;
 
+struct IconVertex
+{
+	float x, y, z;
+	float u, v;
+	int faceId;
+};
+
 class BlockIcons
 {
 public:
@@ -24,6 +31,6 @@ private:
 
 	unsigned int FBO;
 	unsigned int depthAttachmentHandle;
-
+	
 	void setupBlock();
 };

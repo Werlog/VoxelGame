@@ -4,8 +4,8 @@
 #include "imgui.h"
 
 PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager, const std::string& worldName, int worldSeed)
-	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader, this, worldName, worldSeed),
-	player(&(game->getCamera()), &world, resourceManager), terrainSheet(16, 16, "textures/terrain.png"), hud(game, &blockIcons),
+	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader, this, worldName, worldSeed), hud(game, this, &blockIcons),
+	player(&(game->getCamera()), &world, &hud.getHotbar(), resourceManager), terrainSheet(16, 16, "textures/terrain.png"),
 	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.3f, 1.0f), glm::vec3(0.7f, 0.9f, 1.0f), &skyboxShader), clouds(resourceManager),
 	pauseGUI(game, this)
 {
@@ -66,8 +66,6 @@ void PlayingGameState::render()
 	player.render();
 
 	clouds.render(&camera, player.getWorldPosition());
-
-	const BlockProperties& block = world.getBlockData().getBlockProperties(player.getSelectedBlock());
 
 	if (paused)
 	{

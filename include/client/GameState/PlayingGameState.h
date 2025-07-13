@@ -32,9 +32,9 @@ private:
 	Shader& terrainShader;
 	Font& minecraftFont;
 	World world;
+	HUD hud;
 	Player player;
 	TextureSheet terrainSheet;
-	HUD hud;
 	BlockIcons blockIcons;
 
 	Shader& skyboxShader;

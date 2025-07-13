@@ -10,6 +10,7 @@
 #include "AABB.h"
 #include "debugRenderer.h"
 #include "chunkcoord.h"
+#include "UI/elements/HUD/hotbar.h"
 
 constexpr float playerHeight = 1.9f;
 constexpr float cameraHeight = 1.8f;
@@ -27,7 +28,7 @@ class Player
 {
 public:
 
-	Player(Camera* camera, World* world, ResourceManager& resourceManager);
+	Player(Camera* camera, World* world, Hotbar* hotbar, ResourceManager& resourceManager);
 
 	void update(InputHandler& inputHandler, float deltaTime);
 	void render();
@@ -37,7 +38,6 @@ public:
 
 	void setWorldPosition(glm::vec3 position);
 
-	BlockType getSelectedBlock() const;
 	const glm::vec3& getRelPosition() const;
 	const ChunkCoord& getChunkPosition() const;
 	glm::vec3 getWorldPosition() const;
@@ -52,13 +52,12 @@ private:
 	bool enableCollision;
 	bool enableFlight;
 	World* world;
+	Hotbar* hotbar;
 
 	ChunkCoord chunkPosition;
 
 	// Collider relative to the current chunk's position
 	AABB collider;
-
-	BlockType selectedBlock;
 
 	BlockOutline blockOutline;
 
@@ -75,7 +74,6 @@ private:
 
 	void blockBreakLogic();
 	void blockPlaceLogic();
-	void blockSwitchLogic(InputHandler& inputHandler);
 
 	std::unique_ptr<glm::vec3> getLookingAtPosition();
 };
