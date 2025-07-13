@@ -49,7 +49,7 @@ void InputField::update(InputHandler& inputHandler, float deltaTime)
 				this->text.pop_back();
 				showCursor = true;
 				cursorTimer = 0.0f;
-				if (changedCallback) changedCallback(text);
+				if (changedCallback) changedCallback(this->text);
 			}
 		}
 		else
@@ -58,7 +58,7 @@ void InputField::update(InputHandler& inputHandler, float deltaTime)
 			if (strlen(text) <= 0 || this->text.size() >= 24 || containsNonASCIIChars(text))
 				return;
 			this->text += std::string(text);
-			if (changedCallback) changedCallback(text);
+			if (changedCallback) changedCallback(this->text);
 			showCursor = true;
 			cursorTimer = 0.0f;
 		}

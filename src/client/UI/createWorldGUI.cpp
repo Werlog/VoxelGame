@@ -4,6 +4,7 @@
 #include "UI/elements/inputfield.h"
 #include "UI/worldSelectGUI.h"
 #include "GameState/MainMenuGameState.h"
+#include <filesystem>
 
 CreateWorldGUI::CreateWorldGUI(Game* game, MainMenuGameState* mainMenu) : GUI(game)
 {
@@ -63,6 +64,11 @@ bool CreateWorldGUI::checkWorldName(const std::string& worldName)
 	{
 		if (worldName.find(c) != std::string::npos)
 			return false;
+	}
+
+	if (std::filesystem::is_directory(RESOURCES_PATH "saves/" + worldName))
+	{
+		return false;
 	}
 
 	return true;
