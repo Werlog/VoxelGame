@@ -105,6 +105,30 @@ void Camera::updateProjectionMatrix(float aspectRatio)
 	projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 }
 
+float Camera::getYaw() const
+{
+	return yaw;
+}
+
+float Camera::getPitch() const
+{
+	return pitch;
+}
+
+void Camera::setYaw(float yaw)
+{
+	this->yaw = yaw;
+	updateCameraVectors();
+	updateFrustum();
+}
+
+void Camera::setPitch(float pitch)
+{
+	this->pitch = pitch;
+	updateCameraVectors();
+	updateFrustum();
+}
+
 void Camera::resetFirstMouse()
 {
 	firstMouse = true;

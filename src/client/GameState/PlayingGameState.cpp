@@ -5,7 +5,7 @@
 
 PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager, const std::string& worldName, int worldSeed)
 	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader, this, worldName, worldSeed),
-	player(&(game->getCamera()), &world, resourceManager), terrainSheet(16, 16, "textures/terrain.png"),
+	player(&(game->getCamera()), &world, resourceManager), terrainSheet(16, 16, "textures/terrain.png"), hud(game, &blockIcons),
 	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.3f, 1.0f), glm::vec3(0.7f, 0.9f, 1.0f), &skyboxShader), clouds(resourceManager),
 	pauseGUI(game, this)
 {
@@ -30,6 +30,7 @@ void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 		return;
 	}
 
+	hud.update(inputHandler, deltaTime);
 	player.update(inputHandler, deltaTime);
 
 	world.updateWorld(player);
@@ -68,21 +69,19 @@ void PlayingGameState::render()
 
 	const BlockProperties& block = world.getBlockData().getBlockProperties(player.getSelectedBlock());
 
-	int width = game->getUIRenderer().getWindowWidth();
-	int height = game->getUIRenderer().getWindowHeight();
-
 	if (paused)
 	{
 		pauseGUI.render();
 	}
 
-	game->getUIRenderer().renderCrosshair(width / 2, height / 2, 21.0f);
-	game->getUIRenderer().renderText(minecraftFont, block.blockName + " selected", width / 2, 150, 0.9f, glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
+	hud.render(&game->getUIRenderer());
 }
 
 void PlayingGameState::onEnter()
 {
 	world.updateLoadedChunks(ChunkCoord::toChunkCoord(player.getWorldPosition()));
+
+	blockIcons.init(world.getBlockData());
 }
 
 void PlayingGameState::onExit()
@@ -114,6 +113,11 @@ Player& PlayingGameState::getPlayer()
 World& PlayingGameState::getWorld()
 {
 	return world;
+}
+
+HUD& PlayingGameState::getHUD()
+{
+	return hud;
 }
 
 void PlayingGameState::setupShader()

@@ -145,7 +145,7 @@ void Player::movement(InputHandler& inputHandler, float deltaTime)
 {
 	glm::vec3 input = getInputDirection(inputHandler);
 
-	float yaw = camera->yaw;
+	float yaw = camera->getYaw();
 
 	glm::vec3 forward = glm::vec3(cos(glm::radians(yaw)), 0.0f, sin(glm::radians(yaw)));
 	glm::vec3 right = glm::cross(forward, glm::vec3(0.0f, 1.0f, 0.0f));

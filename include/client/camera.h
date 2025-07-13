@@ -23,8 +23,6 @@ public:
 	glm::vec3 right;
 	glm::vec3 worldUp;
 
-	float yaw;
-	float pitch;
 	float fov;
 
 	float mouseSensitivity;
@@ -44,9 +42,17 @@ public:
 	void ProccessMouse(float mouseX, float mouseY, bool constrainPitch = true);
 	void updateProjectionMatrix(float aspectRatio);
 
+	float getYaw() const;
+	float getPitch() const;
+
+	void setYaw(float yaw);
+	void setPitch(float pitch);
+
 	void resetFirstMouse();
 private:
 	glm::vec3 position;
+	float yaw;
+	float pitch;
 
 	float lastMouseX, lastMouseY;
 	float aspectRatio;

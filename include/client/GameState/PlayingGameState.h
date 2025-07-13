@@ -8,6 +8,8 @@
 #include "player.h"
 #include "clouds.h"
 #include "UI/pauseMenuGUI.h"
+#include "UI/elements/HUD/HUD.h"
+#include "UI/blockicons.h"
 
 class PlayingGameState : public BaseGameState
 {
@@ -25,12 +27,15 @@ public:
 
 	Player& getPlayer();
 	World& getWorld();
+	HUD& getHUD();
 private:
 	Shader& terrainShader;
 	Font& minecraftFont;
 	World world;
 	Player player;
 	TextureSheet terrainSheet;
+	HUD hud;
+	BlockIcons blockIcons;
 
 	Shader& skyboxShader;
 	SkyBox skybox;
