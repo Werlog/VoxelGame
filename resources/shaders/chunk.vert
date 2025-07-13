@@ -1,11 +1,5 @@
 #version 430
 
-uniform float texUnitX;
-uniform float texUnitY;
-
-uniform int atlasSizeX;
-uniform int atlasSizeY;
-
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
@@ -110,7 +104,7 @@ vec3 biomeColors[1] = vec3[1](
 	vec3(0.55f, 0.95f, 0.35f)
 );
 
-out vec2 texCoord;
+out vec3 texCoord;
 out vec3 colorMod;
 out vec3 worldPosition;
 flat out uint lightLevel;
@@ -159,17 +153,7 @@ void main()
 
 	position += vertexPositions[indices[vertexIndex]];
 
-	uint row = textureId / atlasSizeX;
-	uint column = textureId - row * atlasSizeX;
-	if (row == 0)
-		column = textureId;
-
-	float rowPos = 1 - texUnitY - (row / float(atlasSizeY));
-	float columnPos = column / float(atlasSizeX);
-
-	vec2 uvs = vec2(uvs[indices[curVertexId]].x, uvs[indices[curVertexId]].y);
-
-	texCoord = vec2(columnPos, rowPos) + vec2(uvs.x * texUnitX, uvs.y * texUnitY);
+	texCoord = vec3(uvs[indices[curVertexId]].x, uvs[indices[curVertexId]].y, textureId);
 
 	vec3 normal = voxelNormals[faceDirection];
 

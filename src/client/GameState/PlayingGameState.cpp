@@ -5,7 +5,7 @@
 
 PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager, const std::string& worldName, int worldSeed)
 	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader, this, worldName, worldSeed),
-	player(&(game->getCamera()), &world, resourceManager), terrainTexture(resourceManager.getTexture("textures\\terrain.png")), terrainSheet(16, 16, &terrainTexture),
+	player(&(game->getCamera()), &world, resourceManager), terrainSheet(16, 16, "textures/terrain.png"),
 	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.3f, 1.0f), glm::vec3(0.7f, 0.9f, 1.0f), &skyboxShader), clouds(resourceManager),
 	pauseGUI(game, this)
 {
@@ -55,7 +55,7 @@ void PlayingGameState::render()
 	glUniformMatrix4fv(shaderViewLoc, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
 	glUniform3fv(shaderCameraPositionLoc, 1, glm::value_ptr(camera.getPosition()));
 
-	glBindTexture(GL_TEXTURE_2D, terrainTexture.getTextureHandle());
+	glBindTexture(GL_TEXTURE_2D_ARRAY, terrainSheet.getTextureHandle());
 
 	world.renderWorld(player.getChunkPosition(), camera);
 	glBindVertexArray(0);
@@ -82,8 +82,6 @@ void PlayingGameState::render()
 
 void PlayingGameState::onEnter()
 {
-	glBindTexture(GL_TEXTURE_2D, terrainSheet.getSheet().getTextureHandle());
-
 	world.updateLoadedChunks(ChunkCoord::toChunkCoord(player.getWorldPosition()));
 }
 
@@ -130,20 +128,6 @@ void PlayingGameState::setupShader()
 
 	glm::vec3 lightDirection = glm::normalize(glm::vec3(0.5f, 1.0f, 1.0f));
 	glUniform3fv(shaderLightDirectionLoc, 1, glm::value_ptr(lightDirection));
-
-	unsigned int unitXLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "texUnitX");
-	unsigned int unitYLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "texUnitY");
-	unsigned int atlasSizeX = glGetUniformLocation(terrainShader.getProgramHandle(), "atlasSizeX");
-	unsigned int atlasSizeY = glGetUniformLocation(terrainShader.getProgramHandle(), "atlasSizeY");
-
-	float oneX = terrainSheet.getOneUnitX();
-	float oneY = terrainSheet.getOneUnitY();
-
-	int atlasSize = 16;
-	glUniform1fv(unitXLoc, 1, &oneX);
-	glUniform1fv(unitYLoc, 1, &oneY);
-	glUniform1iv(atlasSizeX, 1, &atlasSize);
-	glUniform1iv(atlasSizeY, 1, &atlasSize);
 }
 
 void PlayingGameState::devMenuLogic(InputHandler& inputHandler)

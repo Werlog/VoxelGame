@@ -30,7 +30,6 @@ private:
 	Font& minecraftFont;
 	World world;
 	Player player;
-	Texture& terrainTexture;
 	TextureSheet terrainSheet;
 
 	Shader& skyboxShader;

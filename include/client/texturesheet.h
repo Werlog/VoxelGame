@@ -1,19 +1,16 @@
 #pragma once
 
-#include "texture.h"
+#include <string>
 
 class TextureSheet
 {
 public:
-	TextureSheet(int textureWidth, int textureHeight, Texture* texture);
+	TextureSheet(int textureWidth, int textureHeight, const std::string& sheetPath);
 
-	const Texture& getSheet() const;
-
-	float getOneUnitX() const;
-	float getOneUnitY() const;
-
+	unsigned int getTextureHandle() const;
 private:
-	Texture* sheet;
-
 	int textureWidth, textureHeight;
+	unsigned int textureHandle;
+
+	void setup(const std::string& sheetPath);
 };

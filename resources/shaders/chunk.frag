@@ -1,8 +1,14 @@
 #version 330 core
 
-in vec2 texCoord;
+in vec3 texCoord;
+in vec3 worldPosition;
+in vec3 colorMod;
+flat in uint lightLevel;
+in float brightness;
 
-uniform sampler2D terrainTexture;
+out vec4 outColor;
+
+uniform sampler2DArray terrainTexture;
 uniform vec3 cameraPosition;
 
 uniform float fogStart = 150.0f;
@@ -10,11 +16,6 @@ uniform float fogEnd = 325.0f;
 uniform vec3 fogColor = vec3(0.1f, 0.62f, 1.0f);
 uniform vec3 minLightLevel = vec3(0.5f, 0.5f, 0.5f);
 
-out vec4 outColor;
-in vec3 worldPosition;
-in vec3 colorMod;
-flat in uint lightLevel;
-in float brightness;
 
 float calcLinearFogFactor()
 {
