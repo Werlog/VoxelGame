@@ -19,7 +19,7 @@ void BlockIcons::init(BlockData& blockData)
 {
     setupBlock();
 
-    Camera camera = Camera(glm::vec3(1.9f, 1.9f, -1.9f), 45.0f, 1.0f);
+    Camera camera = Camera(glm::vec3(2.0f, 2.0f, -2.0f), 45.0f, 1.0f);
 
     Shader iconShader = Shader("shaders\\blockIcon.vert", "shaders\\blockIcon.frag");
 	glm::vec3 lightDirection = glm::normalize(glm::vec3(0.5f, 1.0f, 1.0f));
@@ -35,6 +35,8 @@ void BlockIcons::init(BlockData& blockData)
     unsigned int modelLoc = glGetUniformLocation(iconShader.getProgramHandle(), "model");
     unsigned int projectionLoc = glGetUniformLocation(iconShader.getProgramHandle(), "projection");
 	unsigned int lightDirLoc = glGetUniformLocation(iconShader.getProgramHandle(), "lightDirection");
+
+	unsigned int biomeMaskLoc = glGetUniformLocation(iconShader.getProgramHandle(), "biomeMask");
 
     unsigned int frontFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "frontFaceId");
     unsigned int rightFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "rightFaceId");
@@ -93,6 +95,7 @@ void BlockIcons::init(BlockData& blockData)
 		glUniform1i(leftFaceIdLoc, (int)properties.leftFaceTexId);
 		glUniform1i(topFaceIdLoc, (int)properties.topFaceTexId);
 		glUniform1i(bottomFaceIdLoc, (int)properties.bottomFaceTexId);
+		glUniform1i(biomeMaskLoc, (int)properties.biomeMask);
 
         glBindVertexArray(blockVAO);
 
