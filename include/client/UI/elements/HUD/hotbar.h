@@ -17,6 +17,7 @@ public:
 	BlockType getSelectedBlock() const;
 
 	void pickBlock(BlockType type);
+	void handleMiddleClick(BlockType type);
 private:
 	PlayingGameState* playingState;
 	float sinceSwitched;

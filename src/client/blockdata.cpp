@@ -51,4 +51,13 @@ void BlockData::init()
 	data.insert({ BlockType::OAK_LEAVES, BlockProperties{"Oak Leaves", 53, 53, 53, 53, 53, 53, biomeAllFaceMask, false} });
 	data.insert({ BlockType::BEDROCK, BlockProperties{"Bedrock", 17, 17, 17, 17, 17, 17, biomeNoFaceMask, false} });
 	data.insert({ BlockType::GLASS, BlockProperties{"Glass", 49, 49, 49, 49, 49, 49, biomeNoFaceMask, true} });
+	data.insert({ BlockType::WOOL, BlockProperties{"Wool", 64, 64, 64, 64, 64, 64, biomeNoFaceMask, false} });
+	data.insert({ BlockType::BOOKSHELF, BlockProperties{"Bookshelf", 35, 35, 35, 35, 4, 4, biomeNoFaceMask, false} });
+	data.insert({ BlockType::BRICKS, BlockProperties{"Bricks", 7, 7, 7, 7, 7, 7, biomeNoFaceMask, false} });
+	data.insert({ BlockType::SMOOTH_STONE, BlockProperties{"Smooth Stone", 5, 5, 5, 5, 6, 6, biomeNoFaceMask, false} });
+	data.insert({ BlockType::SAND, BlockProperties{"Sand", 18, 18, 18, 18, 18, 18, biomeNoFaceMask, false} });
+	data.insert({ BlockType::GRAVEL, BlockProperties{"Gravel", 19, 19, 19, 19, 19, 19, biomeNoFaceMask, false} });
+	data.insert({ BlockType::CLAY, BlockProperties{"Clay", 72, 72, 72, 72, 72, 72, biomeNoFaceMask, false} });
+	data.insert({ BlockType::MOSSY_COBBLESTONE, BlockProperties{"Mossy Cobblestone", 36, 36, 36, 36, 36, 36, biomeNoFaceMask, false} });
+	data.insert({ BlockType::OBSIDIAN, BlockProperties{"Obsidian", 37, 37, 37, 37, 37, 37, biomeNoFaceMask, false} });
 }

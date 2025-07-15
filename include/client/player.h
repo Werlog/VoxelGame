@@ -74,6 +74,7 @@ private:
 
 	void blockBreakLogic();
 	void blockPlaceLogic();
+	void blockPickLogic();
 
 	std::unique_ptr<glm::vec3> getLookingAtPosition();
 };

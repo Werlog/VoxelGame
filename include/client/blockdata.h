@@ -15,6 +15,15 @@ enum BlockType : unsigned char
 	OAK_LEAVES,
 	GLASS,
 	BEDROCK,
+	WOOL,
+	BOOKSHELF,
+	BRICKS,
+	SMOOTH_STONE,
+	SAND,
+	GRAVEL,
+	CLAY,
+	MOSSY_COBBLESTONE,
+	OBSIDIAN,
 };
 
 struct BlockProperties

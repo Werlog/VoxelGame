@@ -70,3 +70,18 @@ void Hotbar::pickBlock(BlockType type)
 	hotbarBlocks[selectedIndex] = type;
 	sinceSwitched = 0.0f;
 }
+
+void Hotbar::handleMiddleClick(BlockType type)
+{
+	for (size_t i = 0; i < hotbarBlocks.size(); i++)
+	{
+		if (hotbarBlocks[i] == type)
+		{
+			selectedIndex = i;
+			sinceSwitched = 0.0f;
+			return;
+		}
+	}
+
+	pickBlock(type);
+}

@@ -77,6 +77,10 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	{
 		blockPlaceLogic();
 	}
+	if (inputHandler.getMouseButtonDown(SDL_BUTTON_MIDDLE))
+	{
+		blockPickLogic();
+	}
 }
 
 void Player::render()
@@ -398,6 +402,21 @@ void Player::blockPlaceLogic()
 
 		world->modifyBlockAt(placeX, placeY, placeZ, hotbar->getSelectedBlock());
 	}
+}
+
+void Player::blockPickLogic()
+{
+	std::unique_ptr<glm::vec3> blockPos = getLookingAtPosition();
+	if (blockPos == nullptr)
+		return;
+
+	int pickX = (int)floor(blockPos->x);
+	int pickY = (int)floor(blockPos->y);
+	int pickZ = (int)floor(blockPos->z);
+
+	BlockType type = world->getBlockAt(pickX, pickY, pickZ);
+	if (type != BlockType::AIR)
+		hotbar->handleMiddleClick(type);
 }
 
 std::unique_ptr<glm::vec3> Player::getLookingAtPosition()
