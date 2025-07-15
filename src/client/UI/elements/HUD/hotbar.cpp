@@ -64,3 +64,9 @@ BlockType Hotbar::getSelectedBlock() const
 {
 	return hotbarBlocks[selectedIndex];
 }
+
+void Hotbar::pickBlock(BlockType type)
+{
+	hotbarBlocks[selectedIndex] = type;
+	sinceSwitched = 0.0f;
+}

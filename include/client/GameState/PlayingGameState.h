@@ -23,11 +23,15 @@ public:
 	void onEnter() override;
 	void onExit() override;
 
-	void SetPaused(bool paused);
+	void setPaused(bool paused);
+
+	void openGUI(std::shared_ptr<GUI> gui);
 
 	Player& getPlayer();
 	World& getWorld();
 	HUD& getHUD();
+	BlockIcons& getBlockIcons();
+
 private:
 	Shader& terrainShader;
 	Font& minecraftFont;
@@ -41,7 +45,7 @@ private:
 	SkyBox skybox;
 	Clouds clouds;
 
-	PauseMenuGUI pauseGUI;
+	std::shared_ptr<GUI> currentGUI;
 
 	bool enableDevMenu;
 	bool enableCollisionOption;
@@ -56,4 +60,5 @@ private:
 
 	void setupShader();
 	void devMenuLogic(InputHandler& inputHandler);
+	void checkNextGUI();
 };

@@ -14,7 +14,7 @@ void MainMenuGUI::constructGUI()
 {
 	std::shared_ptr<Button> singleplayerButton = std::make_shared<Button>(game, glm::vec2(0.5f), glm::vec2(0, 40), glm::vec2(300, 30), "Play Singleplayer", [this]() {
 		std::shared_ptr<WorldSelectGUI> gui = std::make_shared<WorldSelectGUI>(game, mainMenu);
-		mainMenu->switchToGUI(gui);
+		closeGUI(gui);
 	});
 
 	std::shared_ptr<Button> quitButton = std::make_shared<Button>(game, glm::vec2(0.5f), glm::vec2(0, -40), glm::vec2(300, 30), "Quit Game", [this]() {

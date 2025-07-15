@@ -15,6 +15,8 @@ public:
 	void render(UIRenderer* uiRenderer) override;
 
 	BlockType getSelectedBlock() const;
+
+	void pickBlock(BlockType type);
 private:
 	PlayingGameState* playingState;
 	float sinceSwitched;

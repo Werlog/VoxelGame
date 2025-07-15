@@ -41,7 +41,7 @@ const std::unordered_map<BlockType, BlockProperties>& BlockData::getData()
 
 void BlockData::init()
 {
-	data.insert({ BlockType::AIR, BlockProperties{"Air", 0, 0, 0, 0, 0, 0, biomeNoFaceMask, true} });
+	data.insert({ BlockType::AIR, BlockProperties{"Air", 30, 30, 30, 30, 30, 30, biomeNoFaceMask, true} });
 	data.insert({ BlockType::STONE, BlockProperties{"Stone", 1, 1, 1, 1, 1, 1, biomeNoFaceMask, false} });
 	data.insert({ BlockType::OAK_PLANKS, BlockProperties{"Oak Planks", 4, 4, 4, 4, 4, 4, biomeNoFaceMask, false} });
 	data.insert({ BlockType::COBBLESTONE, BlockProperties{"Cobblestone", 16, 16, 16, 16, 16, 16, biomeNoFaceMask, false} });

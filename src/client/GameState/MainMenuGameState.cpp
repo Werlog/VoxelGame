@@ -10,19 +10,18 @@ MainMenuGameState::MainMenuGameState(Game* game) : BaseGameState(game),
 	titleTexture(game->getResourceManager().getTexture("textures\\title.png"))
 {
 	currentGUI = nullptr;
-	multiplayerMenuOpen = false;
-	singleplayerMenuOpen = false;
 
-	std::shared_ptr<MainMenuGUI> mainMenu = std::make_shared<MainMenuGUI>(game, this);
-	switchToGUI(mainMenu);
+	this->currentGUI = std::make_shared<MainMenuGUI>(game, this);
 }
 
 void MainMenuGameState::update(float deltaTime, InputHandler& inputHandler)
 {
-	checkNextGUI();
 
 	if (currentGUI != nullptr)
+	{
+		checkNextGUI();
 		currentGUI->update(inputHandler, deltaTime);
+	}
 }
 
 void MainMenuGameState::render()
@@ -48,11 +47,6 @@ void MainMenuGameState::onEnter()
 void MainMenuGameState::onExit()
 {
 	SDL_SetRelativeMouseMode(SDL_TRUE);
-}
-
-void MainMenuGameState::switchToGUI(std::shared_ptr<GUI> newGUI)
-{
-	nextGUI = newGUI;
 }
 
 void MainMenuGameState::enterGame(const std::string& seedText, const std::string& worldName)
@@ -100,9 +94,8 @@ void MainMenuGameState::enterSavedGame(const std::string& worldName)
 
 void MainMenuGameState::checkNextGUI()
 {
-	if (nextGUI != nullptr)
+	if (currentGUI->shouldGUIClose())
 	{
-		currentGUI = nextGUI;
-		nextGUI = nullptr;
+		currentGUI = currentGUI->getNextGUI();
 	}
 }

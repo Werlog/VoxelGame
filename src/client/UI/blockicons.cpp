@@ -2,7 +2,6 @@
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "shader.h"
 #include "camera.h"
 
 BlockIcons::BlockIcons()
@@ -13,6 +12,18 @@ BlockIcons::BlockIcons()
 	this->blockVAO = 0;
 	this->blockVBO = 0;
 	this->blockEBO = 0;
+
+	this->viewLoc = 0;
+	this->modelLoc = 0;
+	this->projectionLoc = 0;
+	this->lightDirLoc = 0;
+	this->biomeMaskLoc = 0;
+	this->frontFaceIdLoc = 0;
+	this->rightFaceIdLoc = 0;
+	this->backFaceIdLoc = 0;
+	this->leftFaceIdLoc = 0;
+	this->topFaceIdLoc = 0;
+	this->bottomFaceIdLoc = 0;
 }
 
 void BlockIcons::init(BlockData& blockData)
@@ -29,21 +40,7 @@ void BlockIcons::init(BlockData& blockData)
     glm::mat4 modelMatrix = glm::mat4(1.0f);
 	glm::mat4 viewMatrix = glm::lookAt(camera.getPosition(), glm::vec3(0.5f, 0.5f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-
-
-    unsigned int viewLoc = glGetUniformLocation(iconShader.getProgramHandle(), "view");
-    unsigned int modelLoc = glGetUniformLocation(iconShader.getProgramHandle(), "model");
-    unsigned int projectionLoc = glGetUniformLocation(iconShader.getProgramHandle(), "projection");
-	unsigned int lightDirLoc = glGetUniformLocation(iconShader.getProgramHandle(), "lightDirection");
-
-	unsigned int biomeMaskLoc = glGetUniformLocation(iconShader.getProgramHandle(), "biomeMask");
-
-    unsigned int frontFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "frontFaceId");
-    unsigned int rightFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "rightFaceId");
-    unsigned int backFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "backFaceId");
-    unsigned int leftFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "leftFaceId");
-    unsigned int topFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "topFaceId");
-    unsigned int bottomFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "bottomFaceId");
+	initUniforms(iconShader);
 
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
@@ -89,13 +86,7 @@ void BlockIcons::init(BlockData& blockData)
 
 		const BlockProperties& properties = blockData.getBlockProperties(type);
 
-        glUniform1i(frontFaceIdLoc, (int)properties.frontFaceTexId);
-		glUniform1i(rightFaceIdLoc, (int)properties.rightFaceTexId);
-		glUniform1i(backFaceIdLoc, (int)properties.backFaceTexId);
-		glUniform1i(leftFaceIdLoc, (int)properties.leftFaceTexId);
-		glUniform1i(topFaceIdLoc, (int)properties.topFaceTexId);
-		glUniform1i(bottomFaceIdLoc, (int)properties.bottomFaceTexId);
-		glUniform1i(biomeMaskLoc, (int)properties.biomeMask);
+		setUniforms(properties);
 
         glBindVertexArray(blockVAO);
 
@@ -121,46 +112,51 @@ unsigned int BlockIcons::getTextureForBlock(BlockType block) const
 	return it->second;
 }
 
+const std::unordered_map<BlockType, unsigned int>& BlockIcons::getIconMap() const
+{
+	return iconMap;
+}
+
 void BlockIcons::setupBlock()
 {
 	
 	constexpr IconVertex vertices[] =
 	{
 		// Front Face
-		{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
-		{ 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f },
-		{ 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
-		{ 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0 },
+		{ 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0 },
+		{ 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0 },
+		{ 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0 },
 
 		// Right Face
-		{ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f },
-		{ 1.0f, 0.0f, -1.0f, 1.0f, 0.0f, 1.0f },
-		{ 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f },
-		{ 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f },
+		{ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1 },
+		{ 1.0f, 0.0f, -1.0f, 1.0f, 0.0f, 1 },
+		{ 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1 },
+		{ 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1 },
 
 		// Back Face
-		{ 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 2.0f },
-		{ 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 2.0f },
-		{ 1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 2.0f },
-		{ 0.0f, 1.0f, -1.0f, 1.0f, 1.0f, 2.0f },
+		{ 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 2 },
+		{ 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 2 },
+		{ 1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 2 },
+		{ 0.0f, 1.0f, -1.0f, 1.0f, 1.0f, 2 },
 
 		// Left Face
-		{ 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 3.0f },
-		{ 0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 3.0f },
-		{ 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 3.0f },
-		{ 0.0f, 1.0f, 0.0f,  1.0f, 1.0f, 3.0f },
+		{ 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 3 },
+		{ 0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 3 },
+		{ 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 3 },
+		{ 0.0f, 1.0f, 0.0f,  1.0f, 1.0f, 3 },
 
 		// Top Face
-		{ 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 4.0f },
-		{ 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 4.0f },
-		{ 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 4.0f },
-		{ 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 4.0f },
+		{ 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 4 },
+		{ 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 4 },
+		{ 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 4 },
+		{ 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 4 },
 
 		// Bottom Face
-		{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f },
-		{ 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 5.0f },
-		{ 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 5.0f },
-		{ 1.0f, 0.0f, -1.0f, 1.0f, 1.0f, 5.0f },
+		{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5 },
+		{ 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 5 },
+		{ 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 5 },
+		{ 1.0f, 0.0f, -1.0f, 1.0f, 1.0f, 5 },
 	};
 
 	constexpr int indices[] =
@@ -212,4 +208,32 @@ void BlockIcons::setupBlock()
 	glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
+}
+
+void BlockIcons::initUniforms(Shader& iconShader)
+{
+	viewLoc = glGetUniformLocation(iconShader.getProgramHandle(), "view");
+	modelLoc = glGetUniformLocation(iconShader.getProgramHandle(), "model");
+	projectionLoc = glGetUniformLocation(iconShader.getProgramHandle(), "projection");
+	lightDirLoc = glGetUniformLocation(iconShader.getProgramHandle(), "lightDirection");
+
+	biomeMaskLoc = glGetUniformLocation(iconShader.getProgramHandle(), "biomeMask");
+
+	frontFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "frontFaceId");
+	rightFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "rightFaceId");
+	backFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "backFaceId");
+	leftFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "leftFaceId");
+	topFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "topFaceId");
+	bottomFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "bottomFaceId");
+}
+
+void BlockIcons::setUniforms(const BlockProperties& properties)
+{
+	glUniform1i(frontFaceIdLoc, (int)properties.frontFaceTexId);
+	glUniform1i(rightFaceIdLoc, (int)properties.rightFaceTexId);
+	glUniform1i(backFaceIdLoc, (int)properties.backFaceTexId);
+	glUniform1i(leftFaceIdLoc, (int)properties.leftFaceTexId);
+	glUniform1i(topFaceIdLoc, (int)properties.topFaceTexId);
+	glUniform1i(bottomFaceIdLoc, (int)properties.bottomFaceTexId);
+	glUniform1i(biomeMaskLoc, (int)properties.biomeMask);
 }

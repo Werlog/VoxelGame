@@ -18,7 +18,7 @@ void CreateWorldGUI::constructGUI()
 {
 	std::shared_ptr<Button> backButton = std::make_shared<Button>(game, glm::vec2(0.5f, 0.05f), glm::vec2(0.0f, 80.0f), glm::vec2(300, 30), "Cancel", [this]() {
 		std::shared_ptr<WorldSelectGUI> gui = std::make_shared<WorldSelectGUI>(game, mainMenu);
-		mainMenu->switchToGUI(gui);
+		closeGUI(gui);
 	});
 
 	std::shared_ptr<InputField> inputField = std::make_shared<InputField>(game, glm::vec2(0.5f), glm::vec2(0.0f), glm::vec2(300, 30));

@@ -38,12 +38,12 @@ void WorldSelectGUI::constructGUI()
 
 	std::shared_ptr<Button> cancelButton = std::make_shared<Button>(game, glm::vec2(0.5f, 0.06f), glm::vec2(-155.0f, 80.0f), glm::vec2(145, 30), "Cancel", [this] {
 		std::shared_ptr<MainMenuGUI> mainGUI = std::make_shared<MainMenuGUI>(game, mainMenu);
-		mainMenu->switchToGUI(mainGUI);
+		closeGUI(mainGUI);
 	});
 
 	std::shared_ptr<Button> newWorldButton = std::make_shared<Button>(game, glm::vec2(0.5f, 0.06f), glm::vec2(155.0f, 80.0f), glm::vec2(145, 30), "New world", [this] {
 		std::shared_ptr<CreateWorldGUI> createWorldGUI = std::make_shared<CreateWorldGUI>(game, mainMenu);
-		mainMenu->switchToGUI(createWorldGUI);
+		closeGUI(createWorldGUI);
 	});
 
 	uiElements.push_back(worldSelect);

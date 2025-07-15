@@ -3,6 +3,8 @@
 GUI::GUI(Game* game)
 {
 	this->game = game;
+	this->shouldClose = false;
+	this->nextGUI = nullptr;
 }
 
 void GUI::update(InputHandler& inputHandler, float deltaTime)
@@ -21,4 +23,20 @@ void GUI::render()
 		std::shared_ptr<UIElement> element = *it;
 		element->render(&game->getUIRenderer());
 	}
+}
+
+std::shared_ptr<GUI> GUI::getNextGUI() const
+{
+	return nextGUI;
+}
+
+bool GUI::shouldGUIClose() const
+{
+	return shouldClose;
+}
+
+void GUI::closeGUI(std::shared_ptr<GUI> nextGUI)
+{
+	shouldClose = true;
+	this->nextGUI = nextGUI;
 }

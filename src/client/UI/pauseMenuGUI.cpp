@@ -17,7 +17,8 @@ void PauseMenuGUI::constructGUI()
 	std::shared_ptr<Label> label = std::make_shared<Label>(game, glm::vec2(0.5f, 1.0f), glm::vec2(0, -150), glm::vec2(0.75f), "Game Paused", glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
 
 	std::shared_ptr<Button> resumeButton = std::make_shared<Button>(game, glm::vec2(0.5f), glm::vec2(0, 40.0f), glm::vec2(300, 30), "Back to Game", [this]() {
-		playingState->SetPaused(false);
+		playingState->setPaused(false);
+		closeGUI();
 	});
 
 	std::shared_ptr<Button> saveButton = std::make_shared<Button>(game, glm::vec2(0.5f), glm::vec2(155.0f, -40.0f), glm::vec2(145, 30), "Save world", [this]() {

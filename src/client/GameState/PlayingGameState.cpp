@@ -2,14 +2,16 @@
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 #include "imgui.h"
+#include "UI/blockPickGUI.h"
 
 PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager, const std::string& worldName, int worldSeed)
 	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader, this, worldName, worldSeed), hud(game, this, &blockIcons),
 	player(&(game->getCamera()), &world, &hud.getHotbar(), resourceManager), terrainSheet(16, 16, "textures/terrain.png"),
-	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.3f, 1.0f), glm::vec3(0.7f, 0.9f, 1.0f), &skyboxShader), clouds(resourceManager),
-	pauseGUI(game, this)
+	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.3f, 1.0f), glm::vec3(0.7f, 0.9f, 1.0f), &skyboxShader), clouds(resourceManager)
 {
 	setupShader();
+
+	currentGUI = nullptr;
 
 	enableDevMenu = false;
 	enableCollisionOption = true;
@@ -19,9 +21,14 @@ PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager,
 
 void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 {
+	if (currentGUI != nullptr)
+	{
+		currentGUI->update(inputHandler, deltaTime);
+		checkNextGUI();
+	}
+
 	if (paused)
 	{
-		pauseGUI.update(inputHandler, deltaTime);
 		return;
 	}
 	if (enableDevMenu)
@@ -40,7 +47,20 @@ void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 
 	if (inputHandler.getKeyDown(SDLK_ESCAPE))
 	{
-		SetPaused(true);
+		setPaused(true);
+		openGUI(std::make_shared<PauseMenuGUI>(game, this));
+	}
+	else if (inputHandler.getKeyDown(SDLK_e))
+	{
+		setPaused(true);
+
+		std::shared_ptr<BlockPickGUI> gui = std::make_shared<BlockPickGUI>(game, this);
+		gui->setBlockSelectCallback([this](BlockType type) {
+			hud.getHotbar().pickBlock(type);
+		});
+
+
+		openGUI(gui);
 	}
 }
 
@@ -67,9 +87,9 @@ void PlayingGameState::render()
 
 	clouds.render(&camera, player.getWorldPosition());
 
-	if (paused)
+	if (currentGUI != nullptr)
 	{
-		pauseGUI.render();
+		currentGUI->render();
 	}
 
 	hud.render(&game->getUIRenderer());
@@ -87,7 +107,7 @@ void PlayingGameState::onExit()
 
 }
 
-void PlayingGameState::SetPaused(bool paused)
+void PlayingGameState::setPaused(bool paused)
 {
 	this->paused = paused;
 	game->getCamera().resetFirstMouse();
@@ -103,6 +123,11 @@ void PlayingGameState::SetPaused(bool paused)
 	SDL_SetRelativeMouseMode(paused ? SDL_FALSE : SDL_TRUE);
 }
 
+void PlayingGameState::openGUI(std::shared_ptr<GUI> gui)
+{
+	this->currentGUI = gui;
+}
+
 Player& PlayingGameState::getPlayer()
 {
 	return player;
@@ -116,6 +141,11 @@ World& PlayingGameState::getWorld()
 HUD& PlayingGameState::getHUD()
 {
 	return hud;
+}
+
+BlockIcons& PlayingGameState::getBlockIcons()
+{
+	return blockIcons;
 }
 
 void PlayingGameState::setupShader()
@@ -156,5 +186,13 @@ void PlayingGameState::devMenuLogic(InputHandler& inputHandler)
 
 		player.setEnableFlight(enableFlightOption);
 		player.setEnableCollision(enableCollisionOption);
+	}
+}
+
+void PlayingGameState::checkNextGUI()
+{
+	if (currentGUI->shouldGUIClose())
+	{
+		currentGUI = currentGUI->getNextGUI();
 	}
 }
