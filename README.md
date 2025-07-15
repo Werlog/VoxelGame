@@ -13,7 +13,11 @@ Left Click - Destroy block
 
 Right Click - Place block
 
+Middle Click - Selects the block you are looking at
+
 Mouse Scroll - Swap between blocks
+
+E - Open block picker
 
 Right Shift - Open Dev Menu (Allows to toggle flight/collisions)
 
