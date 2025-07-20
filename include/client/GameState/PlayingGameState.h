@@ -8,7 +8,7 @@
 #include "player.h"
 #include "clouds.h"
 #include "UI/pauseMenuGUI.h"
-#include "UI/elements/HUD/HUD.h"
+#include "UI/HUD.h"
 #include "UI/blockicons.h"
 
 class PlayingGameState : public BaseGameState

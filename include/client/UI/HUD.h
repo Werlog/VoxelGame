@@ -1,7 +1,7 @@
 #pragma once
 
 #include "game.h"
-#include "hotbar.h"
+#include "elements/HUD/hotbar.h"
 
 class HUD
 {
