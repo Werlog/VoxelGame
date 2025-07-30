@@ -50,5 +50,5 @@ All dependencies are already included in the thirdparty directory.
 
 ## Screenshots
 
-![In-Game Screenshot](https://github.com/Werlog/VoxelGame/blob/1c354ab01821943649911ab68ea33b55d894ce40/screenshots/1.JPG)
-![In-Game Screenshot](https://github.com/Werlog/VoxelGame/blob/1c354ab01821943649911ab68ea33b55d894ce40/screenshots/2.png)
+![In-Game Screenshot](https://github.com/Werlog/VoxelGame/blob/26fe21f114588a4fab7d7a0ccacbd440b36a344c/screenshots/1.JPG)
+![In-Game Screenshot](https://github.com/Werlog/VoxelGame/blob/26fe21f114588a4fab7d7a0ccacbd440b36a344c/screenshots/2.png)
