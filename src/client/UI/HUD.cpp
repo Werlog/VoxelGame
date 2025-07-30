@@ -1,7 +1,7 @@
 #include "UI/HUD.h"
 
 HUD::HUD(Game* game, PlayingGameState* playingState, BlockIcons* blockIcons)
-	: hotbar(game, playingState, glm::vec2(0.5f, 0.0f), glm::vec2(0.0f, 35.0f), blockIcons)
+	: hotbar(game, playingState, glm::vec2(0.5f, 0.0f), glm::vec2(0.0f, 40.0f), blockIcons)
 {
 	this->game = game;
 }
