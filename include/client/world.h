@@ -47,6 +47,8 @@ public:
 	int getWorldSeed();
 	BlockData& getBlockData();
 private:
+	PlayingGameState* playingState;
+
 	BlockData blockData;
 	ChunkManager chunkManager;
 	int seed;

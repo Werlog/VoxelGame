@@ -10,6 +10,7 @@
 #include "UI/pauseMenuGUI.h"
 #include "UI/HUD.h"
 #include "UI/blockicons.h"
+#include "breakparticles.h"
 
 class PlayingGameState : public BaseGameState
 {
@@ -27,11 +28,12 @@ public:
 
 	void openGUI(std::shared_ptr<GUI> gui);
 
+	void spawnBreakParticles(const glm::vec3& position, BlockType block);
+
 	Player& getPlayer();
 	World& getWorld();
 	HUD& getHUD();
 	BlockIcons& getBlockIcons();
-
 private:
 	Shader& terrainShader;
 	Font& minecraftFont;
@@ -40,6 +42,8 @@ private:
 	Player player;
 	TextureSheet terrainSheet;
 	BlockIcons blockIcons;
+
+	std::vector<BreakParticles> blockBreakParticles;
 
 	Shader& skyboxShader;
 	SkyBox skybox;
@@ -58,6 +62,10 @@ private:
 	unsigned int shaderCameraPositionLoc;
 	unsigned int shaderLightDirectionLoc;
 
+	void updateBreakParticles(float deltaTime);
+
+	void renderWorld();
+	void renderBreakParticles();
 	void setupShader();
 	void devMenuLogic(InputHandler& inputHandler);
 	void checkNextGUI();

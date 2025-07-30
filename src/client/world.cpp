@@ -7,11 +7,13 @@
 #include <unordered_set>
 #include <random>
 #include <limits>
+#include "GameState/PlayingGameState.h"
 
 World::World(const Shader& terrainShader, PlayingGameState* playingState, const std::string& worldName, int worldSeed)
 	: chunkManager(this), worldSaver(this, playingState)
 {
 	shaderModelLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "model");
+	this->playingState = playingState;
 
 	this->seed = worldSeed;
 	this->worldName = worldName;
@@ -152,6 +154,12 @@ void World::setBlockAt(int x, int y, int z, BlockType newBlock)
 
 void World::modifyBlockAt(int x, int y, int z, BlockType newBlock)
 {
+	BlockType oldBlock = getBlockAt(x, y, z);
+	if (oldBlock != BlockType::AIR)
+	{
+		playingState->spawnBreakParticles(glm::vec3(x, y, z), oldBlock);
+	}
+
 	setBlockAt(x, y, z, newBlock);
 
 	ChunkCoord coord = ChunkCoord::toChunkCoord(x, y, z);

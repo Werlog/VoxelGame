@@ -42,6 +42,8 @@ void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 
 	world.updateWorld(player);
 
+	updateBreakParticles(deltaTime);
+
 	clouds.update(deltaTime);
 	devMenuLogic(inputHandler);
 
@@ -59,7 +61,6 @@ void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 			hud.getHotbar().pickBlock(type);
 		});
 
-
 		openGUI(gui);
 	}
 }
@@ -70,20 +71,11 @@ void PlayingGameState::render()
 
 	skybox.render(camera);
 
-	glUseProgram(terrainShader.getProgramHandle());
-
-	glUniformMatrix4fv(shaderProjectionLoc, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
-	glUniformMatrix4fv(shaderViewLoc, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
-	glUniform3fv(shaderCameraPositionLoc, 1, glm::value_ptr(camera.getPosition()));
-
-	glBindTexture(GL_TEXTURE_2D_ARRAY, terrainSheet.getTextureHandle());
-
-	world.renderWorld(player.getChunkPosition(), camera);
-	glBindVertexArray(0);
-	glUseProgram(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	renderWorld();
 
 	player.render();
+
+	renderBreakParticles();
 
 	clouds.render(&camera, player.getWorldPosition());
 
@@ -128,6 +120,11 @@ void PlayingGameState::openGUI(std::shared_ptr<GUI> gui)
 	this->currentGUI = gui;
 }
 
+void PlayingGameState::spawnBreakParticles(const glm::vec3& position, BlockType block)
+{
+	blockBreakParticles.emplace_back(block, world.getBlockData(), position, game->getResourceManager(), terrainSheet);
+}
+
 Player& PlayingGameState::getPlayer()
 {
 	return player;
@@ -146,6 +143,53 @@ HUD& PlayingGameState::getHUD()
 BlockIcons& PlayingGameState::getBlockIcons()
 {
 	return blockIcons;
+}
+
+void PlayingGameState::updateBreakParticles(float deltaTime)
+{
+	for (auto it = blockBreakParticles.begin(); it != blockBreakParticles.end();)
+	{
+		BreakParticles& particles = *it;
+		
+		particles.update(deltaTime, player.getChunkPosition(), world);
+
+		if (particles.isFinished())
+		{
+			it = blockBreakParticles.erase(it);
+			continue;
+		}
+		it++;
+	}
+}
+
+void PlayingGameState::renderWorld()
+{
+	Camera& camera = game->getCamera();
+	glUseProgram(terrainShader.getProgramHandle());
+
+	glUniformMatrix4fv(shaderProjectionLoc, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
+	glUniformMatrix4fv(shaderViewLoc, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
+	glUniform3fv(shaderCameraPositionLoc, 1, glm::value_ptr(camera.getPosition()));
+
+	glBindTexture(GL_TEXTURE_2D_ARRAY, terrainSheet.getTextureHandle());
+
+	world.renderWorld(player.getChunkPosition(), camera);
+
+	glBindVertexArray(0);
+	glUseProgram(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void PlayingGameState::renderBreakParticles()
+{
+	Camera& camera = game->getCamera();
+
+	for (size_t i = 0; i < blockBreakParticles.size(); i++)
+	{
+		BreakParticles& particles = blockBreakParticles[i];
+
+		particles.render(camera);
+	}
 }
 
 void PlayingGameState::setupShader()
