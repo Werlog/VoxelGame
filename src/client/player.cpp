@@ -63,6 +63,8 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	}
 
 	/*
+	ImGui::SetNextWindowCollapsed(false);
+
 	ImGui::Begin("Test GUI");
 	ImGui::Text("Position: %f, %f, %f", worldPos.x, worldPos.y, worldPos.z);
 	ImGui::Text("Rel Position: %f, %f, %f", relPosition.x, relPosition.y, relPosition.z);

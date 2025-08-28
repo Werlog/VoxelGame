@@ -45,8 +45,8 @@ void Hotbar::render(UIRenderer* uiRenderer)
 
 	if (sinceSwitched < 1.5f)
 	{
-		const BlockProperties& properties = playingState->getWorld().getBlockData().getBlockProperties(hotbarBlocks[selectedIndex]);
-		uiRenderer->renderText(minecraftFont, properties.blockName, position.x, position.y + 75.0f, 0.75f, glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
+		const std::shared_ptr<Block>& block = playingState->getWorld().getBlockData().getBlock(hotbarBlocks[selectedIndex]);
+		uiRenderer->renderText(minecraftFont, block->getName(), position.x, position.y + 75.0f, 0.75f, glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
 	}
 
 	uiRenderer->renderTexturedQuad(selectedTexture, position + glm::vec2(-scale.x + 37.0f + selectedIndex * 66.0f, 0.0f), glm::vec3(36.0f), glm::vec2(1.0f));

@@ -13,7 +13,7 @@ BreakParticles::BreakParticles(BlockType block, BlockData& blockData, const glm:
 	this->VBO = 0;
 	this->EBO = 0;
 	this->instanceVBO = 0;
-	this->blockTexture = blockData.getBlockProperties(block).frontFaceTexId;
+	this->blockTexture = 1; // FIX THIS LATER
 
 	this->position = position;
 	this->playerCoord = ChunkCoord{ 0, 0, 0 };

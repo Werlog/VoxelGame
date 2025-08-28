@@ -24,7 +24,7 @@ public:
 	void updateLight();
 	void generateMesh(BlockData& blockData);
 	void createChunkMesh();
-	void render() const;
+	void render(BlockData& blockData) const;
 
 	inline BlockType getBlockAt(int x, int y, int z);
 	void setBlockAt(int x, int y, int z, BlockType newBlock, bool isModification = false);
@@ -55,5 +55,5 @@ private:
 	unsigned int VAO;
 	unsigned int SSBO;
 
-	void createFace(int x, int y, int z, int textureId, int faceDirection, int faceMask, int biomeColorIndex, int lightLevel);
+	void createFace(int x, int y, int z, int textureId, int lightLevel, int shapeIndex, int faceIndex);
 };

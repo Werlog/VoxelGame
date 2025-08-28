@@ -55,7 +55,7 @@ void BlockIcons::init(BlockData& blockData)
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, blockIconResolution, blockIconResolution);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthAttachmentHandle, 0);
 
-    const std::unordered_map<BlockType, BlockProperties>& blocks = blockData.getData();
+    const std::unordered_map<BlockType, std::shared_ptr<Block>>& blocks = blockData.getData();
 
     for (auto it = blocks.begin(); it != blocks.end(); it++)
     {
@@ -84,9 +84,7 @@ void BlockIcons::init(BlockData& blockData)
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		const BlockProperties& properties = blockData.getBlockProperties(type);
-
-		setUniforms(properties);
+		setUniforms();
 
         glBindVertexArray(blockVAO);
 
@@ -227,13 +225,13 @@ void BlockIcons::initUniforms(Shader& iconShader)
 	bottomFaceIdLoc = glGetUniformLocation(iconShader.getProgramHandle(), "bottomFaceId");
 }
 
-void BlockIcons::setUniforms(const BlockProperties& properties)
+void BlockIcons::setUniforms()
 {
-	glUniform1i(frontFaceIdLoc, (int)properties.frontFaceTexId);
-	glUniform1i(rightFaceIdLoc, (int)properties.rightFaceTexId);
-	glUniform1i(backFaceIdLoc, (int)properties.backFaceTexId);
-	glUniform1i(leftFaceIdLoc, (int)properties.leftFaceTexId);
-	glUniform1i(topFaceIdLoc, (int)properties.topFaceTexId);
-	glUniform1i(bottomFaceIdLoc, (int)properties.bottomFaceTexId);
-	glUniform1i(biomeMaskLoc, (int)properties.biomeMask);
+	glUniform1i(frontFaceIdLoc, 1);
+	glUniform1i(rightFaceIdLoc, 1);
+	glUniform1i(backFaceIdLoc, 1);
+	glUniform1i(leftFaceIdLoc, 1);
+	glUniform1i(topFaceIdLoc, 1);
+	glUniform1i(bottomFaceIdLoc, 1);
+	glUniform1i(biomeMaskLoc, 1);
 }

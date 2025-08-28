@@ -54,5 +54,5 @@ private:
 
 	void initUniforms(Shader& iconShader);
 
-	void setUniforms(const BlockProperties& properties);
+	void setUniforms();
 };

@@ -22,7 +22,7 @@ class World
 {
 public:
 
-	World(const Shader& terrainShader, PlayingGameState* playingState, const std::string& worldName, int worldSeed);
+	World(Shader& terrainShader, PlayingGameState* playingState, const std::string& worldName, int worldSeed);
 
 	void updateLoadedChunks(ChunkCoord& newCoordinate);
 	void loadChunk(ChunkCoord coordinate);

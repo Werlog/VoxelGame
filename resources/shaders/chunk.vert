@@ -9,7 +9,27 @@ uniform vec3 lightDirection;
 struct FaceData
 {
 	uint data;
-	uint biomeData;
+	uint secondData;
+};
+
+struct BlockShapeFace
+{
+	float offsetX, offsetY, offsetZ;
+	float scaleX, scaleY;
+	float rotationX, rotationY;
+	float uvOffsetX, uvOffsetY;
+
+	float normalX, normalY, normalZ;
+};
+
+struct BlockShape
+{
+	BlockShapeFace faces[10];
+};
+
+layout(std430, binding = 1) readonly buffer voxelShapeBuffer
+{
+	BlockShape shapes[];
 };
 
 layout(std430, binding = 0) readonly buffer vertexPullBuffer
@@ -17,70 +37,18 @@ layout(std430, binding = 0) readonly buffer vertexPullBuffer
 	FaceData meshData[];
 };
 
-const vec3 vertexPositions[24] = vec3[24]
+const vec3 vertexPositions[4] = vec3[4]
 (
-	// Front Face
-	vec3(0, 0, 0),
-	vec3(1, 0, 0),
-	vec3(0, 1, 0),
-	vec3(1, 1, 0),
-
-	// Right Face
-	vec3(1, 0, 0),
-	vec3(1, 0, -1),
-	vec3(1, 1, 0),
-	vec3(1, 1, -1),
-
-	// Back Face
-	vec3(1, 0, -1),
-	vec3(0, 0, -1),
-	vec3(1, 1, -1),
-	vec3(0, 1, -1),
-
-	// Left Face
-	vec3(0, 0, -1),
-	vec3(0, 0, 0),
-	vec3(0, 1, -1),
-	vec3(0, 1, 0),
-
-	// Top Face
-	vec3(0, 1, 0),
-	vec3(1, 1, 0),
-	vec3(0, 1, -1),
-	vec3(1, 1, -1),
-
-	// Bottom Face
-	vec3(0, 0, 0),
-	vec3(0, 0, -1),
-	vec3(1, 0, 0),
-	vec3(1, 0, -1)
+	vec3(-0.5f, -0.5f, 0.0f),
+	vec3(0.5f, -0.5f, 0.0f),
+	vec3(-0.5f, 0.5f, 0.0f),
+	vec3(0.5f, 0.5f, 0.0f)
 );
 
-int indices[36] = int[36]
+int indices[6] = int[6]
 (
-	// Front Face
 	0, 1, 2,
-	1, 3, 2,
-
-	// Right Face
-	4, 5, 6,
-	5, 7, 6,
-
-	// Back Face
-	8, 9, 10,
-	9, 11, 10,
-
-	// Left Face
-	12, 13, 14,
-	13, 15, 14,
-
-	// Top Face
-	16, 17, 18,
-	17, 19, 18,
-
-	// Bottom Face
-	20, 21, 22,
-	21, 23, 22
+	1, 3, 2
 );
 
 const vec2 uvs[4] = vec2[4]
@@ -91,85 +59,62 @@ const vec2 uvs[4] = vec2[4]
 	vec2(1.0f, 1.0f)
 );
 
-vec3 voxelNormals[6] = vec3[6](
-	vec3(0, 0, 1),
-	vec3(1, 0, 0),
-	vec3(0, 0, -1),
-	vec3(-1, 0, 0),
-	vec3(0, 1, 0),
-	vec3(0, -1, 0)
-);
+mat3 rotationMatrixNoZ(vec2 eulerXY) {
+    float cx = cos(eulerXY.x); // pitch
+    float sx = sin(eulerXY.x);
+    float cy = cos(eulerXY.y); // yaw
+    float sy = sin(eulerXY.y);
 
-vec3 biomeColors[1] = vec3[1](
-	vec3(0.55f, 0.95f, 0.35f)
-);
+    // Rotation order Y * X (yaw then pitch)
+    return mat3(
+        cy,      0.0,      sy,
+        sx*sy,   cx,      -sx*cy,
+       -cx*sy,   sx,       cx*cy
+    );
+}
 
 out vec3 texCoord;
-out vec3 colorMod;
 out vec3 worldPosition;
 flat out uint lightLevel;
 out float brightness;
-
-bool shouldUseBiomeColor(uint faceMask, uint faceDirection)
-{
-	switch (faceDirection)
-	{
-		case 0:
-			return (faceMask & 0x01) != 0;
-		case 1:
-			return (faceMask & 0x02) != 0;
-		case 2:
-			return (faceMask & 0x04) != 0;
-		case 3:
-			return (faceMask & 0x08) != 0;
-		case 4:
-			return (faceMask & 0x10) != 0;
-		case 5:
-			return (faceMask & 0x20) != 0;
-		default:
-			return false;
-	}
-}
 
 void main()
 {
 	int index = gl_VertexID / 6;
 	uint data = meshData[index].data;
-	uint biomeData = meshData[index].biomeData;
-	int curVertexId = gl_VertexID % 6;
+	uint secondData = meshData[index].secondData;
+
+	int curVertexIndex = gl_VertexID % 6;
 
 	uint xPos = data & 63;
 	uint yPos = (data >> 6) & 63;
 	uint zPos = (data >> 12) & 63;
 	uint textureId = (data >> 18) & 255;
-	uint faceDirection = (data >> 26) & 7;
+	lightLevel = (data >> 26) & 15;
 
-	uint biomeColorIndex = biomeData & 15;
-	uint faceMask = (biomeData >> 4) & 63;
-	lightLevel = (biomeData >> 10) & 15;
+	uint shapeIndex = secondData & 15;
+	uint faceIndex = (secondData >> 4) & 15;
 
-	vec3 position = vec3(xPos, yPos, zPos);
-	int vertexIndex = curVertexId + 6 * int(faceDirection);
+	const BlockShape shape = shapes[shapeIndex];
+	const float RAD2DEG = 3.14159265 / 180.0;
 
-	position += vertexPositions[indices[vertexIndex]];
+	vec3 scale = vec3(shape.faces[faceIndex].scaleX, shape.faces[faceIndex].scaleY, 1.0f);
+	vec3 position = vertexPositions[indices[curVertexIndex]] * scale;
 
-	texCoord = vec3(uvs[indices[curVertexId]].x, uvs[indices[curVertexId]].y, textureId);
+	vec3 offset = vec3(shape.faces[faceIndex].offsetX, shape.faces[faceIndex].offsetY, shape.faces[faceIndex].offsetZ);
+	vec2 euler = vec2(shape.faces[faceIndex].rotationX, shape.faces[faceIndex].rotationY) * RAD2DEG;
+	position = rotationMatrixNoZ(euler) * position;
 
-	vec3 normal = voxelNormals[faceDirection];
+	position += vec3(xPos, yPos, zPos) + offset;
+
+	texCoord = vec3(uvs[indices[curVertexIndex]].x * scale.x, uvs[indices[curVertexIndex]].y * scale.y, textureId);
+
+	vec3 normal = vec3(shape.faces[faceIndex].normalX, shape.faces[faceIndex].normalY, shape.faces[faceIndex].normalZ);
 
 	brightness = max(dot(normal, lightDirection), -0.5f);
 	brightness += 0.5f;
 	brightness = clamp(brightness, 0.65f, 1.0f);
 
-	// projection * view * model
-
 	gl_Position = projection * view * model * vec4(position, 1.0f);
 	worldPosition = (model * vec4(position, 1.0f)).xyz;
-
-	colorMod = vec3(1);
-
-	if (biomeColorIndex < biomeColors.length() && shouldUseBiomeColor(faceMask, faceDirection))
-	{
-		colorMod = biomeColors[biomeColorIndex];
-	}
 }

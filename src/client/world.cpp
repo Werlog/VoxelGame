@@ -9,8 +9,8 @@
 #include <limits>
 #include "GameState/PlayingGameState.h"
 
-World::World(const Shader& terrainShader, PlayingGameState* playingState, const std::string& worldName, int worldSeed)
-	: chunkManager(this), worldSaver(this, playingState)
+World::World(Shader& terrainShader, PlayingGameState* playingState, const std::string& worldName, int worldSeed)
+	: chunkManager(this), worldSaver(this, playingState), blockData(terrainShader)
 {
 	shaderModelLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "model");
 	this->playingState = playingState;
@@ -50,7 +50,7 @@ void World::renderWorld(const ChunkCoord& playerCoord, Camera& camera)
 		glm::mat4 model = glm::mat4(1.0f);
 
 		ChunkCoord relative = coord - playerCoord;
-		glm::vec3 relativePos = glm::vec3(relative.x * CHUNK_SIZE_X, relative.y * CHUNK_SIZE_Y, relative.z * CHUNK_SIZE_Z + 1);
+		glm::vec3 relativePos = glm::vec3(relative.x * CHUNK_SIZE_X, relative.y * CHUNK_SIZE_Y, relative.z * CHUNK_SIZE_Z);
 		
 		AABB aabb = AABB(relativePos, relativePos + glm::vec3(32));
 		if (!camera.isInsideFrustum(aabb))
@@ -60,7 +60,7 @@ void World::renderWorld(const ChunkCoord& playerCoord, Camera& camera)
 
 		glUniformMatrix4fv(shaderModelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-		chunk->render();
+		chunk->render(blockData);
 	}
 }
 

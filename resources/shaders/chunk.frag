@@ -2,7 +2,6 @@
 
 in vec3 texCoord;
 in vec3 worldPosition;
-in vec3 colorMod;
 flat in uint lightLevel;
 in float brightness;
 
@@ -38,5 +37,5 @@ void main()
 	if (texColor.a < 0.2f)
 		discard;
 
-	outColor = mix(vec4(fogColor, 1.0f), vec4((texColor * brightness).xyz * colorMod * lightMultiplier, 1.0f), fogFactor);
+	outColor = mix(vec4(fogColor, 1.0f), vec4((texColor * brightness).xyz * lightMultiplier, 1.0f), fogFactor);
 }

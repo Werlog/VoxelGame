@@ -43,7 +43,7 @@ void Chunk::updateLight()
 				{
 					light[index] = 15;
 
-					if (getBlockAt(x, y, z) != BlockType::AIR)
+					if (!Block::isSimilar(getBlockAt(x, y, z), BlockType::AIR))
 						hitBlock = true;
 					continue;
 				}
@@ -66,27 +66,36 @@ void Chunk::generateMesh(BlockData& blockData)
 			for (int z = 0; z < CHUNK_SIZE_Z; z++)
 			{
 				int index = x + y * CHUNK_SIZE_X + z * CHUNK_SIZE_X * CHUNK_SIZE_Y;
+				BlockType current = blocks[index];
 
-				if (blocks[index] == BlockType::AIR) continue;
+				if (current == BlockType::AIR) continue;
 
-				const BlockProperties& blockProperties = blockData.getBlockProperties(blocks[index]);
+				const std::shared_ptr<Block>& block = blockData.getBlock(current);
+				std::shared_ptr<BlockShape> shape = block->getBlockShape(current);
+				const std::vector<BlockShapeFace> faces = shape->getFaces();
 
-				for (int i = 0; i < 6; i++)
+				int shapeIndex = blockData.getShapeIndex(shape->getShapeType());
+
+				for (int i = 0; i < faces.size(); i++)
 				{
-					int checkIndex = i * 3;
-					int checkX = faceChecks[checkIndex] + x;
-					int checkY = faceChecks[checkIndex + 1] + y;
-					int checkZ = faceChecks[checkIndex + 2] + z;
+					const BlockShapeFace& face = faces[i];
 
-					BlockType neighbour = getBlockAt(checkX, checkY, checkZ);
-					const BlockProperties& neighbourProperties = blockData.getBlockProperties(neighbour);
+					int checkX = face.faceDirection.x + x;
+					int checkY = face.faceDirection.y + y;
+					int checkZ = face.faceDirection.z + z;
 
-					if (!neighbourProperties.isTransparent || blocks[index] == neighbour)
-						continue;
+					if (face.cullable)
+					{
+						BlockType neighbour = getBlockAt(checkX, checkY, checkZ);
+						if (neighbour == current)
+							continue;
 
-					int textureId = blockData.getTextureIdFromFaceIndex(blockProperties, i);
+						const std::shared_ptr<Block>& neighbourBlock = blockData.getBlock(neighbour);
+						if (neighbourBlock->isFullBlock() && neighbour != BlockType::AIR)
+							continue;
+					}
 
-					createFace(x, y, z, textureId, i, blockProperties.biomeMask, 0, getLightLevelAt(checkX, checkY, checkZ));
+					createFace(x, y, z, face.textureId, getLightLevelAt(checkX, checkY, checkZ), shapeIndex, i);
 				}
 			}
 		}
@@ -116,10 +125,11 @@ void Chunk::createChunkMesh()
 	faceData.clear();
 }
 
-void Chunk::render() const
+void Chunk::render(BlockData& blockData) const
 {
 	glBindVertexArray(VAO);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, blockData.getShapeSSBO());
 
 	glDrawArrays(GL_TRIANGLES, 0, faceCount * 6);
 }
@@ -191,7 +201,7 @@ void Chunk::unloadMesh()
 	SSBO = 0;
 }
 
-void Chunk::createFace(int x, int y, int z, int textureId, int faceDirection, int faceMask, int biomeColorIndex, int lightLevel)
+void Chunk::createFace(int x, int y, int z, int textureId, int lightLevel, int shapeIndex, int faceIndex)
 {
-	faceData.push_back(ChunkFace{ (x | y << 6 | z << 12 | textureId << 18 | faceDirection << 26), (biomeColorIndex | faceMask << 4 | lightLevel << 10)});
+	faceData.push_back(ChunkFace{ (x | y << 6 | z << 12 | textureId << 18 | lightLevel << 26), (shapeIndex | faceIndex << 4) });
 }

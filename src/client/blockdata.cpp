@@ -1,63 +1,84 @@
 #include "blockdata.h"
+#include "block/blocks/cubeblock.h"
+#include "block/blocks/slabblock.h"
+#include <glad/glad.h>
 
-BlockData::BlockData()
+BlockData::BlockData(Shader& chunkShader)
 {
+	shapeSSBO = 0;
+
+	initShapes();
 	init();
 }
 
-const BlockProperties& BlockData::getBlockProperties(BlockType blockType)
+const std::shared_ptr<Block>& BlockData::getBlock(BlockType blockType)
 {
-	auto it = data.find(blockType);
+	auto it = data.find(Block::getRaw(blockType));
 	if (it == data.end()) return data[BlockType::AIR];
 
 	return it->second;
 }
 
-int BlockData::getTextureIdFromFaceIndex(const BlockProperties& blockData, int index)
-{
-	switch (index)
-	{
-	case 0:
-		return blockData.frontFaceTexId;
-	case 1:
-		return blockData.rightFaceTexId;
-	case 2:
-		return blockData.backFaceTexId;
-	case 3:
-		return blockData.leftFaceTexId;
-	case 4:
-		return blockData.topFaceTexId;
-	case 5:
-		return blockData.bottomFaceTexId;
-	default:
-		return blockData.frontFaceTexId;
-	}
-}
-
-const std::unordered_map<BlockType, BlockProperties>& BlockData::getData()
+const std::unordered_map<BlockType, std::shared_ptr<Block>>& BlockData::getData() const
 {
 	return data;
 }
 
+int BlockData::getShapeIndex(BlockShapeType shapeType) const
+{
+	auto it = shapeIndexMap.find(shapeType);
+	if (it == shapeIndexMap.end()) return -1;
+
+	return it->second;
+}
+
+unsigned int BlockData::getShapeSSBO() const
+{
+	return shapeSSBO;
+}
+
+void BlockData::initShapes()
+{
+	std::vector<BlockShapeSpecification> shapes = std::vector<BlockShapeSpecification>();
+
+	CubeShape cube = CubeShape(1, 1, 1, 1, 1, 1);
+	shapes.push_back(BlockShapeSpecification::convertBlockShape(cube));
+
+	SlabBottomShape bottomSlab = SlabBottomShape(1, 1, 1, 1, 1, 1);
+	shapes.push_back(BlockShapeSpecification::convertBlockShape(bottomSlab));
+	
+	uploadShapes(shapes);
+
+	for (size_t i = 0; i < shapes.size(); i++)
+	{
+		BlockShapeSpecification& spec = shapes[i];
+
+		shapeIndexMap.insert({ spec.type, i });
+	}
+}
+
+void BlockData::uploadShapes(const std::vector<BlockShapeSpecification>& shapes)
+{
+	glGenBuffers(1, &shapeSSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, shapeSSBO);
+
+	glBufferData(GL_SHADER_STORAGE_BUFFER, shapes.size() * sizeof(BlockShapeSpecification::BlockShapeData), nullptr, GL_STATIC_DRAW);
+
+	for (size_t i = 0; i < shapes.size(); i++)
+	{
+		glBufferSubData(GL_SHADER_STORAGE_BUFFER, i * sizeof(BlockShapeSpecification::BlockShapeData), sizeof(BlockShapeSpecification::BlockShapeData), &shapes[i].data);
+	}
+}
+
 void BlockData::init()
 {
-	data.insert({ BlockType::AIR, BlockProperties{"Air", 30, 30, 30, 30, 30, 30, biomeNoFaceMask, true} });
-	data.insert({ BlockType::STONE, BlockProperties{"Stone", 1, 1, 1, 1, 1, 1, biomeNoFaceMask, false} });
-	data.insert({ BlockType::OAK_PLANKS, BlockProperties{"Oak Planks", 4, 4, 4, 4, 4, 4, biomeNoFaceMask, false} });
-	data.insert({ BlockType::COBBLESTONE, BlockProperties{"Cobblestone", 16, 16, 16, 16, 16, 16, biomeNoFaceMask, false} });
-	data.insert({ BlockType::DIRT, BlockProperties{"Dirt", 2, 2, 2, 2, 2, 2, biomeNoFaceMask, false} });
-	data.insert({ BlockType::GRASS, BlockProperties{"Grass", 3, 3, 3, 3, 0, 2, biomeTopFaceMask, false} });
-	data.insert({ BlockType::OAK_LOG, BlockProperties{"Oak Log", 20, 20, 20, 20, 21, 21, biomeNoFaceMask, false} });
-	data.insert({ BlockType::OAK_LEAVES, BlockProperties{"Oak Leaves", 53, 53, 53, 53, 53, 53, biomeAllFaceMask, false} });
-	data.insert({ BlockType::BEDROCK, BlockProperties{"Bedrock", 17, 17, 17, 17, 17, 17, biomeNoFaceMask, false} });
-	data.insert({ BlockType::GLASS, BlockProperties{"Glass", 49, 49, 49, 49, 49, 49, biomeNoFaceMask, true} });
-	data.insert({ BlockType::WOOL, BlockProperties{"Wool", 64, 64, 64, 64, 64, 64, biomeNoFaceMask, false} });
-	data.insert({ BlockType::BOOKSHELF, BlockProperties{"Bookshelf", 35, 35, 35, 35, 4, 4, biomeNoFaceMask, false} });
-	data.insert({ BlockType::BRICKS, BlockProperties{"Bricks", 7, 7, 7, 7, 7, 7, biomeNoFaceMask, false} });
-	data.insert({ BlockType::SMOOTH_STONE, BlockProperties{"Smooth Stone", 5, 5, 5, 5, 6, 6, biomeNoFaceMask, false} });
-	data.insert({ BlockType::SAND, BlockProperties{"Sand", 18, 18, 18, 18, 18, 18, biomeNoFaceMask, false} });
-	data.insert({ BlockType::GRAVEL, BlockProperties{"Gravel", 19, 19, 19, 19, 19, 19, biomeNoFaceMask, false} });
-	data.insert({ BlockType::CLAY, BlockProperties{"Clay", 72, 72, 72, 72, 72, 72, biomeNoFaceMask, false} });
-	data.insert({ BlockType::MOSSY_COBBLESTONE, BlockProperties{"Mossy Cobblestone", 36, 36, 36, 36, 36, 36, biomeNoFaceMask, false} });
-	data.insert({ BlockType::OBSIDIAN, BlockProperties{"Obsidian", 37, 37, 37, 37, 37, 37, biomeNoFaceMask, false} });
+	data.emplace(BlockType::AIR, std::make_shared<CubeBlock>(BlockType::AIR, "Air", 113));
+	data.emplace(BlockType::STONE, std::make_shared<CubeBlock>(BlockType::STONE, "Stone", 1));
+	data.emplace(BlockType::OAK_PLANKS, std::make_shared<CubeBlock>(BlockType::OAK_PLANKS, "Oak Planks", 4));
+	data.emplace(BlockType::COBBLESTONE, std::make_shared<CubeBlock>(BlockType::COBBLESTONE, "Cobblestone", 16));
+	data.emplace(BlockType::DIRT, std::make_shared<CubeBlock>(BlockType::DIRT, "Dirt", 2));
+	data.emplace(BlockType::GRASS, std::make_shared<CubeBlock>(BlockType::GRASS, "Grass", 3, 0, 2));
+	data.emplace(BlockType::OAK_LOG, std::make_shared<CubeBlock>(BlockType::OAK_LOG, "Oak Log", 20, 21, 21));
+	data.emplace(BlockType::OAK_LEAVES, std::make_shared<CubeBlock>(BlockType::OAK_LEAVES, "Oak Leaves", 53));
+	data.emplace(BlockType::COBBLESTONE_SLAB, std::make_shared<SlabBlock>(BlockType::COBBLESTONE_SLAB, "Cobblestone Slab", 16));
 }
