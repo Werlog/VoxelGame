@@ -43,6 +43,7 @@ public:
 
 	virtual std::shared_ptr<BlockShape> getBlockShape(BlockType block) = 0;
 	virtual AABB getCollider(glm::ivec3 position, BlockType block) = 0;
+	virtual int getBreakParticleTextureId() const = 0;
 
 	virtual bool isFullBlock() const = 0;
 	virtual bool isTransparent() const = 0;

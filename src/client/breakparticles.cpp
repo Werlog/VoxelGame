@@ -13,7 +13,9 @@ BreakParticles::BreakParticles(BlockType block, BlockData& blockData, const glm:
 	this->VBO = 0;
 	this->EBO = 0;
 	this->instanceVBO = 0;
-	this->blockTexture = 1; // FIX THIS LATER
+
+	std::shared_ptr<Block> brokenBlock = blockData.getBlock(block);
+	this->blockTexture = brokenBlock->getBreakParticleTextureId();
 
 	this->position = position;
 	this->playerCoord = ChunkCoord{ 0, 0, 0 };

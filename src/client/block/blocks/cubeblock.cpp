@@ -41,6 +41,11 @@ AABB CubeBlock::getCollider(glm::ivec3 position, BlockType block)
 	return AABB(position, glm::vec3(position) + glm::vec3(1.0f));
 }
 
+int CubeBlock::getBreakParticleTextureId() const
+{
+	return cubeShape->getFaces()[0].textureId;
+}
+
 bool CubeBlock::isFullBlock() const
 {
 	return true;

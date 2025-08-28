@@ -15,6 +15,7 @@ public:
 
 	std::shared_ptr<BlockShape> getBlockShape(BlockType block) override;
 	AABB getCollider(glm::ivec3 position, BlockType block) override;
+	int getBreakParticleTextureId() const override;
 
 	bool isFullBlock() const override;
 	bool isTransparent() const override;

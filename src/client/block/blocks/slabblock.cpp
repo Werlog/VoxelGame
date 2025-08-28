@@ -38,6 +38,11 @@ AABB SlabBlock::getCollider(glm::ivec3 position, BlockType block)
 	return AABB(position, glm::vec3(position) + glm::vec3(1.0f, 0.5f, 1.0f));
 }
 
+int SlabBlock::getBreakParticleTextureId() const
+{
+	return bottomShape->getFaces()[0].textureId;
+}
+
 bool SlabBlock::isFullBlock() const
 {
 	return false;
