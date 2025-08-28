@@ -47,6 +47,7 @@ public:
 	virtual bool isFullBlock() const = 0;
 
 	const std::string& getName() const;
+	BlockType getBlockType() const;
 
 	static BlockType getRaw(BlockType blockType);
 	static BlockState getState(BlockType blockType);

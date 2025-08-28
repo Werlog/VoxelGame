@@ -11,6 +11,11 @@ const std::string& Block::getName() const
 	return blockName;
 }
 
+BlockType Block::getBlockType() const
+{
+	return blockType;
+}
+
 // Returns the block ID without its state
 BlockType Block::getRaw(BlockType blockType)
 {

@@ -2,22 +2,15 @@
 
 #include "blockdata.h"
 #include <unordered_map>
-#include "shader.h"
+#include "resourcemanager.h"
 
 constexpr int blockIconResolution = 256;
-
-struct IconVertex
-{
-	float x, y, z;
-	float u, v;
-	int faceId;
-};
 
 class BlockIcons
 {
 public:
 
-	BlockIcons();
+	BlockIcons(ResourceManager& resourceManager);
 
 	void init(BlockData& blockData);
 
@@ -28,9 +21,10 @@ private:
 	// Maps block types to OpenGL texture handles
 	std::unordered_map<BlockType, unsigned int> iconMap;
 
+	Shader& chunkShader;
+
 	unsigned int blockVAO;
-	unsigned int blockVBO;
-	unsigned int blockEBO;
+	unsigned int blockSSBO;
 
 	unsigned int FBO;
 	unsigned int depthAttachmentHandle;
@@ -39,20 +33,9 @@ private:
 	unsigned int viewLoc;
 	unsigned int modelLoc;
 	unsigned int projectionLoc;
-
 	unsigned int lightDirLoc;
-	unsigned int biomeMaskLoc;
-
-	unsigned int frontFaceIdLoc;
-	unsigned int rightFaceIdLoc;
-	unsigned int backFaceIdLoc;
-	unsigned int leftFaceIdLoc;
-	unsigned int topFaceIdLoc;
-	unsigned int bottomFaceIdLoc;
 	
 	void setupBlock();
-
-	void initUniforms(Shader& iconShader);
-
-	void setUniforms();
+	void initUniforms();
+	int updateBlockSSBO(std::shared_ptr<Block> newBlock, BlockData& blockData);
 };
