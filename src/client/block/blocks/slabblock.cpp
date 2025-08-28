@@ -42,3 +42,8 @@ bool SlabBlock::isFullBlock() const
 {
 	return false;
 }
+
+bool SlabBlock::isTransparent() const
+{
+	return false;
+}

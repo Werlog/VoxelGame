@@ -17,6 +17,7 @@ public:
 	AABB getCollider(glm::ivec3 position, BlockType block) override;
 
 	bool isFullBlock() const override;
+	bool isTransparent() const override;
 protected:
 	std::shared_ptr<SlabBottomShape> bottomShape;
 };

@@ -72,13 +72,14 @@ void BlockData::uploadShapes(const std::vector<BlockShapeSpecification>& shapes)
 
 void BlockData::init()
 {
-	data.emplace(BlockType::AIR, std::make_shared<CubeBlock>(BlockType::AIR, "Air", 113));
-	data.emplace(BlockType::STONE, std::make_shared<CubeBlock>(BlockType::STONE, "Stone", 1));
-	data.emplace(BlockType::OAK_PLANKS, std::make_shared<CubeBlock>(BlockType::OAK_PLANKS, "Oak Planks", 4));
-	data.emplace(BlockType::COBBLESTONE, std::make_shared<CubeBlock>(BlockType::COBBLESTONE, "Cobblestone", 16));
-	data.emplace(BlockType::DIRT, std::make_shared<CubeBlock>(BlockType::DIRT, "Dirt", 2));
-	data.emplace(BlockType::GRASS, std::make_shared<CubeBlock>(BlockType::GRASS, "Grass", 3, 0, 2));
-	data.emplace(BlockType::OAK_LOG, std::make_shared<CubeBlock>(BlockType::OAK_LOG, "Oak Log", 20, 21, 21));
-	data.emplace(BlockType::OAK_LEAVES, std::make_shared<CubeBlock>(BlockType::OAK_LEAVES, "Oak Leaves", 53));
+	data.emplace(BlockType::AIR, std::make_shared<CubeBlock>(BlockType::AIR, "Air", 113, true));
+	data.emplace(BlockType::STONE, std::make_shared<CubeBlock>(BlockType::STONE, "Stone", 1, false));
+	data.emplace(BlockType::OAK_PLANKS, std::make_shared<CubeBlock>(BlockType::OAK_PLANKS, "Oak Planks", 4, false));
+	data.emplace(BlockType::COBBLESTONE, std::make_shared<CubeBlock>(BlockType::COBBLESTONE, "Cobblestone", 16, false));
+	data.emplace(BlockType::DIRT, std::make_shared<CubeBlock>(BlockType::DIRT, "Dirt", 2, false));
+	data.emplace(BlockType::GRASS, std::make_shared<CubeBlock>(BlockType::GRASS, "Grass", 3, 0, 2, false));
+	data.emplace(BlockType::OAK_LOG, std::make_shared<CubeBlock>(BlockType::OAK_LOG, "Oak Log", 20, 21, 21, false));
+	data.emplace(BlockType::OAK_LEAVES, std::make_shared<CubeBlock>(BlockType::OAK_LEAVES, "Oak Leaves", 53, false));
 	data.emplace(BlockType::COBBLESTONE_SLAB, std::make_shared<SlabBlock>(BlockType::COBBLESTONE_SLAB, "Cobblestone Slab", 16));
+	data.emplace(BlockType::GLASS, std::make_shared<CubeBlock>(BlockType::GLASS, "Glass", 49, true));
 }

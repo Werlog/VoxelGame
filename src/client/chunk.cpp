@@ -89,9 +89,9 @@ void Chunk::generateMesh(BlockData& blockData)
 						BlockType neighbour = getBlockAt(checkX, checkY, checkZ);
 						if (neighbour == current)
 							continue;
-
 						const std::shared_ptr<Block>& neighbourBlock = blockData.getBlock(neighbour);
-						if (neighbourBlock->isFullBlock() && neighbour != BlockType::AIR)
+
+						if (neighbourBlock->isFullBlock() && !neighbourBlock->isTransparent())
 							continue;
 					}
 

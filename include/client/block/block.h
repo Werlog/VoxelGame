@@ -45,6 +45,7 @@ public:
 	virtual AABB getCollider(glm::ivec3 position, BlockType block) = 0;
 
 	virtual bool isFullBlock() const = 0;
+	virtual bool isTransparent() const = 0;
 
 	const std::string& getName() const;
 	BlockType getBlockType() const;
