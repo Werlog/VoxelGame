@@ -45,6 +45,13 @@ bool AABB::isOverlapping(const AABB& other) const
 		&& min.z < otherMax.z && max.z > otherMin.z;
 }
 
+bool AABB::isInside(glm::vec3 point) const
+{
+	return point.x > min.x && point.x < max.x
+		&& point.y > min.y && point.y < max.y
+		&& point.z > min.z && point.z < max.z;
+}
+
 CollisionResult AABB::collide(const AABB& other, const glm::vec3& velocity)
 {
 	const glm::vec3& otherMin = other.getMin();

@@ -22,6 +22,7 @@ public:
 	const glm::vec3& getMax() const;
 
 	bool isOverlapping(const AABB& other) const;
+	bool isInside(glm::vec3 point) const;
 
 	CollisionResult collide(const AABB& other, const glm::vec3& velocity);
 private:

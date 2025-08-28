@@ -23,8 +23,6 @@ Player::Player(Camera* camera, World* world, Hotbar* hotbar, ResourceManager& re
 	enableFlight = false;
 }
 
-bool lineMode = false;
-
 void Player::update(InputHandler& inputHandler, float deltaTime)
 {
 	camera->update(deltaTime);
@@ -55,12 +53,6 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 	playerMoved();
 	glm::vec3 worldPos = getWorldPosition();
 	camera->setPosition(relPosition + glm::vec3(0.0f, cameraHeight, 0.0f));
-
-	if (inputHandler.getKeyDown(SDLK_k))
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, lineMode ? GL_FILL : GL_LINE);
-		lineMode = !lineMode;
-	}
 
 	/*
 	ImGui::SetNextWindowCollapsed(false);
@@ -238,6 +230,8 @@ void Player::resolveCollisions(float deltaTime)
 
 	glm::vec3 velocity = this->velocity * deltaTime;
 
+	BlockData& blockData = world->getBlockData();
+
 	for (int _ = 0; _ < 3; _++)
 	{
 		// Broad phase box
@@ -264,12 +258,15 @@ void Player::resolveCollisions(float deltaTime)
 					int worldX = x + chunkPosition.x * CHUNK_SIZE_X;
 					int worldY = y + chunkPosition.y * CHUNK_SIZE_Y;
 					int worldZ = z + chunkPosition.z * CHUNK_SIZE_Z;
-					if (world->getBlockAt(worldX, worldY, worldZ) == BlockType::AIR)
+
+					BlockType blockType = world->getBlockAt(worldX, worldY, worldZ);
+					if (Block::isSimilar(blockType, BlockType::AIR))
 					{
 						continue;
 					}
+					const std::shared_ptr<Block>& block = blockData.getBlock(blockType);
 
-					AABB blockAABB = AABB(glm::vec3(x, y, z), glm::vec3(x + 1, y + 1, z + 1));
+					AABB blockAABB = block->getCollider(glm::ivec3(x, y, z), blockType);
 					CollisionResult collision = collider.collide(blockAABB, velocity);
 
 					if (collision.entryTime < nearest.entryTime)
@@ -301,12 +298,28 @@ void Player::resolveCollisions(float deltaTime)
 
 void Player::checkGround()
 {
+	isGrounded = false;
+
+	BlockData& blockData = world->getBlockData();
+
 	glm::vec3 worldPos = getWorldPosition();
 	for (float x = -playerWidth * 0.4f; x <= playerWidth * 0.4f; x += playerWidth * 0.4f)
 	{
 		for (float z = -playerWidth * 0.4f; z <= playerWidth * 0.4f; z += playerWidth * 0.4f)
 		{
-			isGrounded = world->getBlockAt((int)floor(worldPos.x + x), (int)floor(worldPos.y - 0.1f), (int)floor(worldPos.z + z)) != BlockType::AIR;
+			int blockPosX = (int)floor(worldPos.x + x);
+			int blockPosY = (int)floor(worldPos.y - 0.1f);
+			int blockPosZ = (int)floor(worldPos.z + z);
+
+			BlockType blockType = world->getBlockAt(blockPosX, blockPosY, blockPosZ);
+
+			if (blockType == BlockType::AIR) continue;
+
+			const std::shared_ptr<Block>& block = blockData.getBlock(blockType);
+			AABB aabb = block->getCollider(glm::ivec3(blockPosX, blockPosY, blockPosZ), blockType);
+
+			isGrounded = aabb.isInside(glm::vec3(worldPos.x + x, worldPos.y - 0.1f, worldPos.z + z));
+
 			if (isGrounded) return;
 		}
 	}
