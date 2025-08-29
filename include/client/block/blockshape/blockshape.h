@@ -17,6 +17,7 @@ struct BlockShapeFace
 	float scaleX, scaleY;
 	float rotationX, rotationY;
 	float uvOffsetX, uvOffsetY;
+	float uvScaleX, uvScaleY;
 
 	int textureId;
 	bool cullable;

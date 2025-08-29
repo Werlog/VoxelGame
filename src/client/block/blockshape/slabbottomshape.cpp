@@ -8,7 +8,9 @@ SlabBottomShape::SlabBottomShape(int frontFaceTexId, int rightFaceTexId, int bac
 		0.5f, 0.25f, 1.0f, // Offset
 		1.0f, 0.5f, // Scale
 		0.0f, 0.0f, // Rotation
+
 		0.0f, 0.0f, // UV Offset
+		1.0f, 0.5f, // UV Scale
 
 		frontFaceTexId, // Texture
 		true, // Cullable
@@ -20,7 +22,9 @@ SlabBottomShape::SlabBottomShape(int frontFaceTexId, int rightFaceTexId, int bac
 		1.0f, 0.25f, 0.5f, // Offset
 		1.0f, 0.5f, // Scale
 		0.0f, -90.0f, // Rotation
+
 		0.0f, 0.0f, // UV Offset
+		1.0f, 0.5f, // UV Scale
 
 		rightFaceTexId, // Texture
 		true, // Cullable
@@ -32,7 +36,9 @@ SlabBottomShape::SlabBottomShape(int frontFaceTexId, int rightFaceTexId, int bac
 		0.5f, 0.25f, 0.0f, // Offset
 		1.0f, 0.5f, // Scale
 		0.0f, 180.0f, // Rotation
+
 		0.0f, 0.0f, // UV Offset
+		1.0f, 0.5f, // UV Scale
 
 		backFaceTexId, // Texture
 		true, // Cullable
@@ -44,7 +50,9 @@ SlabBottomShape::SlabBottomShape(int frontFaceTexId, int rightFaceTexId, int bac
 		0.0f, 0.25f, 0.5f, // Offset
 		1.0f, 0.5f, // Scale
 		0.0f, 90.0f, // Rotation
+
 		0.0f, 0.0f, // UV Offset
+		1.0f, 0.5f, // UV Scale
 
 		leftFaceTexId, // Texture
 		true, // Cullable
@@ -56,7 +64,9 @@ SlabBottomShape::SlabBottomShape(int frontFaceTexId, int rightFaceTexId, int bac
 		0.5f, 0.5f, 0.5f, // Offset
 		1.0f, 1.0f, // Scale
 		90.0f, 0.0f, // Rotation
+
 		0.0f, 0.0f, // UV Offset
+		1.0f, 1.0f, // UV Scale
 
 		topFaceTexId, // Texture
 		false, // Cullable
@@ -68,7 +78,9 @@ SlabBottomShape::SlabBottomShape(int frontFaceTexId, int rightFaceTexId, int bac
 		0.5f, 0.0f, 0.5f, // Offset
 		1.0f, 1.0f, // Scale
 		-90.0f, 0.0f, // Rotation
+
 		0.0f, 0.0f, // UV Offset
+		1.0f, 1.0f, // UV Scale
 
 		bottomFaceTexId, // Texture
 		true, // Cullable

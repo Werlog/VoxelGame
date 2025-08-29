@@ -23,6 +23,9 @@ BlockShapeSpecification BlockShapeSpecification::convertBlockShape(BlockShape& b
 		shape.data.faces[i].uvOffsetX = faces[i].uvOffsetX;
 		shape.data.faces[i].uvOffsetY = faces[i].uvOffsetY;
 
+		shape.data.faces[i].uvScaleX = faces[i].uvScaleX;
+		shape.data.faces[i].uvScaleY = faces[i].uvScaleY;
+
 		shape.data.faces[i].normalX = faces[i].faceDirection.x;
 		shape.data.faces[i].normalY = faces[i].faceDirection.y;
 		shape.data.faces[i].normalZ = faces[i].faceDirection.z;

@@ -1,6 +1,7 @@
 #include "blockdata.h"
 #include "block/blocks/cubeblock.h"
 #include "block/blocks/slabblock.h"
+#include "block/blocks/crossblock.h"
 #include <glad/glad.h>
 
 BlockData::BlockData(Shader& chunkShader)
@@ -41,11 +42,14 @@ void BlockData::initShapes()
 {
 	std::vector<BlockShapeSpecification> shapes = std::vector<BlockShapeSpecification>();
 
-	CubeShape cube = CubeShape(1, 1, 1, 1, 1, 1);
+	CubeShape cube = CubeShape(0, 0, 0, 0, 0, 0);
 	shapes.push_back(BlockShapeSpecification::convertBlockShape(cube));
 
-	SlabBottomShape bottomSlab = SlabBottomShape(1, 1, 1, 1, 1, 1);
+	SlabBottomShape bottomSlab = SlabBottomShape(0, 0, 0, 0, 0, 0);
 	shapes.push_back(BlockShapeSpecification::convertBlockShape(bottomSlab));
+
+	CrossShape cross = CrossShape(0);
+	shapes.push_back(BlockShapeSpecification::convertBlockShape(cross));
 	
 	uploadShapes(shapes);
 
@@ -82,4 +86,6 @@ void BlockData::init()
 	data.emplace(BlockType::OAK_LEAVES, std::make_shared<CubeBlock>(BlockType::OAK_LEAVES, "Oak Leaves", 53, false));
 	data.emplace(BlockType::COBBLESTONE_SLAB, std::make_shared<SlabBlock>(BlockType::COBBLESTONE_SLAB, "Cobblestone Slab", 16));
 	data.emplace(BlockType::GLASS, std::make_shared<CubeBlock>(BlockType::GLASS, "Glass", 49, true));
+	data.emplace(BlockType::BEDROCK, std::make_shared<CubeBlock>(BlockType::BEDROCK, "Bedrock", 17, true));
+	data.emplace(BlockType::TALL_GRASS, std::make_shared<CrossBlock>(BlockType::TALL_GRASS, "Tall Grass", 106));
 }

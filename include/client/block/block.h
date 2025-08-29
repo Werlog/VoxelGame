@@ -18,6 +18,7 @@ enum BlockType : unsigned char
 	COBBLESTONE_SLAB,
 	GLASS,
 	BEDROCK,
+	TALL_GRASS,
 
 	BLOCK_TYPE_LIMIT = 64,
 };

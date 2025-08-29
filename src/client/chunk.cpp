@@ -72,7 +72,7 @@ void Chunk::generateMesh(BlockData& blockData)
 
 				const std::shared_ptr<Block>& block = blockData.getBlock(current);
 				std::shared_ptr<BlockShape> shape = block->getBlockShape(current);
-				const std::vector<BlockShapeFace> faces = shape->getFaces();
+				const std::vector<BlockShapeFace>& faces = shape->getFaces();
 
 				int shapeIndex = blockData.getShapeIndex(shape->getShapeType());
 

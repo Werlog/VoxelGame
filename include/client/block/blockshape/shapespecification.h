@@ -9,6 +9,7 @@ struct BlockFaceSpecification
 	float scaleX, scaleY;
 	float rotationX, rotationY;
 	float uvOffsetX, uvOffsetY;
+	float uvScaleX, uvScaleY;
 
 	float normalX, normalY, normalZ;
 };

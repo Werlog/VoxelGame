@@ -18,6 +18,7 @@ struct BlockShapeFace
 	float scaleX, scaleY;
 	float rotationX, rotationY;
 	float uvOffsetX, uvOffsetY;
+	float uvScaleX, uvScaleY;
 
 	float normalX, normalY, normalZ;
 };
@@ -99,15 +100,17 @@ void main()
 	const float RAD2DEG = 3.14159265 / 180.0;
 
 	vec3 scale = vec3(shape.faces[faceIndex].scaleX, shape.faces[faceIndex].scaleY, 1.0f);
+	vec3 offset = vec3(shape.faces[faceIndex].offsetX, shape.faces[faceIndex].offsetY, shape.faces[faceIndex].offsetZ);
+	vec2 uvScale = vec2(shape.faces[faceIndex].uvScaleX, shape.faces[faceIndex].uvScaleY);
+
 	vec3 position = vertexPositions[indices[curVertexIndex]] * scale;
 
-	vec3 offset = vec3(shape.faces[faceIndex].offsetX, shape.faces[faceIndex].offsetY, shape.faces[faceIndex].offsetZ);
 	vec2 euler = vec2(shape.faces[faceIndex].rotationX, shape.faces[faceIndex].rotationY) * RAD2DEG;
 	position = rotationMatrixNoZ(euler) * position;
 
 	position += vec3(xPos, yPos, zPos) + offset;
 
-	texCoord = vec3(uvs[indices[curVertexIndex]].x * scale.x, uvs[indices[curVertexIndex]].y * scale.y, textureId);
+	texCoord = vec3(uvs[indices[curVertexIndex]].x * uvScale.x, uvs[indices[curVertexIndex]].y * uvScale.y, textureId);
 
 	vec3 normal = vec3(shape.faces[faceIndex].normalX, shape.faces[faceIndex].normalY, shape.faces[faceIndex].normalZ);
 
