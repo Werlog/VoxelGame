@@ -25,7 +25,7 @@ void BlockIcons::init(BlockData& blockData)
 {
     setupBlock();
 
-    Camera camera = Camera(glm::vec3(2.0f, 2.0f, 2.0f), 45.0f, 1.0f);
+    Camera camera = Camera(glm::vec3(1.6f, 2.0f, 2.0f), 45.0f, 1.0f);
 
 	glm::vec3 lightDirection = glm::normalize(glm::vec3(0.5f, 1.0f, 1.0f));
 

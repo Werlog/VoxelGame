@@ -25,6 +25,7 @@ private:
 
 	void generateTerrainShape();
 	void generateTrees();
+	void generateTallGrass();
 
 	inline float getHeightFromNoise(float noiseValue);
 

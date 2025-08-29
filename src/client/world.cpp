@@ -211,9 +211,9 @@ FastNoiseSIMD* World::getTreeNoise()
 	return treeDensityNoise;
 }
 
-FastNoiseSIMD* World::getCaveNoise()
+FastNoiseSIMD* World::getGrassNoise()
 {
-	return caveNoise;
+	return grassDensityNoise;
 }
 
 int World::getWorldSeed()
@@ -239,7 +239,7 @@ void World::setupWorldGen()
 
 	noise = FastNoiseSIMD::NewFastNoiseSIMD(seed);
 	treeDensityNoise = FastNoiseSIMD::NewFastNoiseSIMD(seed + 1);
-	caveNoise = FastNoiseSIMD::NewFastNoiseSIMD(seed - 1);
+	grassDensityNoise = FastNoiseSIMD::NewFastNoiseSIMD(seed - 1);
 
 	std::cout << "World seed is: " << seed << std::endl;
 }

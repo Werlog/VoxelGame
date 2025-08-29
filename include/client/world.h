@@ -43,7 +43,7 @@ public:
 	std::shared_ptr<Chunk> getChunkByCoordinate(ChunkCoord coord);
 	FastNoiseSIMD* getNoise();
 	FastNoiseSIMD* getTreeNoise();
-	FastNoiseSIMD* getCaveNoise();
+	FastNoiseSIMD* getGrassNoise();
 	int getWorldSeed();
 	BlockData& getBlockData();
 private:
@@ -61,7 +61,7 @@ private:
 	unsigned int shaderModelLoc;
 	FastNoiseSIMD* noise;
 	FastNoiseSIMD* treeDensityNoise;
-	FastNoiseSIMD* caveNoise;
+	FastNoiseSIMD* grassDensityNoise;
 
 	void setupWorldGen();
 };
