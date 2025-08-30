@@ -70,7 +70,6 @@ private:
 	void resolveCollisions(float deltaTime);
 	void checkGround();
 	glm::vec3 getFriction();
-	glm::vec3 minAbsVector(const glm::vec3& vec1, const glm::vec3& vec2);
 
 	void blockBreakLogic();
 	void blockPlaceLogic();

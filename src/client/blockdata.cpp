@@ -50,7 +50,7 @@ void BlockData::initShapes()
 
 	CrossShape cross = CrossShape(0);
 	shapes.push_back(BlockShapeSpecification::convertBlockShape(cross));
-	
+
 	uploadShapes(shapes);
 
 	for (size_t i = 0; i < shapes.size(); i++)
@@ -88,4 +88,6 @@ void BlockData::init()
 	data.emplace(BlockType::GLASS, std::make_shared<CubeBlock>(BlockType::GLASS, "Glass", 49, true));
 	data.emplace(BlockType::BEDROCK, std::make_shared<CubeBlock>(BlockType::BEDROCK, "Bedrock", 17, true));
 	data.emplace(BlockType::TALL_GRASS, std::make_shared<CrossBlock>(BlockType::TALL_GRASS, "Tall Grass", 106));
+	data.emplace(BlockType::RED_FLOWER, std::make_shared<CrossBlock>(BlockType::RED_FLOWER, "Red Flower", 12));
+	data.emplace(BlockType::YELLOW_FLOWER, std::make_shared<CrossBlock>(BlockType::YELLOW_FLOWER, "Yellow Flower", 13));
 }

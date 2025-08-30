@@ -340,18 +340,6 @@ glm::vec3 Player::getFriction()
 	return glm::vec3(1.0f, 0.0f, 1.0f);
 }
 
-glm::vec3 Player::minAbsVector(const glm::vec3& vec1, const glm::vec3& vec2)
-{
-	glm::vec3 absVec1 = glm::vec3(abs(vec1.x), abs(vec1.y), abs(vec1.z));
-	glm::vec3 absVec2 = glm::vec3(abs(vec2.x), abs(vec2.y), abs(vec2.z));
-
-	if (glm::min(absVec1, absVec2) == absVec1)
-	{
-		return glm::vec3(vec1);
-	}
-	return glm::vec3(vec2);
-}
-
 void Player::blockBreakLogic()
 {
 	std::unique_ptr<glm::vec3> blockPos = getLookingAtPosition();

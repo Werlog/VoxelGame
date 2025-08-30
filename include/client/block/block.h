@@ -19,6 +19,8 @@ enum BlockType : unsigned char
 	GLASS,
 	BEDROCK,
 	TALL_GRASS,
+	RED_FLOWER,
+	YELLOW_FLOWER,
 
 	BLOCK_TYPE_LIMIT = 64,
 };
