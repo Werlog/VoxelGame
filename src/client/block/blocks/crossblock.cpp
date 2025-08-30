@@ -38,5 +38,5 @@ bool CrossBlock::isFullBlock() const
 
 bool CrossBlock::isTransparent() const
 {
-	return false;
+	return true;
 }

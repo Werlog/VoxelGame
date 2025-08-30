@@ -334,12 +334,7 @@ glm::vec3 Player::getFriction()
 
 	if (isGrounded)
 	{
-		return glm::vec3(12.0f, 0.0f, 12.0f);
-	}
-
-	if (velocity.y > 0.0f)
-	{
-		return glm::vec3(1.0f, 0.0f, 1.0f);
+		return glm::vec3(13.0f, 0.0f, 13.0f);
 	}
 
 	return glm::vec3(1.0f, 0.0f, 1.0f);

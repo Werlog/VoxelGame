@@ -27,7 +27,7 @@ Chunk::~Chunk()
 	unloadMesh();
 }
 
-void Chunk::updateLight()
+void Chunk::updateLight(BlockData& blockData)
 {
 	std::memset(light, 15, sizeof(light));
 
@@ -43,7 +43,11 @@ void Chunk::updateLight()
 				{
 					light[index] = 15;
 
-					if (!Block::isSimilar(getBlockAt(x, y, z), BlockType::AIR))
+					BlockType blockType = getBlockAt(x, y, z);
+
+					const std::shared_ptr<Block>& block = blockData.getBlock(blockType);
+
+					if (!block->isTransparent())
 						hitBlock = true;
 					continue;
 				}

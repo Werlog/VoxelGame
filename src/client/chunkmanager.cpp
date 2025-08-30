@@ -234,7 +234,7 @@ void ChunkManager::meshWorker()
 			continue;
 		}
 
-		chunk->updateLight();
+		chunk->updateLight(world->getBlockData());
 		chunk->generateMesh(world->getBlockData());
 		chunk->shouldUpdateMesh.store(true);
 	}

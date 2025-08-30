@@ -21,7 +21,7 @@ public:
 	Chunk(ChunkCoord coord, World* world);
 	~Chunk();
 
-	void updateLight();
+	void updateLight(BlockData& blockData);
 	void generateMesh(BlockData& blockData);
 	void createChunkMesh();
 	void render(BlockData& blockData) const;

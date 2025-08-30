@@ -101,7 +101,7 @@ void ChunkGenerator::generateTallGrass()
 		{
 			float grassValue = grassNoiseSet[z + x * CHUNK_SIZE_Z];
 
-			if (grassValue < 0.2f)
+			if (grassValue < 0.1f)
 				continue;
 
 			int random = grassChanceDist(rng);

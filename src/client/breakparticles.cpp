@@ -279,10 +279,10 @@ void BreakParticles::createParticles()
 
 	std::uniform_int_distribution<int> amountDist(60, 80);
 	std::uniform_real_distribution<float> positionDist(0.0f, 1.0f);
-	std::uniform_real_distribution<float> scaleDist(0.05f, 0.12f);
-	std::uniform_real_distribution<float> lifetimeDist(1.5f, 2.5f);
-	std::uniform_real_distribution<float> yVelDist(3.0f, 7.0f);
-	std::uniform_real_distribution<float> horizontalVelDist(1.0f, 7.0f);
+	std::uniform_real_distribution<float> scaleDist(0.08f, 0.15f);
+	std::uniform_real_distribution<float> lifetimeDist(2.5f, 4.5f);
+	std::uniform_real_distribution<float> yVelDist(1.0f, 7.0f);
+	std::uniform_real_distribution<float> horizontalVelDist(1.0f, 5.0f);
 
 	int particleAmount = amountDist(rng);
 

@@ -5,7 +5,7 @@ CrossShape::CrossShape(int textureId)
 {
 	BlockShapeFace sideOneFront = BlockShapeFace
 	{
-		0.5f, 0.4f, 0.5f, // Offset
+		0.5f, 0.3f, 0.5f, // Offset
 		0.9f, 0.8f, // Scale
 		0.0f, 45.0f, // Rotation
 
@@ -19,7 +19,7 @@ CrossShape::CrossShape(int textureId)
 
 	BlockShapeFace sideTwoFront = BlockShapeFace
 	{
-		0.5f, 0.4f, 0.5f, // Offset
+		0.5f, 0.3f, 0.5f, // Offset
 		0.9f, 0.8f, // Scale
 		0.0f, 315.0f, // Rotation
 
@@ -33,7 +33,7 @@ CrossShape::CrossShape(int textureId)
 
 	BlockShapeFace sideOneBack = BlockShapeFace
 	{
-		0.5f, 0.4f, 0.5f, // Offset
+		0.5f, 0.3f, 0.5f, // Offset
 		-0.9f, 0.8f, // Scale
 		0.0f, 45.0f, // Rotation
 
@@ -47,7 +47,7 @@ CrossShape::CrossShape(int textureId)
 
 	BlockShapeFace sideTwoBack = BlockShapeFace
 	{
-		0.5f, 0.4f, 0.5f, // Offset
+		0.5f, 0.3f, 0.5f, // Offset
 		-0.9f, 0.8f, // Scale
 		0.0f, 315.0f, // Rotation
 
