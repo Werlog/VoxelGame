@@ -93,4 +93,5 @@ void BlockData::init()
 	data.emplace(BlockType::TALL_GRASS, std::make_shared<CrossBlock>(BlockType::TALL_GRASS, "Tall Grass", 106));
 	data.emplace(BlockType::RED_FLOWER, std::make_shared<CrossBlock>(BlockType::RED_FLOWER, "Red Flower", 12));
 	data.emplace(BlockType::YELLOW_FLOWER, std::make_shared<CrossBlock>(BlockType::YELLOW_FLOWER, "Yellow Flower", 13));
+	data.emplace(BlockType::OAK_SAPLING, std::make_shared<CrossBlock>(BlockType::OAK_SAPLING, "Oak Sapling", 15));
 }

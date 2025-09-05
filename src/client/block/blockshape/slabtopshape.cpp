@@ -69,7 +69,7 @@ SlabTopShape::SlabTopShape(int frontFaceTexId, int rightFaceTexId, int backFaceT
 		1.0f, 1.0f, // UV Scale
 
 		topFaceTexId, // Texture
-		false, // Cullable
+		true, // Cullable
 		glm::ivec3(0, 1, 0), // Normal
 	};
 
@@ -83,7 +83,7 @@ SlabTopShape::SlabTopShape(int frontFaceTexId, int rightFaceTexId, int backFaceT
 		1.0f, 1.0f, // UV Scale
 
 		bottomFaceTexId, // Texture
-		true, // Cullable
+		false, // Cullable
 		glm::ivec3(0, -1, 0), // Normal
 	};
 
