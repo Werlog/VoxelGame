@@ -42,6 +42,7 @@ Right Shift - Open Dev Menu (Allows to toggle flight/collisions)
 - Breaks less at larger distances
 - Added world saving
 - Added UI
+- Implemented different block shapes
 
 ## How to build
 Open the project folder with Visual Studio, open CMakeLists.txt and press <kbd>Ctrl + S</kbd>.
