@@ -85,7 +85,6 @@ void Player::render()
 		return;
 
 	glm::ivec3 blockPos = glm::ivec3((int)floor(lookPos->x), (int)floor(lookPos->y), (int)floor(lookPos->z));
-
 	blockOutline.setPosition(blockPos);
 	blockOutline.render(*camera, chunkPosition);
 }
@@ -359,47 +358,12 @@ void Player::blockPlaceLogic()
 	if (blockPos == nullptr)
 		return;
 
-	glm::vec3 centerPos = glm::vec3(floor(blockPos->x) + 0.5f, floor(blockPos->y) + 0.5f, floor(blockPos->z) + 0.5f);
-	glm::vec3 direction = glm::normalize((*blockPos) - centerPos);
+	BlockData& blockData = world->getBlockData();
+	const std::shared_ptr<Block>& blockToPlace = blockData.getBlock(hotbar->getSelectedBlock());
 
-	glm::vec3 compass[] =
-	{
-		glm::vec3(1.0f, 0.0f, 0.0f),
-		glm::vec3(-1.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::vec3(0.0f, -1.0f, 0.0f),
-		glm::vec3(0.0f, 0.0f, 1.0f),
-		glm::vec3(0.0f, 0.0f, -1.0f),
-	};
+	BlockPlaceResult result = blockToPlace->placeBlock(std::move(blockPos), *world);
 
-	glm::vec3& highestDir = compass[0];
-	float highestDot = -1.1f;
-	for (const glm::vec3& dir : compass)
-	{
-		float dot = glm::dot(dir, direction);
-
-		if (dot > highestDot)
-		{
-			highestDot = dot;
-			highestDir = dir;
-		}
-	}
-	
-	int placeX = (int)floor(centerPos.x + highestDir.x);
-	int placeY = (int)floor(centerPos.y + highestDir.y);
-	int placeZ = (int)floor(centerPos.z + highestDir.z);
-
-	if (world->getBlockAt(placeX, placeY, placeZ) == BlockType::AIR)
-	{
-		int relX = placeX - chunkPosition.x * CHUNK_SIZE_X;
-		int relY = placeY - chunkPosition.y * CHUNK_SIZE_Y;
-		int relZ = placeZ - chunkPosition.z * CHUNK_SIZE_Z;
-		AABB blockAABB = AABB(glm::vec3(relX, relY, relZ), glm::vec3(relX + 1, relY + 1, relZ + 1));
-		if (enableCollision && blockAABB.isOverlapping(collider))
-			return;
-
-		world->modifyBlockAt(placeX, placeY, placeZ, hotbar->getSelectedBlock());
-	}
+	world->modifyBlockAt(result.placedPosition.x, result.placedPosition.y, result.placedPosition.z, result.placedBlock);
 }
 
 void Player::blockPickLogic()

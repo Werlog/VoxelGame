@@ -2,6 +2,7 @@
 
 #include "../block.h"
 #include "../blockshape/slabbottomshape.h"
+#include "../blockshape/slabtopshape.h"
 
 class SlabBlock : public Block
 {
@@ -19,6 +20,9 @@ public:
 
 	bool isFullBlock() const override;
 	bool isTransparent() const override;
+
+	virtual BlockPlaceResult placeBlock(std::unique_ptr<glm::vec3> lookingPos, World& world) override;
 protected:
 	std::shared_ptr<SlabBottomShape> bottomShape;
+	std::shared_ptr<SlabTopShape> topShape;
 };

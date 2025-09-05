@@ -48,6 +48,9 @@ void BlockData::initShapes()
 	SlabBottomShape bottomSlab = SlabBottomShape(0, 0, 0, 0, 0, 0);
 	shapes.push_back(BlockShapeSpecification::convertBlockShape(bottomSlab));
 
+	SlabTopShape topSlab = SlabTopShape(0, 0, 0, 0, 0, 0);
+	shapes.push_back(BlockShapeSpecification::convertBlockShape(topSlab));
+
 	CrossShape cross = CrossShape(0);
 	shapes.push_back(BlockShapeSpecification::convertBlockShape(cross));
 

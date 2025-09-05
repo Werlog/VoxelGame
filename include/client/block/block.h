@@ -33,6 +33,13 @@ enum BlockState : unsigned char
 	STATE_3 = 3,
 };
 
+struct BlockPlaceResult
+{
+	bool success;
+	BlockType placedBlock;
+	glm::ivec3 placedPosition;
+};
+
 class World;
 
 class Block
@@ -51,10 +58,13 @@ public:
 	virtual bool isFullBlock() const = 0;
 	virtual bool isTransparent() const = 0;
 
+	virtual BlockPlaceResult placeBlock(std::unique_ptr<glm::vec3> lookingPos, World& world);
+
 	const std::string& getName() const;
 	BlockType getBlockType() const;
 
 	static BlockType getRaw(BlockType blockType);
+	static BlockType withState(BlockType blockType, BlockState state);
 	static BlockState getState(BlockType blockType);
 	static bool isSimilar(BlockType first, BlockType second);
 protected:
