@@ -1,4 +1,5 @@
 #include "block/blocks/cubeblock.h"
+#include "world.h"
 
 CubeBlock::CubeBlock(BlockType blockType, const std::string& blockName, int textureId, bool isTransparent)
 	: Block(blockType, blockName)

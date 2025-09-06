@@ -15,6 +15,7 @@ World::World(Shader& terrainShader, PlayingGameState* playingState, const std::s
 	shaderModelLoc = glGetUniformLocation(terrainShader.getProgramHandle(), "model");
 	this->playingState = playingState;
 
+	this->sinceRandomUpdate = 0.0f;
 	this->seed = worldSeed;
 	this->worldName = worldName;
 
@@ -23,7 +24,7 @@ World::World(Shader& terrainShader, PlayingGameState* playingState, const std::s
 	lastplayerCoord = ChunkCoord{ 0, 0, 0 };
 }
 
-void World::updateWorld(Player& player)
+void World::updateWorld(Player& player, float deltaTime)
 {
 	ChunkCoord playerCoord = ChunkCoord::toChunkCoord(player.getWorldPosition());
 
@@ -33,6 +34,8 @@ void World::updateWorld(Player& player)
 	}
 
 	chunkManager.update();
+
+	performRandomUpdates(deltaTime);
 }
 
 void World::renderWorld(const ChunkCoord& playerCoord, Camera& camera)
@@ -152,10 +155,10 @@ void World::setBlockAt(int x, int y, int z, BlockType newBlock)
 	chunk->setBlockAt(x - coord.x * CHUNK_SIZE_X, y - coord.y * CHUNK_SIZE_Y, z - coord.z * CHUNK_SIZE_Z, newBlock, true);
 }
 
-void World::modifyBlockAt(int x, int y, int z, BlockType newBlock)
+void World::modifyBlockAt(int x, int y, int z, BlockType newBlock, bool showParticles)
 {
 	BlockType oldBlock = getBlockAt(x, y, z);
-	if (oldBlock != BlockType::AIR)
+	if (oldBlock != BlockType::AIR && showParticles)
 	{
 		playingState->spawnBreakParticles(glm::vec3(x, y, z), oldBlock);
 	}
@@ -253,7 +256,7 @@ void World::setupWorldGen()
 	{
 		std::random_device rd;
 		std::mt19937 rng(rd());
-		std::uniform_int_distribution<> distr(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::max());
+		std::uniform_int_distribution<int> distr(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::max());
 
 		seed = distr(rng);
 	}
@@ -263,4 +266,47 @@ void World::setupWorldGen()
 	grassDensityNoise = FastNoiseSIMD::NewFastNoiseSIMD(seed - 1);
 
 	std::cout << "World seed is: " << seed << std::endl;
+}
+
+void World::performRandomUpdates(float deltaTime)
+{
+	sinceRandomUpdate += deltaTime;
+
+	if (sinceRandomUpdate > RANDOM_UPDATE_DELAY)
+	{
+		std::random_device rd;
+		std::mt19937 rng(rd());
+		std::uniform_int_distribution<int> posXDistr(0, CHUNK_SIZE_X);
+		std::uniform_int_distribution<int> posYDistr(0, CHUNK_SIZE_Y);
+		std::uniform_int_distribution<int> posZDistr(0, CHUNK_SIZE_Z);
+
+		for (int x = -SIMULATION_DISTANCE; x <= SIMULATION_DISTANCE; x++)
+		{
+			for (int y = -1; y <= 1; y++)
+			{
+				for (int z = -SIMULATION_DISTANCE; z < SIMULATION_DISTANCE; z++)
+				{
+					ChunkCoord coord = lastplayerCoord + ChunkCoord{ x, y, z };
+
+					std::shared_ptr<Chunk> chunk = getChunkByCoordinate(coord);
+
+					for (int _ = 0; _ < 24; _++)
+					{
+						int posX = posXDistr(rng);
+						int posY = posYDistr(rng);
+						int posZ = posZDistr(rng);
+
+						glm::ivec3 worldBlockPos = glm::ivec3(coord.x * CHUNK_SIZE_X + posX, coord.y * CHUNK_SIZE_Y + posY, coord.z * CHUNK_SIZE_Z + posZ);
+
+						BlockType type = chunk->getBlockAt(posX, posY, posZ);
+						const std::shared_ptr<Block>& block = blockData.getBlock(type);
+
+						block->onRandomUpdate(worldBlockPos, type, *this);
+					}
+				}
+			}
+		}
+
+		sinceRandomUpdate -= RANDOM_UPDATE_DELAY;
+	}
 }

@@ -278,7 +278,7 @@ void Player::resolveCollisions(float deltaTime)
 
 		if (nearest.entryTime < 1.0f)
 		{
-			float epsilon = std::max(0.01f, glm::length(velocity) * 0.01f);
+			float epsilon = std::max(0.05f, glm::length(velocity) * 0.03f);
 
 			//this->velocity = glm::vec3(0.0f);
 
@@ -349,7 +349,7 @@ void Player::blockBreakLogic()
 	int breakY = (int)floor(blockPos->y);
 	int breakZ = (int)floor(blockPos->z);
 
-	world->modifyBlockAt(breakX, breakY, breakZ, BlockType::AIR);
+	world->modifyBlockAt(breakX, breakY, breakZ, BlockType::AIR, true);
 }
 
 void Player::blockPlaceLogic()

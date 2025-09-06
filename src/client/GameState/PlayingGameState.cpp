@@ -40,7 +40,7 @@ void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 	hud.update(inputHandler, deltaTime);
 	player.update(inputHandler, deltaTime);
 
-	world.updateWorld(player);
+	world.updateWorld(player, deltaTime);
 
 	updateBreakParticles(deltaTime);
 
