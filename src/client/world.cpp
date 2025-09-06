@@ -155,7 +155,7 @@ void World::setBlockAt(int x, int y, int z, BlockType newBlock)
 	chunk->setBlockAt(x - coord.x * CHUNK_SIZE_X, y - coord.y * CHUNK_SIZE_Y, z - coord.z * CHUNK_SIZE_Z, newBlock, true);
 }
 
-void World::modifyBlockAt(int x, int y, int z, BlockType newBlock, bool showParticles)
+void World::modifyBlockAt(int x, int y, int z, BlockType newBlock, bool showParticles, bool updateNeighbours)
 {
 	BlockType oldBlock = getBlockAt(x, y, z);
 	if (oldBlock != BlockType::AIR && showParticles)
@@ -165,25 +165,26 @@ void World::modifyBlockAt(int x, int y, int z, BlockType newBlock, bool showPart
 
 	setBlockAt(x, y, z, newBlock);
 
-	// Update neighbours
-
-	glm::ivec3 updateDirections[] =
+	if (updateNeighbours)
 	{
-		glm::ivec3(0.0f, 0.0f, 1.0f),
-		glm::ivec3(1.0f, 0.0f, 0.0f),
-		glm::ivec3(0.0f, 0.0f, -1.0f),
-		glm::ivec3(-1.0f, 0.0f, 0.0f),
-		glm::ivec3(0.0f, 1.0f, 0.0f),
-		glm::ivec3(0.0f, -1.0f, 0.0f),
-	};
+		glm::ivec3 updateDirections[] =
+		{
+			glm::ivec3(0.0f, 0.0f, 1.0f),
+			glm::ivec3(1.0f, 0.0f, 0.0f),
+			glm::ivec3(0.0f, 0.0f, -1.0f),
+			glm::ivec3(-1.0f, 0.0f, 0.0f),
+			glm::ivec3(0.0f, 1.0f, 0.0f),
+			glm::ivec3(0.0f, -1.0f, 0.0f),
+		};
 
-	for (const auto& direction : updateDirections)
-	{
-		glm::ivec3 neighbourPos = glm::ivec3(x + direction.x, y + direction.y, z + direction.z);
-		BlockType type = getBlockAt(neighbourPos.x, neighbourPos.y, neighbourPos.z);
+		for (const auto& direction : updateDirections)
+		{
+			glm::ivec3 neighbourPos = glm::ivec3(x + direction.x, y + direction.y, z + direction.z);
+			BlockType type = getBlockAt(neighbourPos.x, neighbourPos.y, neighbourPos.z);
 
-		const std::shared_ptr<Block>& block = blockData.getBlock(type);
-		block->onUpdate(neighbourPos, type, *this);
+			const std::shared_ptr<Block>& block = blockData.getBlock(type);
+			block->onUpdate(neighbourPos, type, *this);
+		}
 	}
 
 	ChunkCoord coord = ChunkCoord::toChunkCoord(x, y, z);

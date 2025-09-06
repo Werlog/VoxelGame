@@ -28,6 +28,7 @@ enum BlockType : unsigned char
 	BOOKSHELF,
 	MOSSY_COBBLESTONE,
 	OBSIDIAN,
+	GLASS_PANE,
 
 	BLOCK_TYPE_LIMIT = 64,
 };

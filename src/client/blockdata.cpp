@@ -4,6 +4,7 @@
 #include "block/blocks/crossblock.h"
 #include "block/blocks/grassblock.h"
 #include "block/blocks/dirtblock.h"
+#include "block/blocks/glasspaneblock.h"
 #include <glad/glad.h>
 
 BlockData::BlockData(Shader& chunkShader)
@@ -56,6 +57,12 @@ void BlockData::initShapes()
 	CrossShape cross = CrossShape(0);
 	shapes.push_back(BlockShapeSpecification::convertBlockShape(cross));
 
+	PaneForwardShape forwardPane = PaneForwardShape(0);
+	shapes.push_back(BlockShapeSpecification::convertBlockShape(forwardPane));
+
+	PaneRightShape rightPane = PaneRightShape(0);
+	shapes.push_back(BlockShapeSpecification::convertBlockShape(rightPane));
+
 	uploadShapes(shapes);
 
 	for (size_t i = 0; i < shapes.size(); i++)
@@ -102,4 +109,5 @@ void BlockData::init()
 	data.emplace(BlockType::BOOKSHELF, std::make_shared<CubeBlock>(BlockType::BOOKSHELF, "Bookshelf", 35, 4, 4, false));
 	data.emplace(BlockType::MOSSY_COBBLESTONE, std::make_shared<CubeBlock>(BlockType::MOSSY_COBBLESTONE, "Mossy Cobblestone", 36, false));
 	data.emplace(BlockType::OBSIDIAN, std::make_shared<CubeBlock>(BlockType::OBSIDIAN, "Obsidian", 37, false));
+	data.emplace(BlockType::GLASS_PANE, std::make_shared<GlassPaneBlock>());
 }

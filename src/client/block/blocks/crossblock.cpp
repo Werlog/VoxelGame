@@ -16,7 +16,7 @@ void CrossBlock::onUpdate(glm::ivec3 position, BlockType block, World& world)
 	BlockType below = world.getBlockAt(position.x, position.y - 1, position.z);
 	if (below != BlockType::GRASS && below != BlockType::DIRT)
 	{
-		world.modifyBlockAt(position.x, position.y, position.z, BlockType::AIR);
+		world.modifyBlockAt(position.x, position.y, position.z, BlockType::AIR, true);
 	}
 }
 

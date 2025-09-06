@@ -9,6 +9,8 @@ enum BlockShapeType : unsigned char
 	CROSS,
 	SLAB_BOTTOM,
 	SLAB_TOP,
+	PANE_FORWARD,
+	PANE_RIGHT,
 };
 
 struct BlockShapeFace
