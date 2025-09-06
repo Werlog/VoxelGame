@@ -102,6 +102,7 @@ void main()
 	vec3 scale = vec3(shape.faces[faceIndex].scaleX, shape.faces[faceIndex].scaleY, 1.0f);
 	vec3 offset = vec3(shape.faces[faceIndex].offsetX, shape.faces[faceIndex].offsetY, shape.faces[faceIndex].offsetZ);
 	vec2 uvScale = vec2(shape.faces[faceIndex].uvScaleX, shape.faces[faceIndex].uvScaleY);
+	vec2 uvOffset = vec2(shape.faces[faceIndex].uvOffsetX, shape.faces[faceIndex].uvOffsetY);
 
 	vec3 position = vertexPositions[indices[curVertexIndex]] * scale;
 
@@ -110,7 +111,7 @@ void main()
 
 	position += vec3(xPos, yPos, zPos) + offset;
 
-	texCoord = vec3(uvs[indices[curVertexIndex]].x * uvScale.x, uvs[indices[curVertexIndex]].y * uvScale.y, textureId);
+	texCoord = vec3(uvs[indices[curVertexIndex]].x * uvScale.x + uvOffset.x, uvs[indices[curVertexIndex]].y * uvScale.y + uvOffset.y, textureId);
 
 	vec3 normal = vec3(shape.faces[faceIndex].normalX, shape.faces[faceIndex].normalY, shape.faces[faceIndex].normalZ);
 

@@ -90,10 +90,10 @@ void BlockData::init()
 	data.emplace(BlockType::COBBLESTONE_SLAB, std::make_shared<SlabBlock>(BlockType::COBBLESTONE_SLAB, "Cobblestone Slab", 16));
 	data.emplace(BlockType::GLASS, std::make_shared<CubeBlock>(BlockType::GLASS, "Glass", 49, true));
 	data.emplace(BlockType::BEDROCK, std::make_shared<CubeBlock>(BlockType::BEDROCK, "Bedrock", 17, true));
-	data.emplace(BlockType::TALL_GRASS, std::make_shared<CrossBlock>(BlockType::TALL_GRASS, "Tall Grass", 106));
-	data.emplace(BlockType::RED_FLOWER, std::make_shared<CrossBlock>(BlockType::RED_FLOWER, "Red Flower", 12));
-	data.emplace(BlockType::YELLOW_FLOWER, std::make_shared<CrossBlock>(BlockType::YELLOW_FLOWER, "Yellow Flower", 13));
-	data.emplace(BlockType::OAK_SAPLING, std::make_shared<CrossBlock>(BlockType::OAK_SAPLING, "Oak Sapling", 15));
+	data.emplace(BlockType::TALL_GRASS, std::make_shared<CrossBlock>(BlockType::TALL_GRASS, "Tall Grass", 106, true));
+	data.emplace(BlockType::RED_FLOWER, std::make_shared<CrossBlock>(BlockType::RED_FLOWER, "Red Flower", 12, true));
+	data.emplace(BlockType::YELLOW_FLOWER, std::make_shared<CrossBlock>(BlockType::YELLOW_FLOWER, "Yellow Flower", 13, true));
+	data.emplace(BlockType::OAK_SAPLING, std::make_shared<CrossBlock>(BlockType::OAK_SAPLING, "Oak Sapling", 15, true));
 	data.emplace(BlockType::SAND, std::make_shared<CubeBlock>(BlockType::SAND, "Sand", 18, false));
 	data.emplace(BlockType::OAK_SLAB, std::make_shared<SlabBlock>(BlockType::OAK_SLAB, "Oak Slab", 4));
 	data.emplace(BlockType::WOOL, std::make_shared<CubeBlock>(BlockType::WOOL, "Wool", 64, false));

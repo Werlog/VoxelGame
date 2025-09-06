@@ -162,6 +162,27 @@ void World::modifyBlockAt(int x, int y, int z, BlockType newBlock)
 
 	setBlockAt(x, y, z, newBlock);
 
+	// Update neighbours
+
+	glm::ivec3 updateDirections[] =
+	{
+		glm::ivec3(0.0f, 0.0f, 1.0f),
+		glm::ivec3(1.0f, 0.0f, 0.0f),
+		glm::ivec3(0.0f, 0.0f, -1.0f),
+		glm::ivec3(-1.0f, 0.0f, 0.0f),
+		glm::ivec3(0.0f, 1.0f, 0.0f),
+		glm::ivec3(0.0f, -1.0f, 0.0f),
+	};
+
+	for (const auto& direction : updateDirections)
+	{
+		glm::ivec3 neighbourPos = glm::ivec3(x + direction.x, y + direction.y, z + direction.z);
+		BlockType type = getBlockAt(neighbourPos.x, neighbourPos.y, neighbourPos.z);
+
+		const std::shared_ptr<Block>& block = blockData.getBlock(type);
+		block->onUpdate(neighbourPos, type, *this);
+	}
+
 	ChunkCoord coord = ChunkCoord::toChunkCoord(x, y, z);
 
 	chunkManager.remeshChunk(coord, true);
