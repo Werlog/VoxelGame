@@ -3,6 +3,7 @@
 #include "block/blocks/slabblock.h"
 #include "block/blocks/crossblock.h"
 #include "block/blocks/grassblock.h"
+#include "block/blocks/dirtblock.h"
 #include <glad/glad.h>
 
 BlockData::BlockData(Shader& chunkShader)
@@ -84,7 +85,7 @@ void BlockData::init()
 	data.emplace(BlockType::STONE, std::make_shared<CubeBlock>(BlockType::STONE, "Stone", 1, false));
 	data.emplace(BlockType::OAK_PLANKS, std::make_shared<CubeBlock>(BlockType::OAK_PLANKS, "Oak Planks", 4, false));
 	data.emplace(BlockType::COBBLESTONE, std::make_shared<CubeBlock>(BlockType::COBBLESTONE, "Cobblestone", 16, false));
-	data.emplace(BlockType::DIRT, std::make_shared<CubeBlock>(BlockType::DIRT, "Dirt", 2, false));
+	data.emplace(BlockType::DIRT, std::make_shared<DirtBlock>());
 	data.emplace(BlockType::GRASS, std::make_shared<GrassBlock>());
 	data.emplace(BlockType::OAK_LOG, std::make_shared<CubeBlock>(BlockType::OAK_LOG, "Oak Log", 20, 21, 21, false));
 	data.emplace(BlockType::OAK_LEAVES, std::make_shared<CubeBlock>(BlockType::OAK_LEAVES, "Oak Leaves", 53, false));
