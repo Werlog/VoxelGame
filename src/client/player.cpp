@@ -363,7 +363,12 @@ void Player::blockPlaceLogic()
 
 	BlockPlaceResult result = blockToPlace->placeBlock(std::move(blockPos), *world);
 
+	if (!result.success)
+		return;
+
 	world->modifyBlockAt(result.placedPosition.x, result.placedPosition.y, result.placedPosition.z, result.placedBlock);
+
+	blockToPlace->onUpdate(result.placedPosition, result.placedBlock, *world);
 }
 
 void Player::blockPickLogic()
