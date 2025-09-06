@@ -291,6 +291,9 @@ void World::performRandomUpdates(float deltaTime)
 
 					std::shared_ptr<Chunk> chunk = getChunkByCoordinate(coord);
 
+					if (chunk == nullptr)
+						continue;
+
 					for (int _ = 0; _ < 24; _++)
 					{
 						int posX = posXDistr(rng);
