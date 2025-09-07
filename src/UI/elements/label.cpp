@@ -19,3 +19,13 @@ void Label::render(UIRenderer* uiRenderer)
 
 	uiRenderer->renderText(minecraftFont, text, position.x, position.y, scale.x, textColor, alignment);
 }
+
+void Label::setText(const std::string& newText)
+{
+	this->text = newText;
+}
+
+std::string Label::getText() const
+{
+	return text;
+}

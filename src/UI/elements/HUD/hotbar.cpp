@@ -73,6 +73,8 @@ void Hotbar::pickBlock(BlockType type)
 
 void Hotbar::handleMiddleClick(BlockType type)
 {
+	type = Block::getRaw(type);
+
 	for (size_t i = 0; i < hotbarBlocks.size(); i++)
 	{
 		if (hotbarBlocks[i] == type)
