@@ -31,33 +31,11 @@ add_subdirectory(thirdparty/glm)			#math
 add_subdirectory(thirdparty/imgui-docking)		#ui
 add_subdirectory(thirdparty/FastNoiseSIMD)
 add_subdirectory(thirdparty/freetype) #loading ttf files
-add_subdirectory(thirdparty/enet)
 
 
-file(GLOB_RECURSE CLIENT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/client/*.cpp")
-file(GLOB_RECURSE SERVER_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/server/*.cpp")
-
-# SHARED_SOURCES holds the source files that are used in both executables
-file(GLOB_RECURSE SHARED_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/shared/*.cpp")
+file(GLOB_RECURSE CLIENT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 add_executable("${CMAKE_PROJECT_NAME}")
-add_executable(VoxelGameServer)
-
-# To ensure the server is built aswell when trying to run the client
-add_dependencies("${CMAKE_PROJECT_NAME}" VoxelGameServer)
-
-# BUILD SERVER
-
-set_property(TARGET VoxelGameServer PROPERTY CXX_STANDARD 17)
-
-target_sources(VoxelGameServer PRIVATE ${SERVER_SOURCES})
-target_sources(VoxelGameServer PRIVATE ${SHARED_SOURCES})
-
-target_include_directories(VoxelGameServer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/server/")
-target_include_directories(VoxelGameServer PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/shared/")
-
-target_link_libraries(VoxelGameServer PRIVATE glm enet fastNoiseSIMD)
-
 
 # BUILD CLIENT
 
@@ -90,10 +68,8 @@ if(MSVC) # If using the VS compiler...
 endif()
 
 target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${CLIENT_SOURCES})
-target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${SHARED_SOURCES})
 
-target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/client/")
-target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/shared/")
+target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
 target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE glm 
-	glad stb_image imgui SDL2-static fastNoiseSIMD freetype enet)
+	glad stb_image imgui SDL2-static fastNoiseSIMD freetype)
