@@ -118,11 +118,16 @@ void BreakParticles::update(float deltaTime, const ChunkCoord& playerCoord, Worl
 
 		particle.velocity.y -= 29.0f * deltaTime;
 
-		int blockX = floor(chunkWorldPos.x + particle.transform.x);
-		int blockY = floor(chunkWorldPos.y + particle.transform.y - particle.transform.w);
-		int blockZ = floor(chunkWorldPos.z + particle.transform.z);
+		glm::vec3 particlePos = glm::vec3(chunkWorldPos.x + particle.transform.x, chunkWorldPos.y + particle.transform.y - particle.transform.w, chunkWorldPos.z + particle.transform.z);
 
-		if (world.getBlockAt(blockX, blockY, blockZ) != BlockType::AIR)
+		int blockX = floor(particlePos.x);
+		int blockY = floor(particlePos.y);
+		int blockZ = floor(particlePos.z);
+
+		BlockType blockType = world.getBlockAt(blockX, blockY, blockZ);
+		const std::shared_ptr<Block>& block = world.getBlockData().getBlock(blockType);
+
+		if (blockType != BlockType::AIR && block->getCollider(glm::ivec3(blockX, blockY, blockZ), blockType).isInside(particlePos))
 		{
 			particle.velocity = glm::vec3(0.0f);
 		}

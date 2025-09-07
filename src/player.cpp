@@ -366,6 +366,13 @@ void Player::blockPlaceLogic()
 	if (!result.success)
 		return;
 
+	// Check if block collider overlaps with player collider
+	glm::ivec3 relativeBlockPos = glm::ivec3(result.placedPosition.x - chunkPosition.x * CHUNK_SIZE_X, result.placedPosition.y - chunkPosition.y * CHUNK_SIZE_Y, result.placedPosition.z - chunkPosition.z * CHUNK_SIZE_Z);
+	if (blockToPlace->getCollider(relativeBlockPos, result.placedBlock).isOverlapping(collider))
+	{
+		return;
+	}
+
 	world->modifyBlockAt(result.placedPosition.x, result.placedPosition.y, result.placedPosition.z, result.placedBlock);
 
 	blockToPlace->onUpdate(result.placedPosition, result.placedBlock, *world);
