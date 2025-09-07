@@ -11,6 +11,7 @@ enum BlockShapeType : unsigned char
 	SLAB_TOP,
 	PANE_FORWARD,
 	PANE_RIGHT,
+	CACTUS_SHAPE,
 };
 
 struct BlockShapeFace

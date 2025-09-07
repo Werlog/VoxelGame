@@ -1,0 +1,27 @@
+#pragma once
+
+#include "../block.h"
+#include "../blockshape/cactusshape.h"
+
+class CactusBlock : public Block
+{
+public:
+	CactusBlock();
+
+	void onUpdate(glm::ivec3 position, BlockType block, World& world) override;
+	void onRandomUpdate(glm::ivec3 position, BlockType block, World& world) override;
+
+	std::shared_ptr<BlockShape> getBlockShape(BlockType block) override;
+	AABB getCollider(glm::ivec3 position, BlockType block) override;
+	int getBreakParticleTextureId() const override;
+
+	bool isFullBlock() const override;
+	bool isTransparent() const override;
+
+	virtual BlockPlaceResult placeBlock(std::unique_ptr<glm::vec3> lookingPos, World& world) override;
+protected:
+	std::shared_ptr<CactusShape> cactusShape;
+
+	bool validate(glm::ivec3 pos, World& world);
+	int calculateStemLength(glm::ivec3 pos, World& world);
+};

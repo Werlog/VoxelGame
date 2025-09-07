@@ -29,6 +29,8 @@ enum BlockType : unsigned char
 	MOSSY_COBBLESTONE,
 	OBSIDIAN,
 	GLASS_PANE,
+	BRICKS,
+	CACTUS,
 
 	BLOCK_TYPE_LIMIT = 64,
 };

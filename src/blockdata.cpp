@@ -6,6 +6,7 @@
 #include "block/blocks/dirtblock.h"
 #include "block/blocks/glasspaneblock.h"
 #include "block/blocks/sandblock.h"
+#include "block/blocks/cactusblock.h"
 #include <glad/glad.h>
 
 BlockData::BlockData(Shader& chunkShader)
@@ -64,6 +65,9 @@ void BlockData::initShapes()
 	PaneRightShape rightPane = PaneRightShape(0);
 	shapes.push_back(BlockShapeSpecification::convertBlockShape(rightPane));
 
+	CactusShape cactusShape = CactusShape(0, 0, 0);
+	shapes.push_back(BlockShapeSpecification::convertBlockShape(cactusShape));
+
 	uploadShapes(shapes);
 
 	for (size_t i = 0; i < shapes.size(); i++)
@@ -111,4 +115,6 @@ void BlockData::init()
 	data.emplace(BlockType::MOSSY_COBBLESTONE, std::make_shared<CubeBlock>(BlockType::MOSSY_COBBLESTONE, "Mossy Cobblestone", 36, false));
 	data.emplace(BlockType::OBSIDIAN, std::make_shared<CubeBlock>(BlockType::OBSIDIAN, "Obsidian", 37, false));
 	data.emplace(BlockType::GLASS_PANE, std::make_shared<GlassPaneBlock>());
+	data.emplace(BlockType::BRICKS, std::make_shared<CubeBlock>(BlockType::BRICKS, "Bricks", 7, false));
+	data.emplace(BlockType::CACTUS, std::make_shared<CactusBlock>());
 }
