@@ -93,6 +93,9 @@ void ChunkManager::remeshChunk(ChunkCoord coord, bool pushToFront)
 {
 	std::shared_ptr<Chunk> chunk = getLoadedChunk(coord);
 
+	if (chunk == nullptr)
+		return;
+
 	std::lock_guard lock(meshMutex);
 	if (std::find(chunksToMesh.begin(), chunksToMesh.end(), chunk) != chunksToMesh.end())
 	{
