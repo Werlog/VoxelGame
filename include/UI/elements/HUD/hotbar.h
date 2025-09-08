@@ -15,9 +15,12 @@ public:
 	void render(UIRenderer* uiRenderer) override;
 
 	BlockType getSelectedBlock() const;
+	void setBlocks(BlockType (&blocks)[9]);
 
 	void pickBlock(BlockType type);
 	void handleMiddleClick(BlockType type);
+
+	BlockType* getBlocks();
 private:
 	PlayingGameState* playingState;
 	float sinceSwitched;

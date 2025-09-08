@@ -37,12 +37,18 @@ public:
 	void setEnableFlight(bool enable);
 
 	void setWorldPosition(glm::vec3 position);
+	void setRotation(float yaw, float pitch);
+	void setHotbarItems(BlockType (&slots)[9]);
 
 	const glm::vec3& getRelPosition() const;
 	const ChunkCoord& getChunkPosition() const;
 	glm::vec3 getWorldPosition() const;
 	bool getEnableCollision() const;
 	bool getEnableFlight() const;
+	float getYaw() const;
+	float getPitch() const;
+
+	BlockType* getHotbarItems();
 private:
 	Camera* camera;
 	glm::vec3 relPosition;

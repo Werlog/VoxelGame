@@ -106,6 +106,17 @@ void Player::setWorldPosition(glm::vec3 position)
 	playerMoved();
 }
 
+void Player::setRotation(float yaw, float pitch)
+{
+	camera->setYaw(yaw);
+	camera->setPitch(pitch);
+}
+
+void Player::setHotbarItems(BlockType(&slots)[9])
+{
+	hotbar->setBlocks(slots);
+}
+
 const glm::vec3& Player::getRelPosition() const
 {
 	return relPosition;
@@ -129,6 +140,21 @@ bool Player::getEnableCollision() const
 bool Player::getEnableFlight() const
 {
 	return enableFlight;
+}
+
+float Player::getYaw() const
+{
+	return camera->getYaw();
+}
+
+float Player::getPitch() const
+{
+	return camera->getPitch();
+}
+
+BlockType* Player::getHotbarItems()
+{
+	return hotbar->getBlocks();
 }
 
 void Player::movement(InputHandler& inputHandler, float deltaTime)

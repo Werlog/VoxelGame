@@ -35,9 +35,16 @@ void WorldSaver::ensureDirectory()
 
 void WorldSaver::saveWorldInfoFile()
 {
-	glm::vec3 playerPos = playingState->getPlayer().getWorldPosition();
+	Player& player = playingState->getPlayer();
+	glm::vec3 playerPos = player.getWorldPosition();
+	BlockType* hotbarBlocks = player.getHotbarItems();
 
-	SavedWorldInfo info = SavedWorldInfo{ world->getWorldSeed(), playerPos.x, playerPos.y, playerPos.z };
+	SavedWorldInfo info = SavedWorldInfo{ world->getWorldSeed(), playerPos.x, playerPos.y, playerPos.z, player.getYaw(), player.getPitch() };
+
+	for (size_t i = 0; i < 9; i++)
+	{
+		info.playerHotbar[i] = hotbarBlocks[i];
+	}
 
 	FileWriter writer = FileWriter(savePath + "/world.bin");
 	writer.writeRaw(info);

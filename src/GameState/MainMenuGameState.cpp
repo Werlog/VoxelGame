@@ -83,12 +83,14 @@ void MainMenuGameState::enterSavedGame(const std::string& worldName)
 	bool success = saveutil::getWorldInfo(worldName, &info);
 	if (!success)
 	{
-		std::cout << "Cannot enter saved game, invalid world.bin file." << std::endl;
+		std::cout << "world.bin does not exist, cannot open world." << std::endl;
 		return;
 	}
 
 	PlayingGameState* state = new PlayingGameState(game, game->getResourceManager(), worldName, info.worldSeed);
 	state->getPlayer().setWorldPosition(glm::vec3(info.playerX, info.playerY, info.playerZ));
+	state->getPlayer().setRotation(info.playerYaw, info.playerPitch);
+	state->getPlayer().setHotbarItems(info.playerHotbar);
 	game->switchToState(state);
 }
 

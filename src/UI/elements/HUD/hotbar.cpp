@@ -65,6 +65,14 @@ BlockType Hotbar::getSelectedBlock() const
 	return hotbarBlocks[selectedIndex];
 }
 
+void Hotbar::setBlocks(BlockType(&blocks)[9])
+{
+	for (size_t i = 0; i < 9; i++)
+	{
+		hotbarBlocks[i] = blocks[i];
+	}
+}
+
 void Hotbar::pickBlock(BlockType type)
 {
 	hotbarBlocks[selectedIndex] = type;
@@ -86,4 +94,9 @@ void Hotbar::handleMiddleClick(BlockType type)
 	}
 
 	pickBlock(type);
+}
+
+BlockType* Hotbar::getBlocks()
+{
+	return hotbarBlocks.data();
 }
