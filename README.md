@@ -32,6 +32,7 @@ Right Shift - Open Dev Menu (Allows to toggle flight/collisions)
 - Player Movement and Player collision
 - World saving
 - Really basic lighting
+- Block behaviours
 
 ## Improvements over the old project
 
@@ -43,6 +44,7 @@ Right Shift - Open Dev Menu (Allows to toggle flight/collisions)
 - Added world saving
 - Added UI
 - Implemented different block shapes
+- Implemented different block behaviours (Cactus growth, sand falling...)
 
 ## How to build
 Open the project folder with Visual Studio, open CMakeLists.txt and press <kbd>Ctrl + S</kbd>.
