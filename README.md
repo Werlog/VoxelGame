@@ -43,7 +43,7 @@ Right Shift - Open Dev Menu (Allows to toggle flight/collisions)
 - Breaks less at larger distances
 - Added world saving
 - Added UI
-- Implemented different block shapes
+- Implemented block shapes
 - Implemented different block behaviours (Cactus growth, sand falling...)
 
 ## How to build
