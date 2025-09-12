@@ -37,6 +37,8 @@ void Hotbar::update(InputHandler& inputHandler, float deltaTime)
 		sinceSwitched = 0.0f;
 	}
 	sinceSwitched += deltaTime;
+
+	handleNumberKeys(inputHandler);
 }
 
 void Hotbar::render(UIRenderer* uiRenderer)
@@ -99,4 +101,17 @@ void Hotbar::handleMiddleClick(BlockType type)
 BlockType* Hotbar::getBlocks()
 {
 	return hotbarBlocks.data();
+}
+
+void Hotbar::handleNumberKeys(InputHandler& inputHandler)
+{
+	for (size_t i = 0; i < 9; i++)
+	{
+		// Kind of stupid, since we assume that SDLK_1-9 are defined in order, but who cares
+		if (inputHandler.getKeyDown(SDLK_1 + i))
+		{
+			selectedIndex = i;
+			sinceSwitched = 0.0f;
+		}
+	}
 }

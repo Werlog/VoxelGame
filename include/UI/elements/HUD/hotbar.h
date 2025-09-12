@@ -33,4 +33,6 @@ private:
 	Texture& selectedTexture;
 	Font& minecraftFont;
 	BlockIcons* blockIcons;
+
+	void handleNumberKeys(InputHandler& inputHandler);
 };
