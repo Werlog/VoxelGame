@@ -19,6 +19,7 @@ public:
 
 	bool isFullBlock() const override;
 	bool isTransparent() const override;
+	bool isSolid() const override;
 protected:
 	bool transparent;
 	std::shared_ptr<CubeShape> cubeShape;

@@ -421,6 +421,8 @@ void Player::blockPickLogic()
 
 std::unique_ptr<glm::vec3> Player::getLookingAtPosition()
 {
+	BlockData& blockData = world->getBlockData();
+
 	const glm::vec3& direction = camera->front;
 	const glm::vec3& startPosition = camera->getPosition() + glm::vec3(chunkPosition.x * CHUNK_SIZE_X, chunkPosition.y * CHUNK_SIZE_Y, chunkPosition.z * CHUNK_SIZE_Z);
 	for (float dist = 0.0f; dist < 5.0f; dist += 0.03f)
@@ -431,7 +433,13 @@ std::unique_ptr<glm::vec3> Player::getLookingAtPosition()
 		int checkY = (int)floor(checkPos.y);
 		int checkZ = (int)floor(checkPos.z);
 
-		if (world->getBlockAt(checkX, checkY, checkZ) != BlockType::AIR)
+		BlockType blockType = world->getBlockAt(checkX, checkY, checkZ);
+		if (blockType == BlockType::AIR)
+			continue;
+
+		const std::shared_ptr<Block> block = blockData.getBlock(blockType);
+
+		if (!block->isSolid() || block->getCollider(glm::ivec3(checkX, checkY, checkZ), blockType).isInside(checkPos))
 		{
 			return std::make_unique<glm::vec3>(checkPos);
 		}

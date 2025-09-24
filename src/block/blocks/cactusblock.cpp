@@ -55,6 +55,11 @@ bool CactusBlock::isTransparent() const
 	return false;
 }
 
+bool CactusBlock::isSolid() const
+{
+	return true;
+}
+
 BlockPlaceResult CactusBlock::placeBlock(std::unique_ptr<glm::vec3> lookingPos, World& world)
 {
 	BlockPlaceResult result = Block::placeBlock(std::move(lookingPos), world);

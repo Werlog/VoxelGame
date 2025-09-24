@@ -50,6 +50,11 @@ bool CrossBlock::isTransparent() const
 	return true;
 }
 
+bool CrossBlock::isSolid() const
+{
+	return false;
+}
+
 BlockPlaceResult CrossBlock::placeBlock(std::unique_ptr<glm::vec3> lookingPos, World& world)
 {
 	BlockPlaceResult result = Block::placeBlock(std::move(lookingPos), world);

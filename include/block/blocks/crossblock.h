@@ -17,6 +17,7 @@ public:
 
 	bool isFullBlock() const override;
 	bool isTransparent() const override;
+	bool isSolid() const override;
 
 	virtual BlockPlaceResult placeBlock(std::unique_ptr<glm::vec3> lookingPos, World& world) override;
 protected:

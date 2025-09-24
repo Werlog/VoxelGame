@@ -63,6 +63,11 @@ bool SlabBlock::isTransparent() const
 	return false;
 }
 
+bool SlabBlock::isSolid() const
+{
+	return true;
+}
+
 BlockPlaceResult SlabBlock::placeBlock(std::unique_ptr<glm::vec3> lookingPos, World& world)
 {
 	glm::vec3 centerPos = glm::vec3(floor(lookingPos->x) + 0.5f, floor(lookingPos->y) + 0.5f, floor(lookingPos->z) + 0.5f);

@@ -60,3 +60,8 @@ bool GlassPaneBlock::isTransparent() const
 {
 	return true;
 }
+
+bool GlassPaneBlock::isSolid() const
+{
+	return true;
+}

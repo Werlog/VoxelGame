@@ -67,6 +67,7 @@ public:
 
 	virtual bool isFullBlock() const = 0;
 	virtual bool isTransparent() const = 0;
+	virtual bool isSolid() const = 0;
 
 	virtual BlockPlaceResult placeBlock(std::unique_ptr<glm::vec3> lookingPos, World& world);
 

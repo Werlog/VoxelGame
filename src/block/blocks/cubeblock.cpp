@@ -56,3 +56,8 @@ bool CubeBlock::isTransparent() const
 {
 	return transparent;
 }
+
+bool CubeBlock::isSolid() const
+{
+	return true;
+}
