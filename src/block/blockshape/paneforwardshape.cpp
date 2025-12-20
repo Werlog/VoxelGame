@@ -21,7 +21,7 @@ PaneForwardShape::PaneForwardShape(int textureId)
 	{
 		1.0f, 0.5f, 0.5f, // Offset
 		0.1f, 1.0f, // Scale
-		0.0f, -90.0f, // Rotation
+		0.0f, 90.0f, // Rotation
 
 		0.0f, 0.0f, // UV Offset
 		0.1f, 1.0f, // UV Scale
@@ -49,7 +49,7 @@ PaneForwardShape::PaneForwardShape(int textureId)
 	{
 		0.0f, 0.5f, 0.5f, // Offset
 		0.1f, 1.0f, // Scale
-		0.0f, 90.0f, // Rotation
+		0.0f, -90.0f, // Rotation
 
 		0.0f, 0.0f, // UV Offset
 		0.1f, 1.0f, // UV Scale
@@ -63,7 +63,7 @@ PaneForwardShape::PaneForwardShape(int textureId)
 	{
 		0.5f, 1.0f, 0.5f, // Offset
 		1.0f, 0.1f, // Scale
-		90.0f, 0.0f, // Rotation
+		-90.0f, 0.0f, // Rotation
 
 		0.0f, 0.0f, // UV Offset
 		1.0f, 0.1f, // UV Scale
@@ -77,7 +77,7 @@ PaneForwardShape::PaneForwardShape(int textureId)
 	{
 		0.5f, 0.0f, 0.5f, // Offset
 		1.0f, 0.1f, // Scale
-		-90.0f, 0.0f, // Rotation
+		90.0f, 0.0f, // Rotation
 
 		0.0f, 0.0f, // UV Offset
 		1.0f, 0.1f, // UV Scale

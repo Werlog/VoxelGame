@@ -46,7 +46,7 @@ void MainMenuGameState::onEnter()
 
 void MainMenuGameState::onExit()
 {
-	SDL_SetRelativeMouseMode(SDL_TRUE);
+	
 }
 
 void MainMenuGameState::enterGame(const std::string& seedText, const std::string& worldName)

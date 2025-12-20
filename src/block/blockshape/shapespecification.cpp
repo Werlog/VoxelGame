@@ -1,4 +1,5 @@
 #include "block/blockshape/shapespecification.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 BlockShapeSpecification BlockShapeSpecification::convertBlockShape(BlockShape& blockShape)
 {
@@ -10,25 +11,18 @@ BlockShapeSpecification BlockShapeSpecification::convertBlockShape(BlockShape& b
 
 	for (size_t i = 0; i < std::min((int)faces.size(), 10); i++)
 	{
-		shape.data.faces[i].offsetX = faces[i].offsetX;
-		shape.data.faces[i].offsetY = faces[i].offsetY;
-		shape.data.faces[i].offsetZ = faces[i].offsetZ;
+		const BlockShapeFace& face = faces[i];
 
-		shape.data.faces[i].scaleX = faces[i].scaleX;
-		shape.data.faces[i].scaleY = faces[i].scaleY;
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(face.offsetX, face.offsetY, face.offsetZ));
+		transform = glm::rotate(transform, glm::radians(face.rotationX), glm::vec3(1.0f, 0.0f, 0.0f));
+		transform = glm::rotate(transform, glm::radians(face.rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		shape.data.faces[i].rotationX = faces[i].rotationX;
-		shape.data.faces[i].rotationY = faces[i].rotationY;
+		transform = glm::scale(transform, glm::vec3(face.scaleX, face.scaleY, 1.0f));
 
-		shape.data.faces[i].uvOffsetX = faces[i].uvOffsetX;
-		shape.data.faces[i].uvOffsetY = faces[i].uvOffsetY;
-
-		shape.data.faces[i].uvScaleX = faces[i].uvScaleX;
-		shape.data.faces[i].uvScaleY = faces[i].uvScaleY;
-
-		shape.data.faces[i].normalX = faces[i].faceDirection.x;
-		shape.data.faces[i].normalY = faces[i].faceDirection.y;
-		shape.data.faces[i].normalZ = faces[i].faceDirection.z;
+		shape.data.faces[i].transform = transform;
+		shape.data.faces[i].uvOffset = glm::vec2(face.uvOffsetX, face.uvOffsetY);
+		shape.data.faces[i].uvScale = glm::vec2(face.uvScaleX, face.uvScaleY);
+		shape.data.faces[i].normal = glm::vec3(face.faceDirection);
 	}
 
 	return shape;

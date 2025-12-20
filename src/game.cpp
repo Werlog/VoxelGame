@@ -91,9 +91,10 @@ bool Game::init()
 	glLineWidth(2.0f);
 
 	// Game State Setup
+
 	MainMenuGameState* mainMenu = new MainMenuGameState(this);
 	switchToState(mainMenu);
-
+	
 	return true;
 }
 

@@ -1,18 +1,21 @@
 #pragma once
 
 #include "blockshape.h"
+#include <glm/glm.hpp>
 
 // GPU-side Face definition
-struct BlockFaceSpecification
+struct alignas(16) BlockFaceSpecification
 {
-	float offsetX, offsetY, offsetZ;
-	float scaleX, scaleY;
-	float rotationX, rotationY;
-	float uvOffsetX, uvOffsetY;
-	float uvScaleX, uvScaleY;
+	glm::mat4 transform;
 
-	float normalX, normalY, normalZ;
+	glm::vec2 uvOffset;
+	glm::vec2 uvScale;
+
+	glm::vec3 normal;
+	float _pad2;
 };
+
+static_assert(sizeof(BlockFaceSpecification) == 96, "BlockFaceSpecification must be 96 bytes");
 
 struct BlockShapeSpecification
 {

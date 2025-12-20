@@ -21,7 +21,7 @@ CubeShape::CubeShape(int frontFaceTexId, int rightFaceTexId, int backFaceTexId, 
 	{
 		1.0f, 0.5f, 0.5f, // Offset
 		1.0f, 1.0f, // Scale
-		0.0f, -90.0f, // Rotation
+		0.0f, 90.0f, // Rotation
 
 		0.0f, 0.0f, // UV Offset
 		1.0f, 1.0f, // UV Scale
@@ -49,7 +49,7 @@ CubeShape::CubeShape(int frontFaceTexId, int rightFaceTexId, int backFaceTexId, 
 	{
 		0.0f, 0.5f, 0.5f, // Offset
 		1.0f, 1.0f, // Scale
-		0.0f, 90.0f, // Rotation
+		0.0f, -90.0f, // Rotation
 
 		0.0f, 0.0f, // UV Offset
 		1.0f, 1.0f, // UV Scale
@@ -63,7 +63,7 @@ CubeShape::CubeShape(int frontFaceTexId, int rightFaceTexId, int backFaceTexId, 
 	{
 		0.5f, 1.0f, 0.5f, // Offset
 		1.0f, 1.0f, // Scale
-		90.0f, 0.0f, // Rotation
+		-90.0f, 0.0f, // Rotation
 
 		0.0f, 0.0f, // UV Offset
 		1.0f, 1.0f, // UV Scale
@@ -77,7 +77,7 @@ CubeShape::CubeShape(int frontFaceTexId, int rightFaceTexId, int backFaceTexId, 
 	{
 		0.5f, 0.0f, 0.5f, // Offset
 		1.0f, 1.0f, // Scale
-		-90.0f, 0.0f, // Rotation
+		90.0f, 0.0f, // Rotation
 
 		0.0f, 0.0f, // UV Offset
 		1.0f, 1.0f, // UV Scale

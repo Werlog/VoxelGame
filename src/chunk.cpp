@@ -29,7 +29,7 @@ Chunk::~Chunk()
 
 void Chunk::updateLight(BlockData& blockData)
 {
-	std::memset(light, 15, sizeof(light));
+	std::memset(light, 0, sizeof(light));
 
 	for (int x = 0; x < CHUNK_SIZE_X; x++)
 	{

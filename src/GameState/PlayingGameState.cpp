@@ -89,6 +89,7 @@ void PlayingGameState::render()
 
 void PlayingGameState::onEnter()
 {
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 	world.updateLoadedChunks(ChunkCoord::toChunkCoord(player.getWorldPosition()));
 
 	blockIcons.init(world.getBlockData());
@@ -96,7 +97,7 @@ void PlayingGameState::onEnter()
 
 void PlayingGameState::onExit()
 {
-
+	SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
 void PlayingGameState::setPaused(bool paused)
