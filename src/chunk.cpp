@@ -246,7 +246,7 @@ std::array<bool, 8> Chunk::getAONeighbours(int x, int y, int z, int faceIndex)
 
 		const std::shared_ptr<Block>& block = world->getBlockData().getBlock(type);
 
-		return block->isFullBlock();
+		return block->isFullBlock() && !block->isTransparent();
 	};
 
 	int count = 0;

@@ -96,14 +96,14 @@ void main()
 	texCoord = vec3(uvs[indices[curVertexIndex]].x * uvScale.x + uvOffset.x, uvs[indices[curVertexIndex]].y * uvScale.y + uvOffset.y, textureId);
 
 	brightness = max(dot(normal, lightDirection), -0.5f);
-	brightness += 0.55f;
-	brightness = clamp(brightness, 0.65f, 1.0f);
+	brightness += 0.4f;
+	brightness = clamp(brightness, 0.6f, 1.0f);
 	brightness = 1.0f;
 	if (ao != 0)
 	{
 		uint aoIndex = indices[curVertexIndex] * 2;
 		uint vertexAO = (ao >> aoIndex) & 3;
-		brightness -= vertexAO * 0.25f;
+		brightness -= vertexAO * 0.2f;
 	}
 
 	gl_Position = projection * view * model * vec4(position, 1.0f);
