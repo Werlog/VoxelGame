@@ -99,7 +99,11 @@ void Chunk::generateMesh(BlockData& blockData)
 							continue;
 					}
 
-					createFace(x, y, z, face.textureId, getLightLevelAt(checkX, checkY, checkZ), shapeIndex, i);
+					int ao = 0;
+					if (block->isFullBlock())
+						ao = calculateAO(x, y, z, i, face.faceDirection);
+
+					createFace(x, y, z, face.textureId, getLightLevelAt(checkX, checkY, checkZ), shapeIndex, i, ao);
 				}
 			}
 		}
@@ -205,7 +209,112 @@ void Chunk::unloadMesh()
 	SSBO = 0;
 }
 
-void Chunk::createFace(int x, int y, int z, int textureId, int lightLevel, int shapeIndex, int faceIndex)
+void Chunk::createFace(int x, int y, int z, int textureId, int lightLevel, int shapeIndex, int faceIndex, int ao)
 {
-	faceData.push_back(ChunkFace{ (x | y << 6 | z << 12 | textureId << 18 | lightLevel << 26), (shapeIndex | faceIndex << 4) });
+	faceData.push_back(ChunkFace{ (x | y << 6 | z << 12 | textureId << 18 | lightLevel << 26), (shapeIndex | faceIndex << 4 | ao << 8) });
+}
+
+int Chunk::calculateAO(int blockX, int blockY, int blockZ, int faceIndex, const glm::ivec3& normal)
+{
+	auto calculateVertexAO = [this](bool sideOne, bool sideTwo, bool corner) -> int {
+		if (sideOne && sideTwo)
+			return 2;
+		return sideOne + sideTwo + corner;
+	};
+
+	int ao = 0;
+
+	std::array<bool, 8> neighbouringBlocks = getAONeighbours(blockX, blockY, blockZ, faceIndex);
+
+	ao |= calculateVertexAO(neighbouringBlocks[3], neighbouringBlocks[6], neighbouringBlocks[5]);
+	ao |= calculateVertexAO(neighbouringBlocks[6], neighbouringBlocks[4], neighbouringBlocks[7]) << 2;
+	ao |= calculateVertexAO(neighbouringBlocks[3], neighbouringBlocks[1], neighbouringBlocks[0]) << 4;
+	ao |= calculateVertexAO(neighbouringBlocks[1], neighbouringBlocks[4], neighbouringBlocks[2]) << 6;
+
+	return ao;
+}
+
+std::array<bool, 8> Chunk::getAONeighbours(int x, int y, int z, int faceIndex)
+{
+	std::array<bool, 8> aoNeighbours = std::array<bool, 8>();
+
+	auto checkBlock = [this](int x, int y, int z) -> bool {
+		BlockType type = getBlockAt(x, y, z);
+
+		if (type == BlockType::AIR)
+			return false;
+
+		const std::shared_ptr<Block>& block = world->getBlockData().getBlock(type);
+
+		return block->isFullBlock();
+	};
+
+	int count = 0;
+	switch (faceIndex)
+	{
+	case 0:
+		for (int i = 1; i >= -1; i--)
+		{
+			for (int j = -1; j <= 1; j++)
+			{
+				if (i == 0 && j == 0) continue;
+				aoNeighbours[count++] = checkBlock(x + j, y + i, z + 1);
+			}
+		}
+		break;
+	case 1:
+		for (int i = 1; i >= -1; i--)
+		{
+			for (int j = 1; j >= -1; j--)
+			{
+				if (i == 0 && j == 0) continue;
+				aoNeighbours[count++] = checkBlock(x + 1, y + i, z + j);
+			}
+		}
+		break;
+	case 2:
+		for (int i = 1; i >= -1; i--)
+		{
+			for (int j = 1; j >= -1; j--)
+			{
+				if (i == 0 && j == 0) continue;
+				aoNeighbours[count++] = checkBlock(x + j, y + i, z - 1);
+			}
+		}
+		break;
+	case 3:
+		for (int i = 1; i >= -1; i--)
+		{
+			for (int j = -1; j <= 1; j++)
+			{
+				if (i == 0 && j == 0) continue;
+				aoNeighbours[count++] = checkBlock(x - 1, y + i, z + j);
+			}
+		}
+		break;
+	case 4:
+		for (int i = -1; i <= 1; i++)
+		{
+			for (int j = -1; j <= 1; j++)
+			{
+				if (i == 0 && j == 0) continue;
+				aoNeighbours[count++] = checkBlock(x + j, y + 1, z + i);
+			}
+		}
+		break;
+	case 5:
+		for (int i = 1; i >= -1; i--)
+		{
+			for (int j = -1; j <= 1; j++)
+			{
+				if (i == 0 && j == 0) continue;
+				aoNeighbours[count++] = checkBlock(x + j, y - 1, z + i);
+			}
+		}
+		break;
+	default:
+		break;
+	}
+
+	return aoNeighbours;
 }

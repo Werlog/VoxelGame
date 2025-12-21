@@ -55,5 +55,8 @@ private:
 	unsigned int VAO;
 	unsigned int SSBO;
 
-	void createFace(int x, int y, int z, int textureId, int lightLevel, int shapeIndex, int faceIndex);
+	void createFace(int x, int y, int z, int textureId, int lightLevel, int shapeIndex, int faceIndex, int ao);
+	int calculateAO(int x, int y, int z, int faceIndex, const glm::ivec3& normal);
+
+	std::array<bool, 8> getAONeighbours(int x, int y, int z, int faceIndex);
 };

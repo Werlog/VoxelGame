@@ -80,9 +80,9 @@ void main()
 
 	uint shapeIndex = secondData & 15;
 	uint faceIndex = (secondData >> 4) & 15;
+	uint ao = (secondData >> 8) & 255;
 
 	const BlockShapeFace face = shapes[shapeIndex].faces[faceIndex];
-	const float RAD2DEG = 3.14159265 / 180.0;
 
 	vec2 uvScale = face.uvScale;
 	vec2 uvOffset = face.uvOffset;
@@ -96,8 +96,15 @@ void main()
 	texCoord = vec3(uvs[indices[curVertexIndex]].x * uvScale.x + uvOffset.x, uvs[indices[curVertexIndex]].y * uvScale.y + uvOffset.y, textureId);
 
 	brightness = max(dot(normal, lightDirection), -0.5f);
-	brightness += 0.5f;
+	brightness += 0.55f;
 	brightness = clamp(brightness, 0.65f, 1.0f);
+	brightness = 1.0f;
+	if (ao != 0)
+	{
+		uint aoIndex = indices[curVertexIndex] * 2;
+		uint vertexAO = (ao >> aoIndex) & 3;
+		brightness -= vertexAO * 0.25f;
+	}
 
 	gl_Position = projection * view * model * vec4(position, 1.0f);
 	worldPosition = (model * vec4(position, 1.0f)).xyz;
