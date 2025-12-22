@@ -114,7 +114,17 @@ void ChunkGenerator::generateTallGrass()
 				if (yPos >= CHUNK_SIZE_Y || yPos < 0)
 					continue;
 
-				chunk->setBlockAt(x, yPos, z, BlockType::TALL_GRASS);
+				BlockType generated = BlockType::TALL_GRASS;
+				if (random < 4)
+				{
+					generated = BlockType::RED_FLOWER;
+				}
+				if (random < 2)
+				{
+					generated = BlockType::YELLOW_FLOWER;
+				}
+
+				chunk->setBlockAt(x, yPos, z, generated);
 			}
 		}
 	}
