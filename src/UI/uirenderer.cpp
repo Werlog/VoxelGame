@@ -149,6 +149,11 @@ void UIRenderer::renderTexturedQuad(unsigned int textureHandle, glm::vec2 positi
 	glUseProgram(0);
 }
 
+void UIRenderer::renderColoredQuad(glm::vec3 color, glm::vec2 position, glm::vec2 scale)
+{
+	renderColoredQuad(glm::vec4(color.x, color.y, color.z, 1.0f), position, scale);
+}
+
 void UIRenderer::renderColoredQuad(const glm::vec4& color, glm::vec2 position, glm::vec2 scale)
 {
 	glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(position.x, position.y, 0.0f));

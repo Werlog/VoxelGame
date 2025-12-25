@@ -45,13 +45,13 @@ void Hotbar::render(UIRenderer* uiRenderer)
 {
 	glm::vec2 position = getPosition();
 
+	uiRenderer->renderTexturedQuad(hotbarTexture, position, scale, glm::vec2(1.0f));
+
 	if (sinceSwitched < 1.5f)
 	{
 		const std::shared_ptr<Block>& block = playingState->getWorld().getBlockData().getBlock(hotbarBlocks[selectedIndex]);
 		uiRenderer->renderText(minecraftFont, block->getName(), position.x, position.y + 75.0f, 0.75f, glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
 	}
-
-	uiRenderer->renderTexturedQuad(selectedTexture, position + glm::vec2(-scale.x + 37.0f + selectedIndex * 66.0f, 0.0f), glm::vec3(36.0f), glm::vec2(1.0f));
 	for (int i = 0; i < hotbarBlocks.size(); i++)
 	{
 		BlockType type = hotbarBlocks[i];
@@ -59,7 +59,7 @@ void Hotbar::render(UIRenderer* uiRenderer)
 		uiRenderer->renderTexturedQuad(blockIcons->getTextureForBlock(type), position + glm::vec2(-scale.x + 37.0f + i * 66.0f, 0.0f), glm::vec2(30.0f), glm::vec2(1.0f));
 	}
 
-	uiRenderer->renderTexturedQuad(hotbarTexture, position, scale, glm::vec2(1.0f));
+	uiRenderer->renderTexturedQuad(selectedTexture, position + glm::vec2(-scale.x + 37.0f + selectedIndex * 66.0f, 0.0f), glm::vec3(36.0f), glm::vec2(1.0f));
 }
 
 BlockType Hotbar::getSelectedBlock() const

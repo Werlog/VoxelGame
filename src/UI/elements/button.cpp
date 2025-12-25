@@ -32,8 +32,8 @@ void Button::render(UIRenderer* uiRenderer)
 {
 	glm::vec2 pos = getPosition();
 
-	uiRenderer->renderText(minecraftFont, text, pos.x, pos.y - (scale.y / 3), 0.75f, disabled ? glm::vec3(0.85f) : glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
 	uiRenderer->renderTexturedQuad(getButtonTexture(), pos, scale, glm::vec2(1.0f));
+	uiRenderer->renderText(minecraftFont, text, pos.x, pos.y - (scale.y / 3), 0.75f, disabled ? glm::vec3(0.85f) : glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
 }
 
 void Button::setCallback(const std::function<void()>& func)

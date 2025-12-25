@@ -139,8 +139,7 @@ void BreakParticles::update(float deltaTime, const ChunkCoord& playerCoord, Worl
 
 	if (removed)
 		updateInstanceBuffer();
-	else
-		updateInstancePositions();
+	updateInstancePositions();
 }
 
 void BreakParticles::render(Camera& camera)
@@ -282,12 +281,12 @@ void BreakParticles::createParticles()
 	std::random_device r;
 	std::mt19937 rng(r());
 
-	std::uniform_int_distribution<int> amountDist(60, 80);
+	std::uniform_int_distribution<int> amountDist(80, 120);
 	std::uniform_real_distribution<float> positionDist(0.0f, 1.0f);
 	std::uniform_real_distribution<float> scaleDist(0.08f, 0.15f);
 	std::uniform_real_distribution<float> lifetimeDist(2.5f, 4.5f);
 	std::uniform_real_distribution<float> yVelDist(1.0f, 7.0f);
-	std::uniform_real_distribution<float> horizontalVelDist(1.0f, 5.0f);
+	std::uniform_real_distribution<float> horizontalVelDist(1.0f, 6.0f);
 
 	int particleAmount = amountDist(rng);
 

@@ -48,6 +48,8 @@ void BlockSelect::render(UIRenderer* uiRenderer)
 {
 	glm::vec2 position = getPosition();
 
+	uiRenderer->renderColoredQuad(glm::vec4(0.0f, 0.0f, 0.0f, 0.7f), position, scale);
+
 	for (size_t i = 0; i < rows * columns; i++)
 	{
 		unsigned int texture = blockIcons->getTextureForBlock((BlockType)i);
@@ -57,13 +59,12 @@ void BlockSelect::render(UIRenderer* uiRenderer)
 		int column = (i - 1) - (columns * row);
 		glm::vec2 pos = glm::vec2((-blockSelectCellSize * columns + blockSelectCellSize) + column * blockSelectCellSize * 2, (blockSelectCellSize * rows - blockSelectCellSize) - row * blockSelectCellSize * 2);
 
-		uiRenderer->renderTexturedQuad(texture, position + pos, glm::vec2(blockSelectCellSize), glm::vec2(1.0f));
 		if (i == hoveredBlock)
 		{
 			uiRenderer->renderColoredQuad(glm::vec4(0.85f), position + pos, glm::vec2(blockSelectCellSize));
 		}
+		uiRenderer->renderTexturedQuad(texture, position + pos, glm::vec2(blockSelectCellSize), glm::vec2(1.0f));
 	}
-	uiRenderer->renderColoredQuad(glm::vec4(0.0f, 0.0f, 0.0f, 0.7f), position, scale);
 }
 
 void BlockSelect::setBlockSelectCallback(const std::function<void(BlockType)>& callback)

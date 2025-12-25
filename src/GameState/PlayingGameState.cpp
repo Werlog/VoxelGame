@@ -79,12 +79,13 @@ void PlayingGameState::render()
 
 	clouds.render(&camera, player.getWorldPosition());
 
+
+	hud.render(&game->getUIRenderer());
+
 	if (currentGUI != nullptr)
 	{
 		currentGUI->render();
 	}
-
-	hud.render(&game->getUIRenderer());
 }
 
 void PlayingGameState::onEnter()

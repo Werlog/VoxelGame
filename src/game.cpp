@@ -49,6 +49,7 @@ bool Game::init()
 	std::cout << "OpenGL Version: " << version << std::endl;
 
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
 	
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);

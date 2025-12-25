@@ -32,11 +32,11 @@ void MainMenuGameState::render()
 	glm::vec2 halfScreen = glm::vec2(width / 2, height / 2);
 	glm::vec2 uvScaler = glm::vec2(width / 60, height / 60);
 
+	game->getUIRenderer().renderTexturedQuad(backgroundTexture, halfScreen, halfScreen, uvScaler);
+	game->getUIRenderer().renderTexturedQuad(titleTexture, glm::vec2(width / 2, height - 100), glm::vec2(343, 47), glm::vec2(1.0f));
+
 	if (currentGUI != nullptr)
 		currentGUI->render();
-
-	game->getUIRenderer().renderTexturedQuad(titleTexture, glm::vec2(width / 2, height - 100), glm::vec2(343, 47), glm::vec2(1.0f));
-	game->getUIRenderer().renderTexturedQuad(backgroundTexture, halfScreen, halfScreen, uvScaler);
 }
 
 void MainMenuGameState::onEnter()

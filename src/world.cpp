@@ -226,6 +226,11 @@ std::shared_ptr<Chunk> World::getChunkByCoordinate(ChunkCoord coord)
 	return chunkManager.getLoadedChunk(coord);
 }
 
+bool World::isChunkLoaded(ChunkCoord coord)
+{
+	return getChunkByCoordinate(coord) != nullptr;
+}
+
 FastNoiseSIMD* World::getNoise()
 {
 	return noise;

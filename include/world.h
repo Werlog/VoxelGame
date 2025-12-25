@@ -43,6 +43,7 @@ public:
 	void saveWorld();
 	
 	std::shared_ptr<Chunk> getChunkByCoordinate(ChunkCoord coord);
+	bool isChunkLoaded(ChunkCoord coord);
 	FastNoiseSIMD* getNoise();
 	FastNoiseSIMD* getTreeNoise();
 	FastNoiseSIMD* getGrassNoise();

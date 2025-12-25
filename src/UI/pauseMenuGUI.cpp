@@ -31,10 +31,10 @@ void PauseMenuGUI::constructGUI()
 		game->quitGame();
 	});
 
+	uiElements.push_back(image);
 	uiElements.push_back(label);
 	uiElements.push_back(savedLabel);
 	uiElements.push_back(resumeButton);
 	uiElements.push_back(saveButton);
 	uiElements.push_back(quitButton);
-	uiElements.push_back(image);
 }

@@ -68,12 +68,12 @@ void SelectView::render(UIRenderer* uiRenderer)
 {
 	glm::vec2 position = getPosition();
 
-	if (shouldShowScrollbar())
-		renderScrollbar(uiRenderer);
+	uiRenderer->renderColoredQuad(glm::vec3(0.0f), position, scale);
 
 	renderOptions(uiRenderer);
 
-	uiRenderer->renderColoredQuad(glm::vec4(0.0f), position, scale);
+	if (shouldShowScrollbar())
+		renderScrollbar(uiRenderer);
 }
 
 void SelectView::setSelectionChangedCallback(const std::function<void(int, const std::string&)>& func)
@@ -106,8 +106,8 @@ void SelectView::renderScrollbar(UIRenderer* uiRenderer)
 	float scrollEndPos = position.y - scale.y + scrollbarHeight;
 	float stepSize = (scrollStartPos - scrollEndPos) / scrollCount;
 
-	uiRenderer->renderColoredQuad(glm::vec4(0.9f, 0.9f, 0.85f, 1.0f), glm::vec2(position.x + scale.x - scrollbarWidth, scrollStartPos - scrollIndex * stepSize), glm::vec2(scrollbarWidth, scrollbarHeight));
-	uiRenderer->renderColoredQuad(glm::vec4(0.3f), glm::vec2(position.x + scale.x - scrollbarWidth, position.y), glm::vec2(scrollbarWidth, scale.y));
+	uiRenderer->renderColoredQuad(glm::vec3(0.2f), glm::vec2(position.x + scale.x - scrollbarWidth, position.y), glm::vec2(scrollbarWidth, scale.y));
+	uiRenderer->renderColoredQuad(glm::vec3(0.9f, 0.9f, 0.85f), glm::vec2(position.x + scale.x - scrollbarWidth, scrollStartPos - scrollIndex * stepSize), glm::vec2(scrollbarWidth, scrollbarHeight));
 }
 
 void SelectView::renderOptions(UIRenderer* uiRenderer)
@@ -119,17 +119,17 @@ void SelectView::renderOptions(UIRenderer* uiRenderer)
 
 		float yPos = position.y + segmentHeight / 4 + scale.y - segmentHeight * (i - scrollIndex + 1);
 		
-		uiRenderer->renderText(minecraftFont, options[i], position.x, yPos, fontScale, selected ? glm::vec3(0.0f) : glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
-		
 		float selectionPos = position.y + segmentHeight / 2 + scale.y - segmentHeight * (i - scrollIndex + 1);
 		if (selected)
 		{
-			uiRenderer->renderColoredQuad(glm::vec4(1.0f), glm::vec2(position.x, selectionPos), glm::vec2(scale.x, segmentHeight / 2.0f));
+			uiRenderer->renderColoredQuad(glm::vec3(1.0f), glm::vec2(position.x, selectionPos), glm::vec2(scale.x, segmentHeight / 2.0f));
 		}
 		else if (hoveredIndex == i)
 		{
-			uiRenderer->renderColoredQuad(glm::vec4(0.6f), glm::vec2(position.x, selectionPos), glm::vec2(scale.x, segmentHeight / 2.0f));
+			uiRenderer->renderColoredQuad(glm::vec3(0.6f), glm::vec2(position.x, selectionPos), glm::vec2(scale.x, segmentHeight / 2.0f));
 		}
+
+		uiRenderer->renderText(minecraftFont, options[i], position.x, yPos, fontScale, selected ? glm::vec3(0.0f) : glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);
 	}
 }
 

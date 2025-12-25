@@ -69,8 +69,8 @@ void InputField::render(UIRenderer* uiRenderer)
 {
 	glm::vec2 position = getPosition();
 
-	uiRenderer->renderText(minecraftFont, (isSelected && showCursor) ? text + "_" : text, position.x - scale.x + 10, position.y - (scale.y / 3), 0.7f, glm::vec3(1.0f));
 	uiRenderer->renderTexturedQuad(inputFieldTexture, position, scale, glm::vec2(1.0f));
+	uiRenderer->renderText(minecraftFont, (isSelected && showCursor) ? text + "_" : text, position.x - scale.x + 10, position.y - (scale.y / 3), 0.7f, glm::vec3(1.0f));
 }
 
 void InputField::setOnChangedCallback(const std::function<void(const std::string&)>& func)
