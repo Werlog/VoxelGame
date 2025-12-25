@@ -24,17 +24,18 @@ void Hotbar::update(InputHandler& inputHandler, float deltaTime)
 
 	if (scroll != 0)
 	{
-		selectedIndex -= scroll;
+		int toSelect = selectedIndex;
+		toSelect -= scroll;
 
-		if (selectedIndex < 0)
+		if (toSelect < 0)
 		{
-			selectedIndex = hotbarBlocks.size() - 1;
+			toSelect = hotbarBlocks.size() - 1;
 		}
-		else if (selectedIndex >= hotbarBlocks.size())
+		else if (toSelect >= hotbarBlocks.size())
 		{
-			selectedIndex = 0;
+			toSelect = 0;
 		}
-		sinceSwitched = 0.0f;
+		selectIndex(toSelect);
 	}
 	sinceSwitched += deltaTime;
 
@@ -79,6 +80,8 @@ void Hotbar::pickBlock(BlockType type)
 {
 	hotbarBlocks[selectedIndex] = type;
 	sinceSwitched = 0.0f;
+	if (blockSelectCallback)
+		blockSelectCallback(selectedIndex, hotbarBlocks[selectedIndex]);
 }
 
 void Hotbar::handleMiddleClick(BlockType type)
@@ -89,13 +92,17 @@ void Hotbar::handleMiddleClick(BlockType type)
 	{
 		if (hotbarBlocks[i] == type)
 		{
-			selectedIndex = i;
-			sinceSwitched = 0.0f;
+			selectIndex(i);
 			return;
 		}
 	}
 
 	pickBlock(type);
+}
+
+void Hotbar::setBlockSelectCallback(const std::function<void(int, BlockType)>& callback)
+{
+	this->blockSelectCallback = callback;
 }
 
 BlockType* Hotbar::getBlocks()
@@ -110,8 +117,15 @@ void Hotbar::handleNumberKeys(InputHandler& inputHandler)
 		// Kind of stupid, since we assume that SDLK_1-9 are defined in order, but who cares
 		if (inputHandler.getKeyDown(SDLK_1 + i))
 		{
-			selectedIndex = i;
-			sinceSwitched = 0.0f;
+			selectIndex(i);
 		}
 	}
+}
+
+void Hotbar::selectIndex(int index)
+{
+	selectedIndex = index;
+	sinceSwitched = 0.0f;
+	if (blockSelectCallback)
+		blockSelectCallback(selectedIndex, hotbarBlocks[selectedIndex]);
 }

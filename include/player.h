@@ -18,9 +18,9 @@ constexpr float playerWidth = 0.6f;
 
 // Movement
 constexpr float gravity = 32.0f;
-constexpr float jumpHeight = 1.3f;
-constexpr float playerSpeed = 9.1f;
-constexpr float flightSpeed = 20.0f;
+constexpr float jumpHeight = 1.28f;
+constexpr float playerSpeed = 7.5f;
+constexpr float flightSpeed = 15.0f;
 
 class World;
 

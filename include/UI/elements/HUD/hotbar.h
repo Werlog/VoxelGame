@@ -3,6 +3,7 @@
 #include "../uielement.h"
 #include "../../blockicons.h"
 #include <array>
+#include <functional>
 
 class PlayingGameState;
 
@@ -20,9 +21,12 @@ public:
 	void pickBlock(BlockType type);
 	void handleMiddleClick(BlockType type);
 
+	void setBlockSelectCallback(const std::function<void(int, BlockType)>& callback);
+
 	BlockType* getBlocks();
 private:
 	PlayingGameState* playingState;
+	std::function<void(int, BlockType)> blockSelectCallback;
 	float sinceSwitched;
 
 	int selectedIndex;
@@ -35,4 +39,6 @@ private:
 	BlockIcons* blockIcons;
 
 	void handleNumberKeys(InputHandler& inputHandler);
+
+	void selectIndex(int index);
 };

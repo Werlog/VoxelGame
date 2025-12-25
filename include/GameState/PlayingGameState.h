@@ -11,6 +11,7 @@
 #include "UI/HUD.h"
 #include "UI/blockicons.h"
 #include "breakparticles.h"
+#include "viewmodel.h"
 
 class PlayingGameState : public BaseGameState
 {
@@ -39,6 +40,7 @@ private:
 	Font& minecraftFont;
 	World world;
 	HUD hud;
+	ViewModel viewModel;
 	Player player;
 	TextureSheet terrainSheet;
 	BlockIcons blockIcons;
@@ -63,6 +65,8 @@ private:
 	unsigned int shaderLightDirectionLoc;
 
 	void updateBreakParticles(float deltaTime);
+
+	void onBlockSelected(int index, BlockType blockType);
 
 	void renderWorld();
 	void renderBreakParticles();
