@@ -25,7 +25,7 @@ Player::Player(Camera* camera, World* world, Hotbar* hotbar, ResourceManager& re
 
 void Player::update(InputHandler& inputHandler, float deltaTime)
 {
-	camera->update(deltaTime);
+	camera->update(inputHandler);
 
 	movement(inputHandler, deltaTime);
 

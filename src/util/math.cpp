@@ -16,3 +16,8 @@ float math::clamp(float val, float min, float max)
 {
 	return std::max(std::min(val, max), min);
 }
+
+float math::cubicEase(float t)
+{
+	return 1.0f - std::pow(1.0f - t, 3);
+}

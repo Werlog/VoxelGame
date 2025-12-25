@@ -56,12 +56,9 @@ glm::mat4 Camera::getViewMatrix()
 	return glm::lookAt(position, position + front, up);
 }
 
-void Camera::update(float deltaTime)
+void Camera::update(InputHandler& inputHandler)
 {
-	int xrel = 0;
-	int yrel = 0;
-	SDL_GetRelativeMouseState(&xrel, &yrel);
-	ProccessMouse(xrel, yrel, true);
+	ProccessMouse(inputHandler.getMouseX(), inputHandler.getMouseY(), true);
 }
 
 void Camera::ProccessMouse(float mouseX, float mouseY, bool constrainPitch)

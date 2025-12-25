@@ -38,7 +38,7 @@ public:
 
 	bool isInsideFrustum(AABB& aabb);
 
-	void update(float deltaTime);
+	void update(InputHandler& inputHandler);
 	void ProccessMouse(float mouseX, float mouseY, bool constrainPitch = true);
 	void updateProjectionMatrix(float aspectRatio);
 

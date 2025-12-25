@@ -35,6 +35,8 @@ public:
 	glm::vec2 getMousePosition();
 
 	int getMouseScroll() const;
+	int getMouseX() const;
+	int getMouseY() const;
 
 	char* getTextInput();
 	void startTextInput();
@@ -44,6 +46,9 @@ private:
 	std::unordered_map<int, KeyState> keyStates;
 	std::unordered_map<unsigned char, KeyState> mouseStates;
 	bool receivingTextInput;
+
+	int mouseX;
+	int mouseY;
 
 	char textInputBuffer[32];
 

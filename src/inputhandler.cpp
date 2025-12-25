@@ -2,6 +2,9 @@
 
 InputHandler::InputHandler()
 {
+	this->mouseX = 0;
+	this->mouseY = 0;
+
 	scrollValue = 0;
 	receivingTextInput = false;
 	std::memset(textInputBuffer, 0, sizeof(textInputBuffer));
@@ -30,6 +33,8 @@ void InputHandler::update()
 	}
 
 	std::memset(textInputBuffer, 0, sizeof(textInputBuffer));
+
+	SDL_GetRelativeMouseState(&mouseX, &mouseY);
 
 	scrollValue = 0;
 }
@@ -118,6 +123,16 @@ glm::vec2 InputHandler::getMousePosition()
 int InputHandler::getMouseScroll() const
 {
 	return scrollValue;
+}
+
+int InputHandler::getMouseX() const
+{
+	return mouseX;
+}
+
+int InputHandler::getMouseY() const
+{
+	return mouseY;
 }
 
 char* InputHandler::getTextInput()

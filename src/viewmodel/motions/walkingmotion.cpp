@@ -18,16 +18,14 @@ void WalkingMotion::update(float deltaTime, InputHandler& inputHandler, const Pl
 		sinceMoved = 0.0f;
 		sinceStopped += deltaTime;
 
-		weight = sinceStopped * 2.0f;
-		weight = math::clamp(weight, 0.0f, 1.0f);
+		weight = math::lerp(0.0f, 1.0f, math::cubicEase(math::clamp(sinceStopped * 2.0f, 0.0f, 1.0f)));
 	}
 	else
 	{
 		sinceMoved += deltaTime;
 		sinceStopped = 0.0f;
 
-		weight = 1.0f - sinceMoved * 4.0f;
-		weight = math::clamp(weight, 0.0f, 1.0f);
+		weight = math::lerp(1.0f, 0.0f, math::cubicEase(math::clamp(sinceMoved * 2.0f, 0.0f, 1.0f)));
 	}
 
 	offset = glm::vec3(cos(time * 7.0f) * 0.05f, sin(time * 14.0f) * 0.025f, 0.0f);

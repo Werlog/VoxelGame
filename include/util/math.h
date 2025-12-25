@@ -8,4 +8,6 @@ namespace math
 	glm::vec3 lerp(glm::vec3 a, glm::vec3 b, float t);
 
 	float clamp(float val, float min, float max);
+
+	float cubicEase(float t);
 }

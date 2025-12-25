@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "viewmodel/motions/walkingmotion.h"
 #include "viewmodel/motions/fallingmotion.h"
+#include "viewmodel/motions/lookmotion.h"
 
 ViewModel::ViewModel(UIRenderer& uiRenderer, BlockData& blockData, TextureSheet& terrainSheet, ResourceManager& resourceManager, Player& player)
 	: uiRenderer(uiRenderer), blockData(blockData), terrainSheet(terrainSheet), chunkShader(resourceManager.getShader("shaders/chunk")), player(player)
@@ -16,7 +17,7 @@ ViewModel::ViewModel(UIRenderer& uiRenderer, BlockData& blockData, TextureSheet&
 	this->depthHandle = 0;
 	this->viewTexture = 0;
 	this->viewFaceCount = 0;
-	this->viewModelPos = glm::vec3(1.25f, -1.7f, -2.75f);
+	this->viewModelPos = glm::vec3(1.25f, -1.67f, -2.75f);
 
 	this->equipMotion = nullptr;
 
@@ -130,6 +131,7 @@ void ViewModel::initMotions()
 	viewMotions.push_back(equipMotion);
 	viewMotions.push_back(std::make_shared<WalkingMotion>());
 	viewMotions.push_back(std::make_shared<FallingMotion>());
+	viewMotions.push_back(std::make_shared<LookMotion>());
 }
 
 glm::vec3 ViewModel::calculateDisplayPosition()
