@@ -11,7 +11,7 @@
 #include "UI/HUD.h"
 #include "UI/blockicons.h"
 #include "breakparticles.h"
-#include "viewmodel.h"
+#include "viewmodel/viewmodel.h"
 
 class PlayingGameState : public BaseGameState
 {

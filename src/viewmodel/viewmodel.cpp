@@ -1,11 +1,13 @@
-#include "viewmodel.h"
+#include "viewmodel/viewmodel.h"
 #include <glad/glad.h>
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "viewmodel/motions/walkingmotion.h"
+#include "viewmodel/motions/fallingmotion.h"
 
-ViewModel::ViewModel(UIRenderer& uiRenderer, BlockData& blockData, TextureSheet& terrainSheet, ResourceManager& resourceManager)
-	: uiRenderer(uiRenderer), blockData(blockData), terrainSheet(terrainSheet), chunkShader(resourceManager.getShader("shaders/chunk"))
+ViewModel::ViewModel(UIRenderer& uiRenderer, BlockData& blockData, TextureSheet& terrainSheet, ResourceManager& resourceManager, Player& player)
+	: uiRenderer(uiRenderer), blockData(blockData), terrainSheet(terrainSheet), chunkShader(resourceManager.getShader("shaders/chunk")), player(player)
 {
 	this->viewSSBO = 0;
 	this->viewVAO = 0;
@@ -14,16 +16,27 @@ ViewModel::ViewModel(UIRenderer& uiRenderer, BlockData& blockData, TextureSheet&
 	this->depthHandle = 0;
 	this->viewTexture = 0;
 	this->viewFaceCount = 0;
-	this->viewModelPos = glm::vec3(0.0f);
+	this->viewModelPos = glm::vec3(1.25f, -1.7f, -2.75f);
+
+	this->equipMotion = nullptr;
 
 	init();
 
 	setViewModelBlockType(BlockType::GRASS);
 }
 
-void ViewModel::update()
+void ViewModel::update(float deltaTime, InputHandler& inputHandler)
 {
+	for (auto it = viewMotions.begin(); it != viewMotions.end(); it++)
+	{
+		const std::shared_ptr<ViewMotion>& motion = *it;
+		motion->update(deltaTime, inputHandler, player);
+	}
 
+	if (uiRenderer.getWindowWidth() != prevWidth || uiRenderer.getWindowHeight() != prevHeight)
+	{
+		onResize();
+	}
 }
 
 void ViewModel::render(Camera& camera)
@@ -31,7 +44,7 @@ void ViewModel::render(Camera& camera)
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
 	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(1.25f, -1.65f, -2.75f));
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), calculateDisplayPosition());
 	model = glm::rotate(model, glm::radians(-40.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glUseProgram(chunkShader.getProgramHandle());
@@ -89,6 +102,7 @@ void ViewModel::setViewModelBlockType(BlockType blockType)
 	glBindVertexArray(0);
 
 	viewFaceCount = blockFaces.size();
+	equipMotion->itemSwitched();
 }
 
 void ViewModel::init()
@@ -98,6 +112,7 @@ void ViewModel::init()
 
 	onResize();
 	initUniforms();
+	initMotions();
 }
 
 void ViewModel::initUniforms()
@@ -106,6 +121,28 @@ void ViewModel::initUniforms()
 	modelLoc = glGetUniformLocation(chunkShader.getProgramHandle(), "model");
 	projectionLoc = glGetUniformLocation(chunkShader.getProgramHandle(), "projection");
 	lightDirLoc = glGetUniformLocation(chunkShader.getProgramHandle(), "lightDirection");
+}
+
+void ViewModel::initMotions()
+{
+	equipMotion = std::make_shared<EquipMotion>();
+
+	viewMotions.push_back(equipMotion);
+	viewMotions.push_back(std::make_shared<WalkingMotion>());
+	viewMotions.push_back(std::make_shared<FallingMotion>());
+}
+
+glm::vec3 ViewModel::calculateDisplayPosition()
+{
+	glm::vec3 pos = viewModelPos;
+
+	for (auto it = viewMotions.begin(); it != viewMotions.end(); it++)
+	{
+		const std::shared_ptr<ViewMotion>& motion = *it;
+		pos += motion->getOffset() * motion->getWeight();
+	}
+
+	return pos;
 }
 
 void ViewModel::onResize()
@@ -140,4 +177,7 @@ void ViewModel::onResize()
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	this->prevWidth = uiRenderer.getWindowWidth();
+	this->prevHeight = uiRenderer.getWindowHeight();
 }

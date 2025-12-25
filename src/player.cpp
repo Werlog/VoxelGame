@@ -142,6 +142,16 @@ bool Player::getEnableFlight() const
 	return enableFlight;
 }
 
+bool Player::isPlayerGrounded() const
+{
+	return isGrounded;
+}
+
+glm::vec3 Player::getVelocity() const
+{
+	return velocity;
+}
+
 float Player::getYaw() const
 {
 	return camera->getYaw();

@@ -45,6 +45,8 @@ public:
 	glm::vec3 getWorldPosition() const;
 	bool getEnableCollision() const;
 	bool getEnableFlight() const;
+	bool isPlayerGrounded() const;
+	glm::vec3 getVelocity() const;
 	float getYaw() const;
 	float getPitch() const;
 

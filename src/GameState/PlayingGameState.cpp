@@ -6,7 +6,7 @@
 
 PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager, const std::string& worldName, int worldSeed)
 	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader, this, worldName, worldSeed), hud(game, this, &blockIcons),
-	viewModel(game->getUIRenderer(), world.getBlockData(), terrainSheet, game->getResourceManager()), player(&(game->getCamera()), &world, &hud.getHotbar(), resourceManager), terrainSheet(16, 16, "textures/terrain.png"), blockIcons(resourceManager),
+	viewModel(game->getUIRenderer(), world.getBlockData(), terrainSheet, game->getResourceManager(), player), player(&(game->getCamera()), &world, &hud.getHotbar(), resourceManager), terrainSheet(16, 16, "textures/terrain.png"), blockIcons(resourceManager),
 	skyboxShader(resourceManager.getShader("shaders\\skybox")), skybox(glm::vec3(0.0f, 0.3f, 1.0f), glm::vec3(0.7f, 0.9f, 1.0f), &skyboxShader), clouds(resourceManager)
 {
 	setupShader();
@@ -39,6 +39,7 @@ void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 
 	hud.update(inputHandler, deltaTime);
 	player.update(inputHandler, deltaTime);
+	viewModel.update(deltaTime, inputHandler);
 
 	world.updateWorld(player, deltaTime);
 
