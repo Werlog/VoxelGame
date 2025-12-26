@@ -126,7 +126,7 @@ void SelectView::renderOptions(UIRenderer* uiRenderer)
 		}
 		else if (hoveredIndex == i)
 		{
-			uiRenderer->renderColoredQuad(glm::vec3(0.6f), glm::vec2(position.x, selectionPos), glm::vec2(scale.x, segmentHeight / 2.0f));
+			uiRenderer->renderColoredQuad(glm::vec3(0.4f), glm::vec2(position.x, selectionPos), glm::vec2(scale.x, segmentHeight / 2.0f));
 		}
 
 		uiRenderer->renderText(minecraftFont, options[i], position.x, yPos, fontScale, selected ? glm::vec3(0.0f) : glm::vec3(1.0f), TextAlignment::ALIGN_CENTER);

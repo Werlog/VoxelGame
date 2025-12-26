@@ -52,6 +52,8 @@ void BlockSelect::render(UIRenderer* uiRenderer)
 
 	for (size_t i = 0; i < rows * columns; i++)
 	{
+		if (i == BlockType::AIR) continue;
+
 		unsigned int texture = blockIcons->getTextureForBlock((BlockType)i);
 		if (texture == 0) continue;
 

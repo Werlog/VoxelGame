@@ -56,9 +56,6 @@ void BlockIcons::init(BlockData& blockData)
         BlockType type = it->first;
 		const std::shared_ptr<Block>& block = it->second;
 
-        if (type == BlockType::AIR) // pointless
-            continue;
-
         unsigned int iconTexture;
         glGenTextures(1, &iconTexture);
         glBindTexture(GL_TEXTURE_2D, iconTexture);

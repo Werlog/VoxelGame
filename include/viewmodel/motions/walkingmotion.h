@@ -12,6 +12,9 @@ public:
 private:
 	bool isWalking(const Player& player, InputHandler& inputHandler);
 
+	float stoppedWeight;
+	float movedWeight;
+
 	float sinceMoved;
 	float sinceStopped;
 	float time;

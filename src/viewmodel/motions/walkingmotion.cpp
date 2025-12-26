@@ -5,6 +5,8 @@
 WalkingMotion::WalkingMotion()
 {
 	time = 0.0f;
+	movedWeight = 0.0f;
+	stoppedWeight = 0.0f;
 	sinceMoved = 10.0f;
 	sinceStopped = 0.0f;
 }
@@ -18,17 +20,19 @@ void WalkingMotion::update(float deltaTime, InputHandler& inputHandler, const Pl
 		sinceMoved = 0.0f;
 		sinceStopped += deltaTime;
 
-		weight = math::lerp(0.0f, 1.0f, math::cubicEase(math::clamp(sinceStopped * 2.0f, 0.0f, 1.0f)));
+		weight = math::lerp(stoppedWeight, 1.0f, math::cubicEase(math::clamp(sinceStopped * 2.0f, 0.0f, 1.0f)));
+		movedWeight = weight;
 	}
 	else
 	{
 		sinceMoved += deltaTime;
 		sinceStopped = 0.0f;
 
-		weight = math::lerp(1.0f, 0.0f, math::cubicEase(math::clamp(sinceMoved * 2.0f, 0.0f, 1.0f)));
+		weight = math::lerp(movedWeight, 0.0f, math::cubicEase(math::clamp(sinceMoved * 2.0f, 0.0f, 1.0f)));
+		stoppedWeight = weight;
 	}
 
-	offset = glm::vec3(cos(time * 7.0f) * 0.05f, sin(time * 14.0f) * 0.025f, 0.0f);
+	offset = glm::vec3(cos(time * 8.0f) * 0.05f, sin(time * 16.0f) * 0.025f, 0.0f);
 }
 
 bool WalkingMotion::isWalking(const Player& player, InputHandler& inputHandler)
