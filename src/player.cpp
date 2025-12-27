@@ -434,7 +434,7 @@ std::unique_ptr<glm::vec3> Player::getLookingAtPosition()
 	BlockData& blockData = world->getBlockData();
 
 	const glm::vec3& direction = camera->front;
-	const glm::vec3& startPosition = camera->getPosition() + glm::vec3(chunkPosition.x * CHUNK_SIZE_X, chunkPosition.y * CHUNK_SIZE_Y, chunkPosition.z * CHUNK_SIZE_Z);
+	const glm::vec3 startPosition = camera->getPosition() + glm::vec3(chunkPosition.x * CHUNK_SIZE_X, chunkPosition.y * CHUNK_SIZE_Y, chunkPosition.z * CHUNK_SIZE_Z);
 	for (float dist = 0.0f; dist < 5.0f; dist += 0.03f)
 	{
 		glm::vec3 checkPos = startPosition + direction * dist;

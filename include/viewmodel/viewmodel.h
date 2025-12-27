@@ -7,6 +7,7 @@
 #include "texturesheet.h"
 #include "player.h"
 #include "motions/equipmotion.h"
+#include "motions/swingmotion.h"
 #include <vector>
 
 constexpr float viewModelFOV = 60;
@@ -24,6 +25,7 @@ public:
 private:
 	std::vector<std::shared_ptr<ViewMotion>> viewMotions;
 	std::shared_ptr<EquipMotion> equipMotion;
+	std::shared_ptr<SwingMotion> swingMotion;
 
 	UIRenderer& uiRenderer;
 	BlockData& blockData;

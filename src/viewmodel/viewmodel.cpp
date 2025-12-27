@@ -44,9 +44,15 @@ void ViewModel::render(Camera& camera)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
+	glm::vec3 swingRotation = swingMotion->getRotation();
+
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), calculateDisplayPosition());
 	model = glm::rotate(model, glm::radians(-40.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	model = glm::rotate(model, glm::radians(swingRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(swingRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(swingRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	glUseProgram(chunkShader.getProgramHandle());
 	glBindTexture(GL_TEXTURE_2D_ARRAY, terrainSheet.getTextureHandle());
@@ -127,8 +133,10 @@ void ViewModel::initUniforms()
 void ViewModel::initMotions()
 {
 	equipMotion = std::make_shared<EquipMotion>();
+	swingMotion = std::make_shared<SwingMotion>();
 
 	viewMotions.push_back(equipMotion);
+	viewMotions.push_back(swingMotion);
 	viewMotions.push_back(std::make_shared<WalkingMotion>());
 	viewMotions.push_back(std::make_shared<FallingMotion>());
 	viewMotions.push_back(std::make_shared<LookMotion>());
