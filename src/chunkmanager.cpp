@@ -1,6 +1,6 @@
 #include "chunkmanager.h"
 #include "world.h"
-#include "chunkgenerator.h"
+#include "generation/chunkgenerator.h"
 
 ChunkManager::ChunkManager(World* world)
 	: saveLoader(world)
@@ -25,9 +25,9 @@ void ChunkManager::loadChunk(ChunkCoord coord)
 		}
 	}
 
-	std::lock_guard genLock(genMutex);
-	chunksToGenerate.push(coord);
-	genCondition.notify_one();
+	std::lock_guard genLock(loadMutex);
+	chunksToLoad.push(coord);
+	loadCondition.notify_one();
 }
 
 void ChunkManager::unloadChunk(ChunkCoord coord)
@@ -74,16 +74,6 @@ void ChunkManager::update()
 		}
 		chunk->unloadMesh();
 
-		{
-			const ChunkCoord& coord = *it;
-			for (const auto& dir : worldDirections)
-			{
-				ChunkCoord neighbour = ChunkCoord{ coord.x + dir[0], coord.y + dir[1], coord.z + dir[2] };
-				std::lock_guard lock(blockModMutex);
-				blockMods.erase(neighbour);
-			}
-		}
-
 		it = chunksToUnload.erase(it);
 		unloadedCount++;
 	}
@@ -108,40 +98,6 @@ void ChunkManager::remeshChunk(ChunkCoord coord, bool pushToFront)
 	meshCondition.notify_one();
 }
 
-void ChunkManager::addBlockMod(ChunkCoord coord, BlockMod mod)
-{
-	std::lock_guard chunkLock(chunksMutex);
-	auto it = loadedChunks.find(coord);
-	if (it == loadedChunks.end())
-	{
-		std::lock_guard lock(blockModMutex);
-		blockMods[coord].push_back(mod);
-		return;
-	}
-
-	it->second->setBlockAt(mod.x, mod.y, mod.z, mod.block);
-}
-
-void ChunkManager::resolveBlockMods(std::shared_ptr<Chunk> chunk)
-{
-	std::unique_lock lock(blockModMutex);
-	auto it = blockMods.find(chunk->getCoord());
-	if (it == blockMods.end())
-		return;
-
-	lock.unlock();
-	std::vector<BlockMod>& mods = it->second;
-
-	for (auto i = mods.begin(); i != mods.end(); i++)
-	{
-		BlockMod& mod = *i;
-		chunk->setBlockAt(mod.x, mod.y, mod.z, mod.block);
-	}
-
-	lock.lock();
-	blockMods.erase(chunk->getCoord());
-}
-
 const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& ChunkManager::getLoadedChunks()
 {
 	return loadedChunks;
@@ -162,6 +118,15 @@ std::shared_ptr<Chunk> ChunkManager::getLoadedChunk(ChunkCoord coordinate)
 	return it->second;
 }
 
+std::shared_ptr<Chunk> ChunkManager::getSavedChunk(ChunkCoord coordinate)
+{
+	auto it = savedChunks.find(coordinate);
+	if (it == loadedChunks.end())
+		return nullptr;
+
+	return it->second;
+}
+
 std::recursive_mutex& ChunkManager::getChunkMutex()
 {
 	return chunksMutex;
@@ -174,23 +139,23 @@ void ChunkManager::clearSavedChunks()
 
 void ChunkManager::init()
 {
-	std::thread genThread(&ChunkManager::genWorker, this);
+	std::thread genThread(&ChunkManager::loadWorker, this);
 	std::thread meshThread(&ChunkManager::meshWorker, this);
 
 	genThread.detach();
 	meshThread.detach();
 }
 
-void ChunkManager::genWorker()
+void ChunkManager::loadWorker()
 {
 	while (true)
 	{
-		std::unique_lock lock(genMutex);
+		std::unique_lock lock(loadMutex);
 
-		genCondition.wait(lock, [this] { return !chunksToGenerate.empty(); });
+		loadCondition.wait(lock, [this] { return !chunksToLoad.empty(); });
 
-		ChunkCoord coord = chunksToGenerate.front();
-		chunksToGenerate.pop();
+		ChunkCoord coord = chunksToLoad.front();
+		chunksToLoad.pop();
 
 		lock.unlock();
 
@@ -199,9 +164,8 @@ void ChunkManager::genWorker()
 		bool loaded = saveLoader.loadChunk(chunk);
 		if (!loaded)
 		{
-			ChunkGenerator generator = ChunkGenerator(chunk, world, this);
+			ChunkGenerator generator = ChunkGenerator(chunk, *world, this);
 			generator.generate();
-			resolveBlockMods(chunk);
 		}
 
 		{

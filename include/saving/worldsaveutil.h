@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <string>
-#include "savedworldinfo.h"
+#include "filedatatypes.h"
 #include "worldRegion.h"
 
 namespace saveutil

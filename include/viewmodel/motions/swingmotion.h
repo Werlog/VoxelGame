@@ -16,7 +16,7 @@ public:
 private:
 	glm::vec3 rotation;
 
-	static constexpr float animationDuration = 0.3f;
+	static constexpr float animationDuration = 0.25f;
 
 	float animationProgress;
 	bool isSwinging;

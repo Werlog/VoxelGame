@@ -3,7 +3,7 @@
 #include "world.h"
 #include "saving/filewriter.h"
 #include "saving/filereader.h"
-#include "saving/savedworldinfo.h"
+#include "saving/filedatatypes.h"
 #include "saving/worldsaveutil.h"
 #include <filesystem>
 
@@ -101,7 +101,7 @@ void WorldSaver::saveChunk(std::shared_ptr<Chunk> chunk)
 	}
 
 	FileReader reader = FileReader(regionPath, false);
-	reader.setStreamPosition(lookupOffset * sizeof(int32_t));
+	reader.setStreamPosition(sizeof(RegionFileHeader) + lookupOffset * sizeof(int32_t));
 	
 	int32_t chunkDataOffset = 0;
 	reader.readRaw(chunkDataOffset);
@@ -114,10 +114,11 @@ void WorldSaver::saveChunk(std::shared_ptr<Chunk> chunk)
 	reader.close();
 
 	FileWriter writer = FileWriter(regionPath, false);
-	writer.setStreamPosition(lookupOffset * sizeof(int32_t));
+	writer.setStreamPosition(sizeof(RegionFileHeader) + lookupOffset * sizeof(int32_t));
 	writer.writeRaw(chunkDataOffset);
 
 	writer.setStreamPosition(chunkDataOffset);
+	writer.writeRaw(chunk->getChunkStatus());
 	writer.writeData((const char*)(chunk->getChunkData()), CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z * sizeof(BlockType));
 	writer.close();
 }
@@ -125,6 +126,13 @@ void WorldSaver::saveChunk(std::shared_ptr<Chunk> chunk)
 void WorldSaver::createEmptyRegionFile(const std::string& filePath)
 {
 	FileWriter writer = FileWriter(filePath, false);
+
+	RegionFileHeader header = RegionFileHeader{
+		"VOXEL_REGION",
+		currentRegionVersion
+	};
+	writer.writeRaw(header);
+
 	// Empty chunk lookup table
 	writer.writeZeros(WORLD_REGION_SIZE * WORLD_REGION_SIZE * WORLD_REGION_SIZE * sizeof(int32_t));
 }

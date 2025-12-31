@@ -10,8 +10,6 @@
 #include "motions/swingmotion.h"
 #include <vector>
 
-constexpr float viewModelFOV = 60;
-
 class ViewModel
 {
 public:
@@ -23,6 +21,8 @@ public:
 
 	void setViewModelBlockType(BlockType blockType);
 private:
+	static constexpr float viewModelFOV = 60;
+
 	std::vector<std::shared_ptr<ViewMotion>> viewMotions;
 	std::shared_ptr<EquipMotion> equipMotion;
 	std::shared_ptr<SwingMotion> swingMotion;

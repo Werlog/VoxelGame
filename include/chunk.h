@@ -13,6 +13,13 @@ typedef struct
 	int biomeData;
 } ChunkFace;
 
+enum ChunkStatus : unsigned char
+{
+	NOT_GENERATED = 0,
+	PROTO_CHUNK = 1,
+	GENERATED = 2,
+};
+
 class Chunk
 {
 public:
@@ -36,11 +43,15 @@ public:
 
 	const ChunkCoord& getCoord();
 
+	void setChunkStatus(ChunkStatus newStatus);
+	ChunkStatus getChunkStatus() const;
+
 	bool wasModified() const;
 
 	bool hasMesh() const;
 	void unloadMesh();
 private:
+	ChunkStatus status;
 	BlockType blocks[CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z];
 	unsigned char light[CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z];
 	int faceCount;

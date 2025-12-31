@@ -155,6 +155,22 @@ void World::setBlockAt(int x, int y, int z, BlockType newBlock)
 	chunk->setBlockAt(x - coord.x * CHUNK_SIZE_X, y - coord.y * CHUNK_SIZE_Y, z - coord.z * CHUNK_SIZE_Z, newBlock, true);
 }
 
+void World::setBlockAtForce(int x, int y, int z, BlockType newBlock)
+{
+	ChunkCoord coord = ChunkCoord::toChunkCoord(x, y, z);
+	std::shared_ptr<Chunk> chunk = getChunkByCoordinate(coord);
+	if (chunk == nullptr)
+	{
+		chunk = chunkManager.getSavedChunk(coord);
+	}
+	if (chunk != nullptr)
+	{
+		chunk->setBlockAt(x - coord.x * CHUNK_SIZE_X, y - coord.y * CHUNK_SIZE_Y, z - coord.z * CHUNK_SIZE_Z, newBlock, true);
+		return;
+	}
+
+}
+
 void World::modifyBlockAt(int x, int y, int z, BlockType newBlock, bool showParticles, bool updateNeighbours)
 {
 	BlockType oldBlock = getBlockAt(x, y, z);

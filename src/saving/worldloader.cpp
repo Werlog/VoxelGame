@@ -20,7 +20,6 @@ bool WorldLoader::loadChunk(const std::shared_ptr<Chunk>& chunk)
 		return false;
 	}
 
-
 	glm::ivec3 relPos = region.getRelativeChunkPosition(chunk->getCoord());
 	int32_t lookupOffset = relPos.x + relPos.y * WORLD_REGION_SIZE + relPos.z * WORLD_REGION_SIZE * WORLD_REGION_SIZE;
 	if (lookupOffset < 0)
@@ -29,7 +28,15 @@ bool WorldLoader::loadChunk(const std::shared_ptr<Chunk>& chunk)
 	}
 
 	FileReader reader = FileReader(regionPath, false);
-	reader.setStreamPosition(lookupOffset * sizeof(int32_t));
+
+	RegionFileHeader header = RegionFileHeader{};
+	reader.readRaw(header);
+	if (strcmp(header.signature, "VOXEL_REGION") != 0 || header.regionVersion != currentRegionVersion)
+	{
+		return false;
+	}
+
+	reader.setStreamPosition(sizeof(RegionFileHeader) + lookupOffset * sizeof(int32_t));
 
 	int32_t chunkDataOffset = 0;
 	reader.readRaw(chunkDataOffset);
@@ -40,7 +47,11 @@ bool WorldLoader::loadChunk(const std::shared_ptr<Chunk>& chunk)
 	}
 
 	reader.setStreamPosition(chunkDataOffset);
+	ChunkStatus chunkStatus = ChunkStatus::NOT_GENERATED;
+	reader.readRaw(chunkStatus);
 	reader.readData((char*)chunk->getChunkData(), CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z * sizeof(BlockType));
+
+	chunk->setChunkStatus(chunkStatus);
 
 	return true;
 }

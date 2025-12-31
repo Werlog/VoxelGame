@@ -35,6 +35,7 @@ public:
 
 	BlockType getBlockAt(int x, int y, int z);
 	void setBlockAt(int x, int y, int z, BlockType newBlock);
+	void setBlockAtForce(int x, int y, int z, BlockType newBlock);
 	void modifyBlockAt(int x, int y, int z, BlockType newBlock, bool showParticles = false, bool updateNeighbours = true);
 
 	ChunkManager& getChunkManager();
