@@ -42,6 +42,12 @@ void InputField::update(InputHandler& inputHandler, float deltaTime)
 			cursorTimer = 0.0f;
 		}
 
+		if (inputHandler.getKey(SDLK_LCTRL))
+		{
+			pasteLogic(inputHandler);
+			return;
+		}
+
 		if (inputHandler.getKeyDown(SDLK_BACKSPACE))
 		{
 			if (text.size() > 0)
@@ -81,6 +87,18 @@ void InputField::setOnChangedCallback(const std::function<void(const std::string
 std::string InputField::getText()
 {
 	return text;
+}
+
+void InputField::pasteLogic(InputHandler& inputHandler)
+{
+	if (inputHandler.getKeyDown(SDLK_v))
+	{
+		char* clipboardText = SDL_GetClipboardText();
+		if (containsNonASCIIChars(clipboardText))
+			return;
+
+		this->text += std::string(clipboardText);
+	}
 }
 
 bool InputField::containsNonASCIIChars(char* str)

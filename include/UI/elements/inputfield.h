@@ -29,5 +29,6 @@ private:
 
 	Texture& inputFieldTexture;
 
+	void pasteLogic(InputHandler& inputHandler);
 	bool containsNonASCIIChars(char* str);
 };
