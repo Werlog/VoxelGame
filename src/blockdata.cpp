@@ -7,6 +7,7 @@
 #include "block/blocks/glasspaneblock.h"
 #include "block/blocks/sandblock.h"
 #include "block/blocks/cactusblock.h"
+#include "block/blocks/oaksaplingblock.h"
 #include <glad/glad.h>
 
 BlockData::BlockData(Shader& chunkShader)
@@ -107,7 +108,7 @@ void BlockData::init()
 	data.emplace(BlockType::TALL_GRASS, std::make_shared<CrossBlock>(BlockType::TALL_GRASS, "Tall Grass", 106, true));
 	data.emplace(BlockType::RED_FLOWER, std::make_shared<CrossBlock>(BlockType::RED_FLOWER, "Red Flower", 12, true));
 	data.emplace(BlockType::YELLOW_FLOWER, std::make_shared<CrossBlock>(BlockType::YELLOW_FLOWER, "Yellow Flower", 13, true));
-	data.emplace(BlockType::OAK_SAPLING, std::make_shared<CrossBlock>(BlockType::OAK_SAPLING, "Oak Sapling", 15, true));
+	data.emplace(BlockType::OAK_SAPLING, std::make_shared<OakSaplingBlock>());
 	data.emplace(BlockType::SAND, std::make_shared<SandBlock>());
 	data.emplace(BlockType::OAK_SLAB, std::make_shared<SlabBlock>(BlockType::OAK_SLAB, "Oak Slab", 4));
 	data.emplace(BlockType::WOOL, std::make_shared<CubeBlock>(BlockType::WOOL, "Wool", 64, false));

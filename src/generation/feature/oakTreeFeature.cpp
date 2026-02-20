@@ -1,12 +1,18 @@
 #include "generation/feature/oakTreeFeature.h"
 #include "chunk.h"
 
-OakTreeFeature::OakTreeFeature(glm::vec3 origin, int height)
+OakTreeFeature::OakTreeFeature(glm::vec3 origin, int height, bool isModification)
 	: GenerationFeature(origin)
 {
 	this->height = height;
+	this->isModification = isModification;
 
-	this->boundingBox = AABB(origin - glm::vec3(3, 0, 3), origin + glm::vec3(3, height, 3));
+	this->boundingBox = AABB(origin - glm::vec3(3, 0, 3), origin + glm::vec3(3, height + 1, 3));
+}
+
+void OakTreeFeature::setOrigin(glm::vec3 origin)
+{
+	this->origin = origin;
 }
 
 void OakTreeFeature::generate(std::shared_ptr<Chunk> chunk) const
@@ -41,7 +47,7 @@ void OakTreeFeature::generate(std::shared_ptr<Chunk> chunk) const
 							continue;
 						}
 
-						chunk->setBlockAt(leafX, leafY, leafZ, BlockType::OAK_LEAVES);
+						chunk->setBlockAt(leafX, leafY, leafZ, BlockType::OAK_LEAVES, isModification);
 					}
 				}
 				continue;
@@ -64,7 +70,7 @@ void OakTreeFeature::generate(std::shared_ptr<Chunk> chunk) const
 					}
 
 					if (chunk->getBlockAt(leafX, leafY, leafZ) == BlockType::AIR)
-						chunk->setBlockAt(leafX, leafY, leafZ, BlockType::OAK_LEAVES);
+						chunk->setBlockAt(leafX, leafY, leafZ, BlockType::OAK_LEAVES, isModification);
 				}
 			}
 		}
@@ -72,7 +78,7 @@ void OakTreeFeature::generate(std::shared_ptr<Chunk> chunk) const
 		{
 			if (y + yPos >= CHUNK_SIZE_Y || y + yPos < 0)
 				continue;
-			chunk->setBlockAt(xPos, y + yPos, zPos, BlockType::OAK_LOG);
+			chunk->setBlockAt(xPos, y + yPos, zPos, BlockType::OAK_LOG, isModification);
 		}
 	}
 }
