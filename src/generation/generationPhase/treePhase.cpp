@@ -61,7 +61,7 @@ std::vector<OakTreeFeature> TreePhase::findTreePositions()
 						if (ownerChunkY != coord.y)
 							continue;
 
-						oakTrees.push_back(OakTreeFeature(glm::vec3(xPos, height - originCoord.y * CHUNK_SIZE_Y + 1, zPos), 6 - random));
+						oakTrees.push_back(OakTreeFeature(glm::vec3(xPos, height - originCoord.y * CHUNK_SIZE_Y + 1, zPos), 7 - random));
 					}
 				}
 			}
