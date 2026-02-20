@@ -11,7 +11,6 @@ void TerrainShapePhase::generate()
 {
 	const ChunkCoord& coord = chunk->getCoord();
 
-	float* heightNoiseSet = chunkGenerator.getHeightNoiseSet();
 	for (int x = 0; x < CHUNK_SIZE_X; x++)
 	{
 		for (int y = 0; y < CHUNK_SIZE_Y; y++)
@@ -19,9 +18,8 @@ void TerrainShapePhase::generate()
 			for (int z = 0; z < CHUNK_SIZE_Z; z++)
 			{
 				int yPos = y + coord.y * CHUNK_SIZE_Y;
-				int noiseIndex = z + x * CHUNK_SIZE_Z;
 
-				int height = chunkGenerator.getHeightFromNoiseValue(heightNoiseSet[noiseIndex]);
+				int height = chunkGenerator.getBlockHeightAt(x, z);
 
 				if (yPos == height)
 				{

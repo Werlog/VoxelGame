@@ -36,6 +36,5 @@ void main()
 
 	if (texColor.a < 0.2f)
 		discard;
-
 	outColor = mix(vec4(fogColor, 1.0f), vec4((texColor * brightness).xyz * lightMultiplier, 1.0f), fogFactor);
 }

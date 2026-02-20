@@ -3,6 +3,7 @@
 #include <random>
 #include "generation/generationPhase/terrainShapePhase.h"
 #include "generation/generationPhase/vegetationPhase.h"
+#include "generation/generationPhase/treePhase.h"
 
 ChunkGenerator::ChunkGenerator(std::shared_ptr<Chunk> chunk, World& world, ChunkManager* chunkManager)
 	: world(world)
@@ -38,26 +39,37 @@ World& ChunkGenerator::getWorld()
 	return world;
 }
 
-float* ChunkGenerator::getHeightNoiseSet() const
-{
-	return heightNoiseSet;
-}
-
-int ChunkGenerator::getHeightFromNoiseValue(float noiseValue)
+int ChunkGenerator::getHeightFromNoiseValue(float noiseValue) const
 {
 	return (int)floor(10.0f + noiseValue * 15.0f);
+}
+
+float ChunkGenerator::getNoiseAt(int blockX, int blockZ) const
+{
+	ChunkCoord coord = chunk->getCoord();
+
+	int setX = blockX + CHUNK_SIZE_X;
+	int setZ = blockZ + CHUNK_SIZE_Z;
+
+	return heightNoiseSet[setZ + setX * CHUNK_SIZE_Z * 3];
+}
+
+int ChunkGenerator::getBlockHeightAt(int blockX, int blockZ) const
+{
+	return getHeightFromNoiseValue(getNoiseAt(blockX, blockZ));
 }
 
 void ChunkGenerator::initPhases()
 {
 	phases.emplace_back(std::make_unique<TerrainShapePhase>(*this, chunk));
+	phases.emplace_back(std::make_unique<TreePhase>(*this, chunk));
 	phases.emplace_back(std::make_unique<VegetationPhase>(*this, chunk));
 }
 
 void ChunkGenerator::createHeightNoiseSet()
 {
 	const ChunkCoord& coord = chunk->getCoord();
-	heightNoiseSet = world.getNoise()->GetSimplexSet(coord.x * CHUNK_SIZE_X, 0, coord.z * CHUNK_SIZE_Z, CHUNK_SIZE_X, 1, CHUNK_SIZE_Z);
+	heightNoiseSet = world.getNoise()->GetSimplexSet((coord.x - 1) * CHUNK_SIZE_X, 0, (coord.z - 1) * CHUNK_SIZE_Z, CHUNK_SIZE_X * 3, 1, CHUNK_SIZE_Z * 3);
 }
 
 void ChunkGenerator::generateTrees()

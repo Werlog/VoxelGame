@@ -13,8 +13,6 @@ void VegetationPhase::generate()
 {
 	const ChunkCoord& coord = chunk->getCoord();
 
-	float* heightNoiseSet = chunkGenerator.getHeightNoiseSet();
-
 	unsigned int seed = chunkGenerator.getChunkSeed(coord, 2);
 	std::mt19937 rng(seed);
 	std::uniform_int_distribution<int> grassChanceDist(0, 100);
@@ -33,7 +31,7 @@ void VegetationPhase::generate()
 
 			if (random < 13)
 			{
-				int height = chunkGenerator.getHeightFromNoiseValue(heightNoiseSet[z + x * CHUNK_SIZE_Z]);
+				int height = chunkGenerator.getBlockHeightAt(x, z);
 				int yPos = height - coord.y * CHUNK_SIZE_Y + 1;
 
 				if (yPos >= CHUNK_SIZE_Y || yPos < 0)
@@ -49,7 +47,8 @@ void VegetationPhase::generate()
 					generated = BlockType::YELLOW_FLOWER;
 				}
 
-				chunk->setBlockAt(x, yPos, z, generated);
+				if (chunk->getBlockAt(x, yPos, z) == BlockType::AIR)
+					chunk->setBlockAt(x, yPos, z, generated);
 			}
 		}
 	}

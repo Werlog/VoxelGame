@@ -281,7 +281,7 @@ void BreakParticles::createParticles()
 	std::random_device r;
 	std::mt19937 rng(r());
 
-	std::uniform_int_distribution<int> amountDist(80, 120);
+	std::uniform_int_distribution<int> amountDist(50, 60);
 	std::uniform_real_distribution<float> positionDist(0.0f, 1.0f);
 	std::uniform_real_distribution<float> scaleDist(0.08f, 0.15f);
 	std::uniform_real_distribution<float> lifetimeDist(2.5f, 4.5f);

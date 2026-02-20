@@ -13,10 +13,11 @@ class AABB
 public:
 
 	AABB(const glm::vec3& min, const glm::vec3& max);
+	AABB();
 
-	void move(const glm::vec3& amount);
-	void setMin(const glm::vec3& newMin);
-	void setMax(const glm::vec3& newMax);
+	AABB& move(const glm::vec3& amount);
+	AABB& setMin(const glm::vec3& newMin);
+	AABB& setMax(const glm::vec3& newMax);
 
 	const glm::vec3& getMin() const;
 	const glm::vec3& getMax() const;

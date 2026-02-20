@@ -19,9 +19,11 @@ public:
 	void generate();
 
 	World& getWorld();
-	float* getHeightNoiseSet() const;
 
-	int getHeightFromNoiseValue(float noiseValue);
+	int getHeightFromNoiseValue(float noiseValue) const;
+
+	float getNoiseAt(int blockX, int blockZ) const;
+	int getBlockHeightAt(int blockX, int blockZ) const;
 
 	unsigned int getChunkSeed(const ChunkCoord& coord, unsigned int subsystemId);
 private:

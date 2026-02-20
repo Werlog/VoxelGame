@@ -56,13 +56,16 @@ bool Game::init()
 	
 	glViewport(0, 0, windowWidth, windowHeight);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glLineWidth(2.0f);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
 	//SDL_SetRelativeMouseMode(SDL_TRUE);
-	
+#if PRODUCTION_BUILD == 0
 	enableReportGlErrors();
+#endif
 
 	// ImGUI
 	ImGui::CreateContext();
@@ -88,8 +91,6 @@ bool Game::init()
 	uiRenderer.init(resourceManager, windowWidth, windowHeight);
 	debugRenderer.init(resourceManager, &camera);
 	fpsCounter.init(resourceManager);
-
-	glLineWidth(2.0f);
 
 	// Game State Setup
 

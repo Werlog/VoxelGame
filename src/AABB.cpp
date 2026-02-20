@@ -9,20 +9,32 @@ AABB::AABB(const glm::vec3& min, const glm::vec3& max)
 	this->max = max;
 }
 
-void AABB::move(const glm::vec3& amount)
+AABB::AABB()
+{
+	this->min = glm::vec3(0);
+	this->max = glm::vec3(0);
+}
+
+AABB& AABB::move(const glm::vec3& amount)
 {
 	min += amount;
 	max += amount;
+
+	return *this;
 }
 
-void AABB::setMin(const glm::vec3& newMin)
+AABB& AABB::setMin(const glm::vec3& newMin)
 {
 	this->min = newMin;
+
+	return *this;
 }
 
-void AABB::setMax(const glm::vec3& newMax)
+AABB& AABB::setMax(const glm::vec3& newMax)
 {
 	this->max = newMax;
+
+	return *this;
 }
 
 const glm::vec3& AABB::getMin() const
