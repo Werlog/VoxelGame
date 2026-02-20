@@ -113,6 +113,12 @@ void SelectView::renderScrollbar(UIRenderer* uiRenderer)
 void SelectView::renderOptions(UIRenderer* uiRenderer)
 {
 	glm::vec2 position = getPosition();
+
+	if (options.size() == 0)
+	{
+		uiRenderer->renderText(minecraftFont, "List is empty.", position.x, position.y, 0.6f, glm::vec3(0.85f), TextAlignment::ALIGN_CENTER);
+		return;
+	}
 	for (size_t i = scrollIndex; i < std::min(scrollIndex + selectViewItemCount, options.size()); i++)
 	{
 		bool selected = i == selectedIndex;

@@ -61,7 +61,7 @@ void InputField::update(InputHandler& inputHandler, float deltaTime)
 		else
 		{
 			char* text = inputHandler.getTextInput();
-			if (strlen(text) <= 0 || this->text.size() >= 24 || containsNonASCIIChars(text))
+			if (strlen(text) <= 0 || this->text.size() >= maxLength || containsNonASCIIChars(text))
 				return;
 			this->text += std::string(text);
 			if (changedCallback) changedCallback(this->text);
@@ -97,7 +97,12 @@ void InputField::pasteLogic(InputHandler& inputHandler)
 		if (containsNonASCIIChars(clipboardText))
 			return;
 
+		if (strlen(clipboardText) + text.length() > maxLength)
+			return;
+
 		this->text += std::string(clipboardText);
+
+		if (changedCallback) changedCallback(text);
 	}
 }
 

@@ -17,6 +17,8 @@ public:
 
 	std::string getText();
 private:
+	static constexpr int maxLength = 20;
+
 	std::string text;
 	std::function<void(const std::string&)> changedCallback;
 
