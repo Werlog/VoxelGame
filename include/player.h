@@ -12,21 +12,20 @@
 #include "chunkcoord.h"
 #include "UI/elements/HUD/hotbar.h"
 
-constexpr float playerHeight = 1.9f;
-constexpr float cameraHeight = 1.8f;
-constexpr float playerWidth = 0.6f;
-
-// Movement
-constexpr float gravity = 32.0f;
-constexpr float jumpHeight = 1.28f;
-constexpr float playerSpeed = 7.5f;
-constexpr float flightSpeed = 15.0f;
-
 class World;
 
 class Player
 {
 public:
+	static constexpr float playerHeight = 1.9f;
+	static constexpr float cameraHeight = 1.8f;
+	static constexpr float playerWidth = 0.6f;
+
+	// Movement
+	static constexpr float gravity = 32.0f;
+	static constexpr float jumpHeight = 1.28f;
+	static constexpr float playerSpeed = 7.5f;
+	static constexpr float flightSpeed = 15.0f;
 
 	Player(Camera* camera, World* world, Hotbar* hotbar, ResourceManager& resourceManager);
 
