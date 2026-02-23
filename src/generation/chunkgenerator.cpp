@@ -30,8 +30,6 @@ void ChunkGenerator::generate()
 	{
 		phase->generate();
 	}
-
-	chunk->setChunkStatus(ChunkStatus::GENERATED);
 }
 
 World& ChunkGenerator::getWorld()

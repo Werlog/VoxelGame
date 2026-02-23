@@ -8,7 +8,6 @@
 #include "resourcemanager.h"
 #include "blockdata.h"
 #include "AABB.h"
-#include "debugRenderer.h"
 #include "chunkcoord.h"
 #include "UI/elements/HUD/hotbar.h"
 

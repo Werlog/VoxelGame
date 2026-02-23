@@ -10,7 +10,6 @@ Chunk::Chunk(ChunkCoord coord, World* world)
 {
 	this->coord = coord;
 	this->world = world;
-	this->status = ChunkStatus::NOT_GENERATED;
 
 	modified = false;
 
@@ -187,16 +186,6 @@ const BlockType* Chunk::getChunkData()
 const ChunkCoord& Chunk::getCoord()
 {
 	return coord;
-}
-
-void Chunk::setChunkStatus(ChunkStatus newStatus)
-{
-	this->status = newStatus;
-}
-
-ChunkStatus Chunk::getChunkStatus() const
-{
-	return status;
 }
 
 bool Chunk::wasModified() const

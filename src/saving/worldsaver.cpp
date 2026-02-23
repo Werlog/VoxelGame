@@ -118,7 +118,6 @@ void WorldSaver::saveChunk(std::shared_ptr<Chunk> chunk)
 	writer.writeRaw(chunkDataOffset);
 
 	writer.setStreamPosition(chunkDataOffset);
-	writer.writeRaw(chunk->getChunkStatus());
 	writer.writeData((const char*)(chunk->getChunkData()), CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z * sizeof(BlockType));
 	writer.close();
 }

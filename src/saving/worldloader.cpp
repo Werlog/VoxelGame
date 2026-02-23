@@ -47,11 +47,7 @@ bool WorldLoader::loadChunk(const std::shared_ptr<Chunk>& chunk)
 	}
 
 	reader.setStreamPosition(chunkDataOffset);
-	ChunkStatus chunkStatus = ChunkStatus::NOT_GENERATED;
-	reader.readRaw(chunkStatus);
 	reader.readData((char*)chunk->getChunkData(), CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z * sizeof(BlockType));
-
-	chunk->setChunkStatus(chunkStatus);
 
 	return true;
 }
