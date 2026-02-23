@@ -10,11 +10,6 @@ OakTreeFeature::OakTreeFeature(glm::vec3 origin, int height, bool isModification
 	this->boundingBox = AABB(origin - glm::vec3(3, 0, 3), origin + glm::vec3(3, height + 1, 3));
 }
 
-void OakTreeFeature::setOrigin(glm::vec3 origin)
-{
-	this->origin = origin;
-}
-
 void OakTreeFeature::generate(std::shared_ptr<Chunk> chunk) const
 {
 	int xPos = (int)floor(origin.x);

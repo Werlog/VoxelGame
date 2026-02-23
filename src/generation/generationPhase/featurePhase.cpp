@@ -1,33 +1,31 @@
-#include "generation/generationPhase/treePhase.h"
+#include "generation/generationPhase/featurePhase.h"
 #include "generation/chunkgenerator.h"
 #include <random>
 
-TreePhase::TreePhase(ChunkGenerator& chunkGenerator, std::shared_ptr<Chunk> chunk)
+FeaturePhase::FeaturePhase(ChunkGenerator& chunkGenerator, std::shared_ptr<Chunk> chunk)
 	: GenerationPhase(chunkGenerator, chunk)
 {
 
 }
 
-void TreePhase::generate()
+void FeaturePhase::generate()
 {
-	std::vector<OakTreeFeature> trees = findTreePositions();
+	std::vector<std::unique_ptr<GenerationFeature>> features = findFeaturePositions();
 
 	AABB chunkAABB = AABB(glm::vec3(0), glm::vec3(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z));
 
-	for (auto it = trees.begin(); it != trees.end(); it++)
+	for (auto& feature : features)
 	{
-		OakTreeFeature& tree = *it;
-
-		if (!chunkAABB.isOverlapping(tree.getBoundingBox()))
+		if (!chunkAABB.isOverlapping(feature->getBoundingBox()))
 			continue;
 
-		tree.generate(chunk);
+		feature->generate(chunk);
 	}
 }
 
-std::vector<OakTreeFeature> TreePhase::findTreePositions()
+std::vector<std::unique_ptr<GenerationFeature>> FeaturePhase::findFeaturePositions()
 {
-	std::vector<OakTreeFeature> oakTrees = std::vector<OakTreeFeature>();
+	auto features = std::vector<std::unique_ptr<GenerationFeature>>();
 
 	ChunkCoord originCoord = chunk->getCoord();
 
@@ -61,12 +59,12 @@ std::vector<OakTreeFeature> TreePhase::findTreePositions()
 						if (ownerChunkY != coord.y)
 							continue;
 
-						oakTrees.push_back(OakTreeFeature(glm::vec3(xPos, height - originCoord.y * CHUNK_SIZE_Y + 1, zPos), 7 - random));
+						features.push_back(std::make_unique<OakTreeFeature>(glm::vec3(xPos, height - originCoord.y * CHUNK_SIZE_Y + 1, zPos), 7 - random));
 					}
 				}
 			}
 		}
 	}
 
-	return oakTrees;
+	return features;
 }

@@ -3,7 +3,7 @@
 #include <random>
 #include "generation/generationPhase/terrainShapePhase.h"
 #include "generation/generationPhase/vegetationPhase.h"
-#include "generation/generationPhase/treePhase.h"
+#include "generation/generationPhase/featurePhase.h"
 
 ChunkGenerator::ChunkGenerator(std::shared_ptr<Chunk> chunk, World& world, ChunkManager* chunkManager)
 	: world(world)
@@ -62,7 +62,7 @@ int ChunkGenerator::getBlockHeightAt(int blockX, int blockZ) const
 void ChunkGenerator::initPhases()
 {
 	phases.emplace_back(std::make_unique<TerrainShapePhase>(*this, chunk));
-	phases.emplace_back(std::make_unique<TreePhase>(*this, chunk));
+	phases.emplace_back(std::make_unique<FeaturePhase>(*this, chunk));
 	phases.emplace_back(std::make_unique<VegetationPhase>(*this, chunk));
 }
 
