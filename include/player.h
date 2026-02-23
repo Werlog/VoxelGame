@@ -25,6 +25,8 @@ public:
 	static constexpr float jumpHeight = 1.28f;
 	static constexpr float playerSpeed = 7.5f;
 	static constexpr float flightSpeed = 15.0f;
+	static constexpr float sprintMultiplier = 1.35f;
+	static constexpr float sneakMultiplier = 0.25f;
 
 	Player(Camera* camera, World* world, Hotbar* hotbar, ResourceManager& resourceManager);
 
@@ -74,7 +76,6 @@ private:
 	void updateRelPosition();
 	void updateCollider();
 	void resolveCollisions(float deltaTime);
-	void checkGround();
 	glm::vec3 getFriction();
 
 	void blockBreakLogic();

@@ -46,7 +46,6 @@ void Player::update(InputHandler& inputHandler, float deltaTime)
 
 	acceleration = glm::vec3(0.0f);
 
-	checkGround();
 	resolveCollisions(deltaTime);
 
 	relPosition += velocity * deltaTime;
@@ -183,9 +182,13 @@ void Player::movement(InputHandler& inputHandler, float deltaTime)
 		acceleration = glm::normalize(acceleration);
 		acceleration *= enableFlight ? flightSpeed : playerSpeed;
 
-		if (enableFlight && inputHandler.getKey(SDLK_LCTRL))
+		if ((inputHandler.getKey(SDLK_LSHIFT) || inputHandler.getKey(SDLK_RSHIFT)) && !enableFlight)
 		{
-			acceleration *= 5.0f;
+			acceleration *= sneakMultiplier;
+		}
+		else if (inputHandler.getKey(SDLK_LCTRL) || inputHandler.getKey(SDLK_RCTRL))
+		{
+			acceleration *= enableFlight ? sprintMultiplier * 3.0f : sprintMultiplier;
 		}
 	}
 
@@ -260,6 +263,8 @@ void Player::resolveCollisions(float deltaTime)
 {
 	if (!enableCollision) return;
 
+	isGrounded = false;
+
 	const glm::vec3& min = collider.getMin();
 	const glm::vec3& max = collider.getMax();
 
@@ -326,36 +331,9 @@ void Player::resolveCollisions(float deltaTime)
 			float dot = glm::dot(velocity, nearest.normal);
 			velocity -= nearest.normal * dot;
 			this->velocity = velocity / deltaTime;
-			
-		}
-	}
-}
 
-void Player::checkGround()
-{
-	isGrounded = false;
-
-	BlockData& blockData = world->getBlockData();
-
-	glm::vec3 worldPos = getWorldPosition();
-	for (float x = -playerWidth * 0.4f; x <= playerWidth * 0.4f; x += playerWidth * 0.4f)
-	{
-		for (float z = -playerWidth * 0.4f; z <= playerWidth * 0.4f; z += playerWidth * 0.4f)
-		{
-			int blockPosX = (int)floor(worldPos.x + x);
-			int blockPosY = (int)floor(worldPos.y - 0.1f);
-			int blockPosZ = (int)floor(worldPos.z + z);
-
-			BlockType blockType = world->getBlockAt(blockPosX, blockPosY, blockPosZ);
-
-			if (blockType == BlockType::AIR) continue;
-
-			const std::shared_ptr<Block>& block = blockData.getBlock(blockType);
-			AABB aabb = block->getCollider(glm::ivec3(blockPosX, blockPosY, blockPosZ), blockType);
-
-			isGrounded = aabb.isInside(glm::vec3(worldPos.x + x, worldPos.y - 0.1f, worldPos.z + z));
-
-			if (isGrounded) return;
+			if (nearest.normal.y > 0.1f)
+				isGrounded = true;
 		}
 	}
 }
