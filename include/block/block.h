@@ -2,7 +2,7 @@
 
 #include <string>
 #include "blockshape/blockshape.h"
-#include "AABB.h"
+#include "collision/AABB.h"
 #include <memory>
 
 enum BlockType : unsigned char

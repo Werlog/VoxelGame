@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include "inputhandler.h"
 #include "frustum.h"
-#include "AABB.h"
+#include "collision/AABB.h"
 
 enum CameraMovement {
 	FORWARD,

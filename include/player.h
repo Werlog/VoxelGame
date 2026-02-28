@@ -7,7 +7,7 @@
 #include "blockoutline.h"
 #include "resourcemanager.h"
 #include "blockdata.h"
-#include "AABB.h"
+#include "collision/AABB.h"
 #include "chunkcoord.h"
 #include "UI/elements/HUD/hotbar.h"
 

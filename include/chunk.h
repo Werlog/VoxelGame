@@ -10,7 +10,7 @@ class World;
 typedef struct
 {
 	int data;
-	int biomeData;
+	int secondData;
 } ChunkFace;
 
 class Chunk

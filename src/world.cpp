@@ -28,11 +28,12 @@ void World::updateWorld(Player& player, float deltaTime)
 {
 	ChunkCoord playerCoord = ChunkCoord::toChunkCoord(player.getWorldPosition());
 
+
 	if (playerCoord != lastplayerCoord)
 	{
 		updateLoadedChunks(playerCoord);
 	}
-
+	
 	chunkManager.update();
 
 	performRandomUpdates(deltaTime);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AABB.h"
+#include "collision/AABB.h"
 #include <memory>
 
 class Chunk;
