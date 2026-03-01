@@ -11,21 +11,19 @@ ChunkGenerator::ChunkGenerator(std::shared_ptr<Chunk> chunk, World& world, Chunk
 	this->chunk = chunk;
 	this->chunkManager = chunkManager;
 
-	heightNoiseSet = nullptr;
+	heightSet = new char[CHUNK_SIZE_X * 3 * CHUNK_SIZE_Z * 3];
+	std::memset(heightSet, 0, CHUNK_SIZE_X * 3 * CHUNK_SIZE_Z * 3);
 
 	initPhases();
 }
 
 ChunkGenerator::~ChunkGenerator()
 {
-	if (heightNoiseSet != nullptr)
-		FastNoiseSIMD::FreeNoiseSet(heightNoiseSet);
+	delete[] heightSet;
 }
 
 void ChunkGenerator::generate()
 {
-	createHeightNoiseSet();
-
 	for (auto& phase : phases)
 	{
 		phase->generate();
@@ -37,24 +35,20 @@ World& ChunkGenerator::getWorld()
 	return world;
 }
 
-int ChunkGenerator::getHeightFromNoiseValue(float noiseValue) const
+int ChunkGenerator::getBlockHeightAt(int blockX, int blockZ) const
 {
-	return (int)floor(10.0f + noiseValue * 15.0f);
-}
-
-float ChunkGenerator::getNoiseAt(int blockX, int blockZ) const
-{
-	ChunkCoord coord = chunk->getCoord();
-
 	int setX = blockX + CHUNK_SIZE_X;
 	int setZ = blockZ + CHUNK_SIZE_Z;
 
-	return heightNoiseSet[setZ + setX * CHUNK_SIZE_Z * 3];
+	return heightSet[setX + setZ * CHUNK_SIZE_X * 3];
 }
 
-int ChunkGenerator::getBlockHeightAt(int blockX, int blockZ) const
+void ChunkGenerator::setBlockHeightAt(int blockX, int blockZ, char height)
 {
-	return getHeightFromNoiseValue(getNoiseAt(blockX, blockZ));
+	int setX = blockX + CHUNK_SIZE_X;
+	int setZ = blockZ + CHUNK_SIZE_Z;
+
+	heightSet[setX + setZ * CHUNK_SIZE_X * 3] = height;
 }
 
 void ChunkGenerator::initPhases()
@@ -62,12 +56,6 @@ void ChunkGenerator::initPhases()
 	phases.emplace_back(std::make_unique<TerrainShapePhase>(*this, chunk));
 	phases.emplace_back(std::make_unique<FeaturePhase>(*this, chunk));
 	phases.emplace_back(std::make_unique<VegetationPhase>(*this, chunk));
-}
-
-void ChunkGenerator::createHeightNoiseSet()
-{
-	const ChunkCoord& coord = chunk->getCoord();
-	heightNoiseSet = world.getNoise()->GetSimplexSet((coord.x - 1) * CHUNK_SIZE_X, 0, (coord.z - 1) * CHUNK_SIZE_Z, CHUNK_SIZE_X * 3, 1, CHUNK_SIZE_Z * 3);
 }
 
 unsigned int ChunkGenerator::getChunkSeed(const ChunkCoord& coord, unsigned int subsystemId)

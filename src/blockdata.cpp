@@ -104,7 +104,7 @@ void BlockData::init()
 	data.emplace(BlockType::OAK_LEAVES, std::make_shared<CubeBlock>(BlockType::OAK_LEAVES, "Oak Leaves", 53, false));
 	data.emplace(BlockType::COBBLESTONE_SLAB, std::make_shared<SlabBlock>(BlockType::COBBLESTONE_SLAB, "Cobblestone Slab", 16));
 	data.emplace(BlockType::GLASS, std::make_shared<CubeBlock>(BlockType::GLASS, "Glass", 49, true));
-	data.emplace(BlockType::BEDROCK, std::make_shared<CubeBlock>(BlockType::BEDROCK, "Bedrock", 17, true));
+	data.emplace(BlockType::BEDROCK, std::make_shared<CubeBlock>(BlockType::BEDROCK, "Bedrock", 17, false));
 	data.emplace(BlockType::TALL_GRASS, std::make_shared<CrossBlock>(BlockType::TALL_GRASS, "Tall Grass", 106, true));
 	data.emplace(BlockType::RED_FLOWER, std::make_shared<CrossBlock>(BlockType::RED_FLOWER, "Red Flower", 12, true));
 	data.emplace(BlockType::YELLOW_FLOWER, std::make_shared<CrossBlock>(BlockType::YELLOW_FLOWER, "Yellow Flower", 13, true));

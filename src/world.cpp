@@ -258,9 +258,9 @@ FastNoiseSIMD* World::getTreeNoise()
 	return treeDensityNoise;
 }
 
-FastNoiseSIMD* World::getOreNoise()
+FastNoiseSIMD* World::getWeirdnessNoise()
 {
-	return oreNoise;
+	return weirdnessNoise;
 }
 
 FastNoiseSIMD* World::getGrassNoise()
@@ -290,7 +290,7 @@ void World::setupWorldGen()
 	}
 
 	noise = FastNoiseSIMD::NewFastNoiseSIMD(seed);
-	oreNoise = FastNoiseSIMD::NewFastNoiseSIMD(seed + 2);
+	weirdnessNoise = FastNoiseSIMD::NewFastNoiseSIMD(seed + 2);
 	treeDensityNoise = FastNoiseSIMD::NewFastNoiseSIMD(seed + 1);
 	grassDensityNoise = FastNoiseSIMD::NewFastNoiseSIMD(seed - 1);
 

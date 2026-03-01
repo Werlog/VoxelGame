@@ -18,10 +18,8 @@ public:
 
 	World& getWorld();
 
-	int getHeightFromNoiseValue(float noiseValue) const;
-
-	float getNoiseAt(int blockX, int blockZ) const;
 	int getBlockHeightAt(int blockX, int blockZ) const;
+	void setBlockHeightAt(int blockX, int blockZ, char height);
 
 	unsigned int getChunkSeed(const ChunkCoord& coord, unsigned int subsystemId);
 private:
@@ -31,9 +29,7 @@ private:
 	World& world;
 	ChunkManager* chunkManager;
 
-	float* heightNoiseSet;
+	char* heightSet;
 
 	void initPhases();
-
-	void createHeightNoiseSet();
 };

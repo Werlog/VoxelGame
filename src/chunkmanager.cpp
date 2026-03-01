@@ -43,16 +43,20 @@ void ChunkManager::unloadChunk(ChunkCoord coord)
 
 void ChunkManager::update()
 {
-	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
 	{
-		std::shared_ptr<Chunk> chunk = it->second;
-		if (chunk == nullptr)
-			continue;
+		std::lock_guard chunkLock(chunksMutex);
 
-		if (chunk->shouldUpdateMesh.load())
+		for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
 		{
-			chunk->createChunkMesh();
-			chunk->shouldUpdateMesh.store(false);
+			std::shared_ptr<Chunk> chunk = it->second;
+			if (chunk == nullptr)
+				continue;
+
+			if (chunk->shouldUpdateMesh.exchange(false, std::memory_order_acquire))
+			{
+				chunk->createChunkMesh();
+				chunk->shouldUpdateMesh.store(false);
+			}
 		}
 	}
 
@@ -168,11 +172,6 @@ void ChunkManager::loadWorker()
 			generator.generate();
 		}
 
-		{
-			std::lock_guard chunksLock(chunksMutex);
-			loadedChunks.insert({ coord, chunk });
-		}
-
 		for (const auto& direction : worldDirections)
 		{
 			ChunkCoord nCoord = ChunkCoord{ coord.x + direction[0], coord.y + direction[1], coord.z + direction[2] };
@@ -180,6 +179,11 @@ void ChunkManager::loadWorker()
 		}
 		
 		remeshChunk(coord);
+
+		{
+			std::lock_guard chunksLock(chunksMutex);
+			loadedChunks.insert({ coord, chunk });
+		}
 	}
 }
 
@@ -203,6 +207,7 @@ void ChunkManager::meshWorker()
 
 		chunk->updateLight(world->getBlockData());
 		chunk->generateMesh(world->getBlockData());
-		chunk->shouldUpdateMesh.store(true);
+
+		chunk->shouldUpdateMesh.store(true, std::memory_order_release);
 	}
 }
