@@ -10,8 +10,6 @@ class World;
 class ChunkGenerator
 {
 public:
-	static constexpr float caveSize = 3.0f;
-
 	ChunkGenerator(std::shared_ptr<Chunk> chunk, World& world, ChunkManager* chunkManager);
 
 	~ChunkGenerator();

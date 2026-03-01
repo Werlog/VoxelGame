@@ -31,6 +31,9 @@ enum BlockType : unsigned char
 	GLASS_PANE,
 	BRICKS,
 	CACTUS,
+	COAL_ORE,
+	IRON_ORE,
+	GOLD_ORE,
 
 	BLOCK_TYPE_LIMIT = 64,
 };

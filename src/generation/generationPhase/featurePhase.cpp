@@ -28,6 +28,8 @@ std::vector<std::unique_ptr<GenerationFeature>> FeaturePhase::findFeaturePositio
 	auto features = std::vector<std::unique_ptr<GenerationFeature>>();
 
 	ChunkCoord originCoord = chunk->getCoord();
+	std::uniform_int_distribution<int> treeChanceDist(0, 500);
+	std::mt19937 rng(0);
 
 	for (int chunkX = -1; chunkX <= 1; chunkX++)
 	{
@@ -38,8 +40,7 @@ std::vector<std::unique_ptr<GenerationFeature>> FeaturePhase::findFeaturePositio
 				ChunkCoord coord = originCoord + ChunkCoord{ chunkX, chunkY, chunkZ };
 
 				int seed = chunkGenerator.getChunkSeed(coord, 1);
-				std::mt19937 rng(seed);
-				std::uniform_int_distribution<int> treeChanceDist(0, 500);
+				rng.seed(seed);
 
 				for (int x = 0; x < CHUNK_SIZE_X; x++)
 				{

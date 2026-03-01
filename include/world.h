@@ -47,6 +47,7 @@ public:
 	bool isChunkLoaded(ChunkCoord coord);
 	FastNoiseSIMD* getNoise();
 	FastNoiseSIMD* getTreeNoise();
+	FastNoiseSIMD* getOreNoise();
 	FastNoiseSIMD* getGrassNoise();
 	int getWorldSeed();
 	BlockData& getBlockData();
@@ -66,6 +67,7 @@ private:
 
 	unsigned int shaderModelLoc;
 	FastNoiseSIMD* noise;
+	FastNoiseSIMD* oreNoise;
 	FastNoiseSIMD* treeDensityNoise;
 	FastNoiseSIMD* grassDensityNoise;
 

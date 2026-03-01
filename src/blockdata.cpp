@@ -118,4 +118,7 @@ void BlockData::init()
 	data.emplace(BlockType::GLASS_PANE, std::make_shared<GlassPaneBlock>());
 	data.emplace(BlockType::BRICKS, std::make_shared<CubeBlock>(BlockType::BRICKS, "Bricks", 7, false));
 	data.emplace(BlockType::CACTUS, std::make_shared<CactusBlock>());
+	data.emplace(BlockType::COAL_ORE, std::make_shared<CubeBlock>(BlockType::COAL_ORE, "Coal Ore", 34, false));
+	data.emplace(BlockType::IRON_ORE, std::make_shared<CubeBlock>(BlockType::IRON_ORE, "Iron Ore", 33, false));
+	data.emplace(BlockType::GOLD_ORE, std::make_shared<CubeBlock>(BlockType::GOLD_ORE, "Gold Ore", 32, false));
 }
