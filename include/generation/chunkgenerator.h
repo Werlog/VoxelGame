@@ -36,7 +36,4 @@ private:
 	void initPhases();
 
 	void createHeightNoiseSet();
-	void generateTrees();
-
-	void generateTree(int xPos, int yPos, int zPos, int height);
 };
