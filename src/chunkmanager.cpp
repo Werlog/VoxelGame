@@ -52,10 +52,12 @@ void ChunkManager::update()
 			if (chunk == nullptr)
 				continue;
 
-			if (chunk->shouldUpdateMesh.exchange(false, std::memory_order_acquire))
+			std::shared_ptr<ChunkMesh> pendingMesh = std::atomic_exchange_explicit(&chunk->pendingMesh, std::shared_ptr<ChunkMesh>{}, std::memory_order_acquire);
+
+			if (pendingMesh != nullptr)
 			{
+				chunk->gpuMesh = pendingMesh;
 				chunk->createChunkMesh();
-				chunk->shouldUpdateMesh.store(false);
 			}
 		}
 	}
@@ -205,9 +207,12 @@ void ChunkManager::meshWorker()
 			continue;
 		}
 
-		chunk->updateLight(world->getBlockData());
-		chunk->generateMesh(world->getBlockData());
+		std::shared_ptr<ChunkMesh> newMesh = std::make_shared<ChunkMesh>();
 
-		chunk->shouldUpdateMesh.store(true, std::memory_order_release);
+		chunk->updateLight(world->getBlockData());
+		chunk->generateMesh(world->getBlockData(), newMesh);
+
+
+		std::atomic_store_explicit(&chunk->pendingMesh, newMesh, std::memory_order_release);
 	}
 }

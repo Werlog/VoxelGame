@@ -3,26 +3,21 @@
 #include <FastNoiseSIMD.h>
 #include "chunkcoord.h"
 #include <atomic>
-#include <mutex>
+#include "chunkmesh.h"
 
 class World;
-
-typedef struct
-{
-	int data;
-	int secondData;
-} ChunkFace;
 
 class Chunk
 {
 public:
-	std::atomic<bool> shouldUpdateMesh;
+	std::shared_ptr<ChunkMesh> pendingMesh;
+	std::shared_ptr<ChunkMesh> gpuMesh;
 
 	Chunk(ChunkCoord coord, World* world);
 	~Chunk();
 
 	void updateLight(BlockData& blockData);
-	void generateMesh(BlockData& blockData);
+	void generateMesh(BlockData& blockData, std::shared_ptr<ChunkMesh> outputMesh);
 	void createChunkMesh();
 	void render(BlockData& blockData) const;
 
@@ -43,8 +38,6 @@ public:
 private:
 	BlockType blocks[CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z];
 	unsigned char light[CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z];
-	int faceCount;
-	std::vector<ChunkFace> faceData;
 
 	bool modified;
 	
@@ -55,7 +48,6 @@ private:
 	unsigned int VAO;
 	unsigned int SSBO;
 
-	void createFace(int x, int y, int z, int textureId, int lightLevel, int shapeIndex, int faceIndex, int ao);
 	int calculateAO(int x, int y, int z, int faceIndex, const glm::ivec3& normal);
 
 	std::array<bool, 8> getAONeighbours(int x, int y, int z, int faceIndex);

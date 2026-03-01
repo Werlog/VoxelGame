@@ -13,13 +13,14 @@ Chunk::Chunk(ChunkCoord coord, World* world)
 
 	modified = false;
 
+	pendingMesh = nullptr;
+	gpuMesh = nullptr;
+
 	VAO = 0;
 	SSBO = 0;
-	faceCount = 0;
 
 	std::memset(blocks, BlockType::AIR, sizeof(blocks));
 	std::memset(light, 0, sizeof(light));
-	shouldUpdateMesh.store(false);
 }
 
 Chunk::~Chunk()
@@ -57,11 +58,14 @@ void Chunk::updateLight(BlockData& blockData)
 	}
 }
 
-void Chunk::generateMesh(BlockData& blockData)
+void Chunk::generateMesh(BlockData& blockData, std::shared_ptr<ChunkMesh> outputMesh)
 {
-	faceData.clear();
+	outputMesh->faces.reserve(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 
-	faceData.reserve(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
+	auto createFace = [this, outputMesh](int x, int y, int z, int textureId, int lightLevel, int shapeIndex, int faceIndex, int ao)
+	{
+		outputMesh->faces.push_back(ChunkFace{ (x | y << 6 | z << 12 | textureId << 18 | lightLevel << 26), (shapeIndex | faceIndex << 4 | ao << 8) });
+	};
 
 	for (int x = 0; x < CHUNK_SIZE_X; x++)
 	{
@@ -108,13 +112,11 @@ void Chunk::generateMesh(BlockData& blockData)
 			}
 		}
 	}
-
-	faceCount = faceData.size();
 }
 
 void Chunk::createChunkMesh()
 {
-	if (faceCount <= 0)
+	if (gpuMesh->faces.size() == 0)
 	{
 		return;
 	}
@@ -128,9 +130,7 @@ void Chunk::createChunkMesh()
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
 
-	glBufferData(GL_SHADER_STORAGE_BUFFER, faceData.size() * sizeof(ChunkFace), faceData.data(), GL_DYNAMIC_DRAW);
-
-	faceData.clear();
+	glBufferData(GL_SHADER_STORAGE_BUFFER, gpuMesh->faces.size() * sizeof(ChunkFace), gpuMesh->faces.data(), GL_DYNAMIC_DRAW);
 }
 
 void Chunk::render(BlockData& blockData) const
@@ -139,7 +139,7 @@ void Chunk::render(BlockData& blockData) const
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, blockData.getShapeSSBO());
 
-	glDrawArrays(GL_TRIANGLES, 0, faceCount * 6);
+	glDrawArrays(GL_TRIANGLES, 0, gpuMesh->faces.size() * 6);
 }
 
 inline BlockType Chunk::getBlockAt(int x, int y, int z)
@@ -207,11 +207,6 @@ void Chunk::unloadMesh()
 
 	VAO = 0;
 	SSBO = 0;
-}
-
-void Chunk::createFace(int x, int y, int z, int textureId, int lightLevel, int shapeIndex, int faceIndex, int ao)
-{
-	faceData.push_back(ChunkFace{ (x | y << 6 | z << 12 | textureId << 18 | lightLevel << 26), (shapeIndex | faceIndex << 4 | ao << 8) });
 }
 
 int Chunk::calculateAO(int blockX, int blockY, int blockZ, int faceIndex, const glm::ivec3& normal)
