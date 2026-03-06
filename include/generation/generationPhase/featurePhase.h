@@ -8,7 +8,7 @@ class FeaturePhase : public GenerationPhase
 {
 public:
 
-	FeaturePhase(ChunkGenerator& chunkGenerator, std::shared_ptr<Chunk> chunk);
+	FeaturePhase(ChunkGenerator& chunkGenerator);
 
 	void generate() override;
 private:

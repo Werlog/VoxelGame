@@ -3,8 +3,8 @@
 #include "world.h"
 #include <random>
 
-VegetationPhase::VegetationPhase(ChunkGenerator& chunkGenerator, std::shared_ptr<Chunk> chunk)
-	: GenerationPhase(chunkGenerator, chunk)
+VegetationPhase::VegetationPhase(ChunkGenerator& chunkGenerator)
+	: GenerationPhase(chunkGenerator)
 {
 
 }

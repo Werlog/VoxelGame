@@ -1,9 +1,8 @@
 #include "chunkmanager.h"
 #include "world.h"
-#include "generation/chunkgenerator.h"
 
 ChunkManager::ChunkManager(World* world)
-	: saveLoader(world)
+	: saveLoader(world), chunkGenerator(*world, this)
 {
 	this->world = world;
 
@@ -43,22 +42,18 @@ void ChunkManager::unloadChunk(ChunkCoord coord)
 
 void ChunkManager::update()
 {
+	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
 	{
-		std::lock_guard chunkLock(chunksMutex);
+		std::shared_ptr<Chunk> chunk = it->second;
+		if (chunk == nullptr)
+			continue;
 
-		for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
+		std::shared_ptr<ChunkMesh> pendingMesh = std::atomic_exchange_explicit(&chunk->pendingMesh, std::shared_ptr<ChunkMesh>{}, std::memory_order_acquire);
+
+		if (pendingMesh != nullptr)
 		{
-			std::shared_ptr<Chunk> chunk = it->second;
-			if (chunk == nullptr)
-				continue;
-
-			std::shared_ptr<ChunkMesh> pendingMesh = std::atomic_exchange_explicit(&chunk->pendingMesh, std::shared_ptr<ChunkMesh>{}, std::memory_order_acquire);
-
-			if (pendingMesh != nullptr)
-			{
-				chunk->gpuMesh = pendingMesh;
-				chunk->createChunkMesh();
-			}
+			chunk->gpuMesh = pendingMesh;
+			chunk->createChunkMesh();
 		}
 	}
 
@@ -170,8 +165,8 @@ void ChunkManager::loadWorker()
 		bool loaded = saveLoader.loadChunk(chunk);
 		if (!loaded)
 		{
-			ChunkGenerator generator = ChunkGenerator(chunk, *world, this);
-			generator.generate();
+			chunkGenerator.setChunk(chunk);
+			chunkGenerator.generate();
 		}
 
 		for (const auto& direction : worldDirections)

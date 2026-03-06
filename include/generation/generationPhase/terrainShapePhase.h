@@ -8,7 +8,7 @@ public:
 	static constexpr float densityThreshold = 0.0f;
 	static constexpr int surfaceBlocks = 3;
 
-	TerrainShapePhase(ChunkGenerator& chunkGenerator, std::shared_ptr<Chunk> chunk);
+	TerrainShapePhase(ChunkGenerator& chunkGenerator);
 
 	~TerrainShapePhase();
 

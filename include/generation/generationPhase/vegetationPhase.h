@@ -6,7 +6,7 @@ class VegetationPhase : public GenerationPhase
 {
 public:
 
-	VegetationPhase(ChunkGenerator& chunkGenerator, std::shared_ptr<Chunk> chunk);
+	VegetationPhase(ChunkGenerator& chunkGenerator);
 
 	void generate() override;
 };

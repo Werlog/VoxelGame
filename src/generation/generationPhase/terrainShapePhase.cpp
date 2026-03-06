@@ -2,9 +2,10 @@
 #include "generation/chunkgenerator.h"
 #include "world.h"
 #include <iostream>
+#include "profiling/codetimer.h"
 
-TerrainShapePhase::TerrainShapePhase(ChunkGenerator& chunkGenerator, std::shared_ptr<Chunk> chunk)
-	: GenerationPhase(chunkGenerator, chunk)
+TerrainShapePhase::TerrainShapePhase(ChunkGenerator& chunkGenerator)
+	: GenerationPhase(chunkGenerator)
 {
 	heightNoiseSet = nullptr;
 	weirdnessNoiseSet = nullptr;
@@ -34,11 +35,11 @@ void TerrainShapePhase::generate()
 		for (int z = 0; z < CHUNK_SIZE_Z; z++)
 		{
 			int depth = getTopSurfaceDepth(x, z);
+			int height = getHeightAt(x, z);
 
 			for (int y = CHUNK_SIZE_Y - 1; y >= 0; y--)
 			{
 				int yPos = y + coord.y * CHUNK_SIZE_Y;
-				int height = getHeightAt(x, z);
 
 				if (yPos <= height)
 				{

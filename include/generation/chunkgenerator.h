@@ -1,16 +1,16 @@
 #pragma once
 
 #include "../chunk.h"
-#include "../chunkmanager.h"
 #include "generationPhase/generationPhase.h"
 #include <memory>
 
 class World;
+class ChunkManager;
 
 class ChunkGenerator
 {
 public:
-	ChunkGenerator(std::shared_ptr<Chunk> chunk, World& world, ChunkManager* chunkManager);
+	ChunkGenerator(World& world, ChunkManager* chunkManager);
 
 	~ChunkGenerator();
 
@@ -19,9 +19,11 @@ public:
 	World& getWorld();
 
 	int getBlockHeightAt(int blockX, int blockZ) const;
-	void setBlockHeightAt(int blockX, int blockZ, char height);
+	void setBlockHeightAt(int blockX, int blockZ, short height);
 
 	unsigned int getChunkSeed(const ChunkCoord& coord, unsigned int subsystemId);
+
+	void setChunk(std::shared_ptr<Chunk> chunk);
 private:
 	std::vector<std::unique_ptr<GenerationPhase>> phases;
 
@@ -29,7 +31,7 @@ private:
 	World& world;
 	ChunkManager* chunkManager;
 
-	char* heightSet;
+	short* heightSet;
 
 	void initPhases();
 };

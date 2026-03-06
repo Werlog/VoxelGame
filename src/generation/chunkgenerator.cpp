@@ -4,14 +4,15 @@
 #include "generation/generationPhase/terrainShapePhase.h"
 #include "generation/generationPhase/vegetationPhase.h"
 #include "generation/generationPhase/featurePhase.h"
+#include "chunkmanager.h"
 
-ChunkGenerator::ChunkGenerator(std::shared_ptr<Chunk> chunk, World& world, ChunkManager* chunkManager)
+ChunkGenerator::ChunkGenerator(World& world, ChunkManager* chunkManager)
 	: world(world)
 {
-	this->chunk = chunk;
 	this->chunkManager = chunkManager;
+	this->chunk = nullptr;
 
-	heightSet = new char[CHUNK_SIZE_X * 3 * CHUNK_SIZE_Z * 3];
+	heightSet = new short[CHUNK_SIZE_X * 3 * CHUNK_SIZE_Z * 3];
 	std::memset(heightSet, 0, CHUNK_SIZE_X * 3 * CHUNK_SIZE_Z * 3);
 
 	initPhases();
@@ -43,7 +44,7 @@ int ChunkGenerator::getBlockHeightAt(int blockX, int blockZ) const
 	return heightSet[setX + setZ * CHUNK_SIZE_X * 3];
 }
 
-void ChunkGenerator::setBlockHeightAt(int blockX, int blockZ, char height)
+void ChunkGenerator::setBlockHeightAt(int blockX, int blockZ, short height)
 {
 	int setX = blockX + CHUNK_SIZE_X;
 	int setZ = blockZ + CHUNK_SIZE_Z;
@@ -53,9 +54,9 @@ void ChunkGenerator::setBlockHeightAt(int blockX, int blockZ, char height)
 
 void ChunkGenerator::initPhases()
 {
-	phases.emplace_back(std::make_unique<TerrainShapePhase>(*this, chunk));
-	phases.emplace_back(std::make_unique<FeaturePhase>(*this, chunk));
-	phases.emplace_back(std::make_unique<VegetationPhase>(*this, chunk));
+	phases.emplace_back(std::make_unique<TerrainShapePhase>(*this));
+	phases.emplace_back(std::make_unique<FeaturePhase>(*this));
+	phases.emplace_back(std::make_unique<VegetationPhase>(*this));
 }
 
 unsigned int ChunkGenerator::getChunkSeed(const ChunkCoord& coord, unsigned int subsystemId)
@@ -71,4 +72,13 @@ unsigned int ChunkGenerator::getChunkSeed(const ChunkCoord& coord, unsigned int 
 	seed ^= (seed << 5);
 
 	return seed ^ (subsystemId * 0x9e3779b9);
+}
+
+void ChunkGenerator::setChunk(std::shared_ptr<Chunk> chunk)
+{
+	this->chunk = chunk;
+	for (auto& phase : phases)
+	{
+		phase->setChunk(chunk);
+	}
 }

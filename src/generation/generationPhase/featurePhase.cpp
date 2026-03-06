@@ -2,8 +2,8 @@
 #include "generation/chunkgenerator.h"
 #include <random>
 
-FeaturePhase::FeaturePhase(ChunkGenerator& chunkGenerator, std::shared_ptr<Chunk> chunk)
-	: GenerationPhase(chunkGenerator, chunk)
+FeaturePhase::FeaturePhase(ChunkGenerator& chunkGenerator)
+	: GenerationPhase(chunkGenerator)
 {
 
 }

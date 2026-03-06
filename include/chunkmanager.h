@@ -10,6 +10,7 @@
 #include <queue>
 #include <deque>
 #include "saving/worldloader.h"
+#include "generation/chunkgenerator.h"
 
 class World;
 
@@ -40,6 +41,7 @@ public:
 private:
 	World* world;
 	WorldLoader saveLoader;
+	ChunkGenerator chunkGenerator;
 
 	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> loadedChunks;
 	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> savedChunks;
