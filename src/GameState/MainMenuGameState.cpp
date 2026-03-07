@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include <SDL2/SDL.h>
 #include "saving/worldsaveutil.h"
+#include "profiling/profiler.h"
 
 MainMenuGameState::MainMenuGameState(Game* game) : BaseGameState(game),
 	minecraftFont(game->getResourceManager().getFont("fonts\\MinecraftRegular.otf")),
@@ -16,7 +17,7 @@ MainMenuGameState::MainMenuGameState(Game* game) : BaseGameState(game),
 
 void MainMenuGameState::update(float deltaTime, InputHandler& inputHandler)
 {
-
+	PROFILER_ZONE;
 	if (currentGUI != nullptr)
 	{
 		checkNextGUI();
@@ -26,6 +27,7 @@ void MainMenuGameState::update(float deltaTime, InputHandler& inputHandler)
 
 void MainMenuGameState::render()
 {
+	PROFILER_ZONE;
 	int width = game->getUIRenderer().getWindowWidth();
 	int height = game->getUIRenderer().getWindowHeight();
 

@@ -2,6 +2,7 @@
 #include "generation/chunkgenerator.h"
 #include "world.h"
 #include <random>
+#include "profiling/profiler.h"
 
 VegetationPhase::VegetationPhase(ChunkGenerator& chunkGenerator)
 	: GenerationPhase(chunkGenerator)
@@ -11,6 +12,7 @@ VegetationPhase::VegetationPhase(ChunkGenerator& chunkGenerator)
 
 void VegetationPhase::generate()
 {
+	PROFILER_ZONE;
 	const ChunkCoord& coord = chunk->getCoord();
 
 	unsigned int seed = chunkGenerator.getChunkSeed(coord, 2);

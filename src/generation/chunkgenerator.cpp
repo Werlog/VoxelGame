@@ -5,6 +5,7 @@
 #include "generation/generationPhase/vegetationPhase.h"
 #include "generation/generationPhase/featurePhase.h"
 #include "chunkmanager.h"
+#include "profiling/profiler.h"
 
 ChunkGenerator::ChunkGenerator(World& world, ChunkManager* chunkManager)
 	: world(world)
@@ -25,6 +26,7 @@ ChunkGenerator::~ChunkGenerator()
 
 void ChunkGenerator::generate()
 {
+	PROFILER_ZONE;
 	for (auto& phase : phases)
 	{
 		phase->generate();

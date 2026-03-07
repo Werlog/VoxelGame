@@ -2,7 +2,7 @@
 #include "generation/chunkgenerator.h"
 #include "world.h"
 #include <iostream>
-#include "profiling/codetimer.h"
+#include "profiling/profiler.h"
 
 TerrainShapePhase::TerrainShapePhase(ChunkGenerator& chunkGenerator)
 	: GenerationPhase(chunkGenerator)
@@ -24,6 +24,7 @@ TerrainShapePhase::~TerrainShapePhase()
 
 void TerrainShapePhase::generate()
 {
+	PROFILER_ZONE;
 	const ChunkCoord& coord = chunk->getCoord();
 
 	heightNoiseSet = chunkGenerator.getWorld().getNoise()->GetPerlinSet((coord.x - 1) * CHUNK_SIZE_X, 0, (coord.z - 1) * CHUNK_SIZE_Z, CHUNK_SIZE_X * 3, 1, CHUNK_SIZE_Z * 3, 2.0f);

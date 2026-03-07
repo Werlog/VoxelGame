@@ -11,6 +11,7 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
 #include "imguiThemes.h"
+#include "profiling/profiler.h"
 
 Game::Game()
 	: camera(glm::vec3(0), 65.0f, (float)windowWidth / (float)windowHeight)
@@ -148,6 +149,7 @@ void Game::gameLoop()
 		}
 
 		SDL_GL_SwapWindow(window);
+		PROFILER_FRAME;
 	}
 }
 

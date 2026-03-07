@@ -1,6 +1,7 @@
 #include "generation/generationPhase/featurePhase.h"
 #include "generation/chunkgenerator.h"
 #include <random>
+#include "profiling/profiler.h"
 
 FeaturePhase::FeaturePhase(ChunkGenerator& chunkGenerator)
 	: GenerationPhase(chunkGenerator)
@@ -10,6 +11,7 @@ FeaturePhase::FeaturePhase(ChunkGenerator& chunkGenerator)
 
 void FeaturePhase::generate()
 {
+	PROFILER_ZONE;
 	std::vector<std::unique_ptr<GenerationFeature>> features = findFeaturePositions();
 
 	AABB chunkAABB = AABB(glm::vec3(0), glm::vec3(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z));

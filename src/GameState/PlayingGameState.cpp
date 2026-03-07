@@ -3,6 +3,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "imgui.h"
 #include "UI/blockPickGUI.h"
+#include "profiling/profiler.h"
 
 PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager, const std::string& worldName, int worldSeed)
 	: BaseGameState(game), terrainShader(resourceManager.getShader("shaders\\chunk")), minecraftFont(resourceManager.getFont("fonts\\MinecraftRegular.otf")), world(terrainShader, this, worldName, worldSeed), hud(game, this, &blockIcons),
@@ -21,6 +22,7 @@ PlayingGameState::PlayingGameState(Game* game, ResourceManager& resourceManager,
 
 void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 {
+	PROFILER_ZONE;
 	if (currentGUI != nullptr)
 	{
 		currentGUI->update(inputHandler, deltaTime);
@@ -68,6 +70,7 @@ void PlayingGameState::update(float deltaTime, InputHandler& inputHandler)
 
 void PlayingGameState::render()
 {
+	PROFILER_ZONE;
 	Camera& camera = game->getCamera();
 
 	skybox.render(camera);

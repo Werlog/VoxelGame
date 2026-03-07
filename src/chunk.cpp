@@ -3,8 +3,8 @@
 #include <vector>
 #include <glad/glad.h>
 #include "faceChecks.h"
-#include "profiling/codetimer.h"
 #include "world.h"
+#include "profiling/profiler.h"
 
 Chunk::Chunk(ChunkCoord coord, World* world)
 {
@@ -30,6 +30,7 @@ Chunk::~Chunk()
 
 void Chunk::updateLight(BlockData& blockData)
 {
+	PROFILER_ZONE;
 	std::memset(light, 0, sizeof(light));
 
 	for (int x = 0; x < CHUNK_SIZE_X; x++)
@@ -60,6 +61,7 @@ void Chunk::updateLight(BlockData& blockData)
 
 void Chunk::generateMesh(BlockData& blockData, std::shared_ptr<ChunkMesh> outputMesh)
 {
+	PROFILER_ZONE;
 	outputMesh->faces.reserve(CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z);
 
 	auto createFace = [this, outputMesh](int x, int y, int z, int textureId, int lightLevel, int shapeIndex, int faceIndex, int ao)

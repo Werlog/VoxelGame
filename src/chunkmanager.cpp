@@ -1,5 +1,6 @@
 #include "chunkmanager.h"
 #include "world.h"
+#include "profiling/profiler.h"
 
 ChunkManager::ChunkManager(World* world)
 	: saveLoader(world), chunkGenerator(*world, this)
@@ -149,6 +150,7 @@ void ChunkManager::init()
 
 void ChunkManager::loadWorker()
 {
+	PROFILER_THREAD_NAME("Chunk Load Worker");
 	while (true)
 	{
 		std::unique_lock lock(loadMutex);
@@ -186,6 +188,7 @@ void ChunkManager::loadWorker()
 
 void ChunkManager::meshWorker()
 {
+	PROFILER_THREAD_NAME("Chunk Meshing Worker");
 	while (true)
 	{
 		std::unique_lock lock(meshMutex);
