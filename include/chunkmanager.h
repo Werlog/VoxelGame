@@ -11,6 +11,7 @@
 #include <deque>
 #include "saving/worldloader.h"
 #include "generation/chunkgenerator.h"
+#include "util/tsQueue.h"
 
 class World;
 
@@ -35,7 +36,6 @@ public:
 	const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& getSavedChunks();
 	std::shared_ptr<Chunk> getLoadedChunk(ChunkCoord coordinate);
 	std::shared_ptr<Chunk> getSavedChunk(ChunkCoord coordinate);
-	std::recursive_mutex& getChunkMutex();
 
 	void clearSavedChunks();
 private:
@@ -46,13 +46,14 @@ private:
 	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> loadedChunks;
 	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> savedChunks;
 
-	std::queue<ChunkCoord> chunksToLoad;
-	std::deque<std::shared_ptr<Chunk>> chunksToMesh;
+	ts_queue<ChunkCoord> chunksToLoad;
+	ts_queue<std::shared_ptr<Chunk>> readyChunks; // Chunks that were just loaded by the loadWorker
+
+	ts_queue<std::shared_ptr<Chunk>> chunksToMesh;
 	std::unordered_set<ChunkCoord> chunksToUnload;
 
-	std::mutex meshMutex;
 	std::mutex loadMutex;
-	std::recursive_mutex chunksMutex;
+	std::mutex meshMutex;
 
 	std::condition_variable loadCondition;
 	std::condition_variable meshCondition;

@@ -12,37 +12,31 @@ ChunkManager::ChunkManager(World* world)
 
 void ChunkManager::loadChunk(ChunkCoord coord)
 {
-	{
-		std::lock_guard lock(chunksMutex);
-		if (loadedChunks.find(coord) != loadedChunks.end()) return;
+	if (loadedChunks.find(coord) != loadedChunks.end()) return;
 
-		auto it = savedChunks.find(coord);
-		if (it != savedChunks.end())
-		{
-			loadedChunks.insert({ coord, it->second });
-			remeshChunk(it->first);
-			savedChunks.erase(it);
-		}
+	auto it = savedChunks.find(coord);
+	if (it != savedChunks.end())
+	{
+		loadedChunks.insert({ coord, it->second });
+		remeshChunk(it->first);
+		savedChunks.erase(it);
 	}
 
-	std::lock_guard genLock(loadMutex);
-	chunksToLoad.push(coord);
+	chunksToLoad.push_back(coord);
 	loadCondition.notify_one();
 }
 
 void ChunkManager::unloadChunk(ChunkCoord coord)
 {
-	{
-		std::lock_guard lock(chunksMutex);
-		if (loadedChunks.find(coord) == loadedChunks.end())
-			return;
-	}
+	if (loadedChunks.find(coord) == loadedChunks.end())
+		return;
 
 	chunksToUnload.insert(coord);
 }
 
 void ChunkManager::update()
 {
+	PROFILER_ZONE;
 	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
 	{
 		std::shared_ptr<Chunk> chunk = it->second;
@@ -63,21 +57,26 @@ void ChunkManager::update()
 	{
 		if (unloadedCount >= MAX_UNLOAD_COUNT)
 			break;
+		PROFILER_ZONE_N("Unload chunk");
 
 		std::shared_ptr<Chunk> chunk = getLoadedChunk(*it);
 
+		loadedChunks.erase(*it);
+		if (chunk->wasModified())
 		{
-			std::lock_guard lock(chunksMutex);
-			loadedChunks.erase(*it);
-			if (chunk->wasModified())
-			{
-				savedChunks.insert({ chunk->getCoord(), chunk });
-			}
+			savedChunks.insert({ chunk->getCoord(), chunk });
 		}
 		chunk->unloadMesh();
 
 		it = chunksToUnload.erase(it);
 		unloadedCount++;
+	}
+
+	while (!readyChunks.empty())
+	{
+		std::shared_ptr<Chunk> chunk = readyChunks.pop_front().value();
+		
+		loadedChunks.insert({ chunk->getCoord(), chunk });
 	}
 }
 
@@ -88,8 +87,7 @@ void ChunkManager::remeshChunk(ChunkCoord coord, bool pushToFront)
 	if (chunk == nullptr)
 		return;
 
-	std::lock_guard lock(meshMutex);
-	if (std::find(chunksToMesh.begin(), chunksToMesh.end(), chunk) != chunksToMesh.end())
+	if (chunksToMesh.contains(chunk))
 	{
 		return;
 	}
@@ -112,7 +110,6 @@ const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& ChunkManager::getS
 
 std::shared_ptr<Chunk> ChunkManager::getLoadedChunk(ChunkCoord coordinate)
 {
-	std::lock_guard lock(chunksMutex);
 	auto it = loadedChunks.find(coordinate);
 	if (it == loadedChunks.end())
 		return nullptr;
@@ -127,11 +124,6 @@ std::shared_ptr<Chunk> ChunkManager::getSavedChunk(ChunkCoord coordinate)
 		return nullptr;
 
 	return it->second;
-}
-
-std::recursive_mutex& ChunkManager::getChunkMutex()
-{
-	return chunksMutex;
 }
 
 void ChunkManager::clearSavedChunks()
@@ -157,10 +149,13 @@ void ChunkManager::loadWorker()
 
 		loadCondition.wait(lock, [this] { return !chunksToLoad.empty(); });
 
-		ChunkCoord coord = chunksToLoad.front();
-		chunksToLoad.pop();
-
 		lock.unlock();
+
+		std::optional<ChunkCoord> loadCoord = chunksToLoad.pop_front();
+		if (!loadCoord.has_value())
+			continue;
+
+		ChunkCoord coord = loadCoord.value();
 
 		std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>(coord, world);
 
@@ -179,10 +174,7 @@ void ChunkManager::loadWorker()
 		
 		remeshChunk(coord);
 
-		{
-			std::lock_guard chunksLock(chunksMutex);
-			loadedChunks.insert({ coord, chunk });
-		}
+		readyChunks.push_back(chunk);
 	}
 }
 
@@ -195,21 +187,21 @@ void ChunkManager::meshWorker()
 
 		meshCondition.wait(lock, [this] { return !chunksToMesh.empty(); });
 
-		std::shared_ptr<Chunk> chunk = chunksToMesh.front();
-		chunksToMesh.pop_front();
-
 		lock.unlock();
 
-		if (chunk == nullptr)
-		{
+		std::optional<std::shared_ptr<Chunk>> chunkOpt = chunksToMesh.pop_front();
+		if (!chunkOpt.has_value())
 			continue;
-		}
+
+		std::shared_ptr<Chunk> chunk = chunkOpt.value();
+
+		if (chunk == nullptr)
+			continue;
 
 		std::shared_ptr<ChunkMesh> newMesh = std::make_shared<ChunkMesh>();
 
 		chunk->updateLight(world->getBlockData());
 		chunk->generateMesh(world->getBlockData(), newMesh);
-
 
 		std::atomic_store_explicit(&chunk->pendingMesh, newMesh, std::memory_order_release);
 	}

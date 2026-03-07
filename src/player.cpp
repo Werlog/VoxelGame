@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include "world.h"
 #include "imgui.h"
+#include "profiling/profiler.h"
 
 Player::Player(Camera* camera, World* world, Hotbar* hotbar, ResourceManager& resourceManager)
 	: blockOutline(&(resourceManager.getShader("shaders\\outline"))),
@@ -25,6 +26,7 @@ Player::Player(Camera* camera, World* world, Hotbar* hotbar, ResourceManager& re
 
 void Player::update(InputHandler& inputHandler, float deltaTime)
 {
+	PROFILER_ZONE;
 	camera->update(inputHandler);
 
 	movement(inputHandler, deltaTime);

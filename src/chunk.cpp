@@ -118,6 +118,7 @@ void Chunk::generateMesh(BlockData& blockData, std::shared_ptr<ChunkMesh> output
 
 void Chunk::createChunkMesh()
 {
+	PROFILER_ZONE;
 	if (gpuMesh->faces.size() == 0)
 	{
 		return;

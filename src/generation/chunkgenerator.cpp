@@ -57,8 +57,8 @@ void ChunkGenerator::setBlockHeightAt(int blockX, int blockZ, short height)
 void ChunkGenerator::initPhases()
 {
 	phases.emplace_back(std::make_unique<TerrainShapePhase>(*this));
-	phases.emplace_back(std::make_unique<FeaturePhase>(*this));
-	phases.emplace_back(std::make_unique<VegetationPhase>(*this));
+	//phases.emplace_back(std::make_unique<FeaturePhase>(*this));
+	//phases.emplace_back(std::make_unique<VegetationPhase>(*this));
 }
 
 unsigned int ChunkGenerator::getChunkSeed(const ChunkCoord& coord, unsigned int subsystemId)

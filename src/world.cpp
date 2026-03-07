@@ -8,6 +8,7 @@
 #include <random>
 #include <limits>
 #include "GameState/PlayingGameState.h"
+#include "profiling/profiler.h"
 
 World::World(Shader& terrainShader, PlayingGameState* playingState, const std::string& worldName, int worldSeed)
 	: chunkManager(this), worldSaver(this, playingState), blockData(terrainShader)
@@ -26,6 +27,7 @@ World::World(Shader& terrainShader, PlayingGameState* playingState, const std::s
 
 void World::updateWorld(Player& player, float deltaTime)
 {
+	PROFILER_ZONE;
 	ChunkCoord playerCoord = ChunkCoord::toChunkCoord(player.getWorldPosition());
 
 
@@ -44,7 +46,6 @@ void World::renderWorld(const ChunkCoord& playerCoord, Camera& camera)
 	const glm::vec3& cameraPos = camera.getPosition();
 
 	const auto& loadedChunks = chunkManager.getLoadedChunks();
-	std::lock_guard lock(chunkManager.getChunkMutex());
 	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
 	{
 		std::shared_ptr<Chunk> chunk = (*it).second;
@@ -70,6 +71,7 @@ void World::renderWorld(const ChunkCoord& playerCoord, Camera& camera)
 
 void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 {
+	PROFILER_ZONE;
 	std::queue<ChunkCoord> coordsToLoad;
 	std::unordered_set<ChunkCoord> visited;
 
@@ -84,11 +86,8 @@ void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 		if (visited.find(coord) != visited.end())
 			continue;
 
-		{
-			std::lock_guard lock(chunkManager.getChunkMutex());
-			if (loadedChunks.find(coord) == loadedChunks.end())
-				loadChunk(coord);
-		}
+		if (loadedChunks.find(coord) == loadedChunks.end())
+			loadChunk(coord);
 		
 		for (const auto& direction : worldDirections)
 		{
@@ -299,6 +298,7 @@ void World::setupWorldGen()
 
 void World::performRandomUpdates(float deltaTime)
 {
+	PROFILER_ZONE;
 	sinceRandomUpdate += deltaTime;
 
 	if (sinceRandomUpdate > RANDOM_UPDATE_DELAY)
