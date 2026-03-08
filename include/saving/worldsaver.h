@@ -25,6 +25,6 @@ private:
 	void ensureChunksDirectory();
 	void saveChunks();
 
-	void saveChunk(std::shared_ptr<Chunk> chunk);
+	void saveChunk(const std::shared_ptr<Chunk>& chunk);
 	void createEmptyRegionFile(const std::string& filePath);
 };

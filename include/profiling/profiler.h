@@ -7,6 +7,7 @@
 #define PROFILER_ZONE_N(name) ZoneScopedN(name)
 #define PROFILER_FRAME FrameMark
 #define PROFILER_THREAD_NAME(name) tracy::SetThreadName(name)
+#define PROFILER_PLOT(plotName, value) TracyPlot(plotName, value)
 
 #else
 
@@ -14,5 +15,6 @@
 #define PROFILER_ZONE_N(name)
 #define PROFILER_FRAME
 #define PROFILER_THREAD_NAME(name)
+#define PROFILER_PLOT(plotName, value)
 
 #endif

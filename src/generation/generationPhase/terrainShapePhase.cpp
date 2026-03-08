@@ -12,16 +12,6 @@ TerrainShapePhase::TerrainShapePhase(ChunkGenerator& chunkGenerator)
 	densityNoiseSet = nullptr;
 }
 
-TerrainShapePhase::~TerrainShapePhase()
-{
-	if (heightNoiseSet != nullptr)
-		FastNoiseSIMD::FreeNoiseSet(heightNoiseSet);
-	if (weirdnessNoiseSet != nullptr)
-		FastNoiseSIMD::FreeNoiseSet(weirdnessNoiseSet);
-	if (densityNoiseSet != nullptr)
-		FastNoiseSIMD::FreeNoiseSet(densityNoiseSet);
-}
-
 void TerrainShapePhase::generate()
 {
 	PROFILER_ZONE;
@@ -61,6 +51,10 @@ void TerrainShapePhase::generate()
 	}
 
 	populateHeightMap();
+
+	FastNoiseSIMD::FreeNoiseSet(heightNoiseSet);
+	FastNoiseSIMD::FreeNoiseSet(weirdnessNoiseSet);
+	FastNoiseSIMD::FreeNoiseSet(densityNoiseSet);
 }
 
 void TerrainShapePhase::populateHeightMap()

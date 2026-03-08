@@ -36,7 +36,7 @@ public:
 	
 	void setPosition(glm::vec3 newPosition);
 
-	bool isInsideFrustum(AABB& aabb);
+	bool isInsideFrustum(AABB& aabb) const;
 
 	void update(InputHandler& inputHandler);
 	void ProccessMouse(float mouseX, float mouseY, bool constrainPitch = true);

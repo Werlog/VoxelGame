@@ -61,17 +61,14 @@ void WorldSaver::ensureChunksDirectory()
 
 void WorldSaver::saveChunks()
 {
-	const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& loadedChunks = world->getChunkManager().getLoadedChunks();
+	const ts_unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& loadedChunks = world->getChunkManager().getLoadedChunks();
 
-	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
-	{
-		const std::shared_ptr<Chunk>& chunk = it->second;
-
+	loadedChunks.for_each([this](const ChunkCoord& coord, const std::shared_ptr<Chunk>& chunk) {
 		if (chunk->wasModified())
 		{
 			saveChunk(chunk);
 		}
-	}
+	});
 
 	const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& savedChunks = world->getChunkManager().getSavedChunks();
 
@@ -83,7 +80,7 @@ void WorldSaver::saveChunks()
 	world->getChunkManager().clearSavedChunks();
 }
 
-void WorldSaver::saveChunk(std::shared_ptr<Chunk> chunk)
+void WorldSaver::saveChunk(const std::shared_ptr<Chunk>& chunk)
 {
 	WorldRegion region = WorldRegion::toWorldRegion(chunk->getCoord());
 	std::string regionPath = saveutil::getRegionPath(region, savePath);

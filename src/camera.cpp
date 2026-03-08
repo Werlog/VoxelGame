@@ -41,7 +41,7 @@ void Camera::setPosition(glm::vec3 newPosition)
 	updateFrustum();
 }
 
-bool Camera::isInsideFrustum(AABB& aabb)
+bool Camera::isInsideFrustum(AABB& aabb) const
 {
 	return frustum.nearPlane.isOnOrForwardPlane(aabb) &&
 		frustum.farPlane.isOnOrForwardPlane(aabb) &&

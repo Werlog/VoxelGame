@@ -12,12 +12,12 @@ ChunkManager::ChunkManager(World* world)
 
 void ChunkManager::loadChunk(ChunkCoord coord)
 {
-	if (loadedChunks.find(coord) != loadedChunks.end()) return;
+	if (loadedChunks.contains(coord)) return;
 
 	auto it = savedChunks.find(coord);
 	if (it != savedChunks.end())
 	{
-		loadedChunks.insert({ coord, it->second });
+		loadedChunks.insert(coord, it->second);
 		remeshChunk(it->first);
 		savedChunks.erase(it);
 	}
@@ -28,7 +28,7 @@ void ChunkManager::loadChunk(ChunkCoord coord)
 
 void ChunkManager::unloadChunk(ChunkCoord coord)
 {
-	if (loadedChunks.find(coord) == loadedChunks.end())
+	if (!loadedChunks.contains(coord))
 		return;
 
 	chunksToUnload.insert(coord);
@@ -37,11 +37,10 @@ void ChunkManager::unloadChunk(ChunkCoord coord)
 void ChunkManager::update()
 {
 	PROFILER_ZONE;
-	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
-	{
-		std::shared_ptr<Chunk> chunk = it->second;
+
+	loadedChunks.for_each([this](const ChunkCoord& coord, std::shared_ptr<Chunk>& chunk) {
 		if (chunk == nullptr)
-			continue;
+			return;
 
 		std::shared_ptr<ChunkMesh> pendingMesh = std::atomic_exchange_explicit(&chunk->pendingMesh, std::shared_ptr<ChunkMesh>{}, std::memory_order_acquire);
 
@@ -50,7 +49,7 @@ void ChunkManager::update()
 			chunk->gpuMesh = pendingMesh;
 			chunk->createChunkMesh();
 		}
-	}
+	});
 
 	int unloadedCount = 0;
 	for (auto it = chunksToUnload.begin(); it != chunksToUnload.end();)
@@ -74,9 +73,10 @@ void ChunkManager::update()
 
 	while (!readyChunks.empty())
 	{
+		PROFILER_ZONE_N("Load ready chunk");
 		std::shared_ptr<Chunk> chunk = readyChunks.pop_front().value();
 		
-		loadedChunks.insert({ chunk->getCoord(), chunk });
+		loadedChunks.insert(chunk->getCoord(), chunk);
 	}
 }
 
@@ -98,7 +98,7 @@ void ChunkManager::remeshChunk(ChunkCoord coord, bool pushToFront)
 	meshCondition.notify_one();
 }
 
-const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& ChunkManager::getLoadedChunks()
+const ts_unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& ChunkManager::getLoadedChunks()
 {
 	return loadedChunks;
 }
@@ -110,17 +110,17 @@ const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& ChunkManager::getS
 
 std::shared_ptr<Chunk> ChunkManager::getLoadedChunk(ChunkCoord coordinate)
 {
-	auto it = loadedChunks.find(coordinate);
-	if (it == loadedChunks.end())
+	auto it = loadedChunks.get(coordinate);
+	if (!it.has_value())
 		return nullptr;
 
-	return it->second;
+	return it.value();
 }
 
 std::shared_ptr<Chunk> ChunkManager::getSavedChunk(ChunkCoord coordinate)
 {
 	auto it = savedChunks.find(coordinate);
-	if (it == loadedChunks.end())
+	if (it == savedChunks.end())
 		return nullptr;
 
 	return it->second;

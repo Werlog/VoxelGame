@@ -12,6 +12,8 @@
 #include "saving/worldloader.h"
 #include "generation/chunkgenerator.h"
 #include "util/tsQueue.h"
+#include "util/tsUnorderedMap.h"
+
 
 class World;
 
@@ -32,7 +34,7 @@ public:
 	void update();
 	void remeshChunk(ChunkCoord coord, bool pushToFront = false);
 
-	const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& getLoadedChunks();
+	const ts_unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& getLoadedChunks();
 	const std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>>& getSavedChunks();
 	std::shared_ptr<Chunk> getLoadedChunk(ChunkCoord coordinate);
 	std::shared_ptr<Chunk> getSavedChunk(ChunkCoord coordinate);
@@ -43,7 +45,7 @@ private:
 	WorldLoader saveLoader;
 	ChunkGenerator chunkGenerator;
 
-	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> loadedChunks;
+	ts_unordered_map<ChunkCoord, std::shared_ptr<Chunk>> loadedChunks;
 	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> savedChunks;
 
 	ts_queue<ChunkCoord> chunksToLoad;

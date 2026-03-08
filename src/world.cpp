@@ -46,12 +46,10 @@ void World::renderWorld(const ChunkCoord& playerCoord, Camera& camera)
 	const glm::vec3& cameraPos = camera.getPosition();
 
 	const auto& loadedChunks = chunkManager.getLoadedChunks();
-	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
-	{
-		std::shared_ptr<Chunk> chunk = (*it).second;
-		if (!chunk->hasMesh()) continue;
 
-		const ChunkCoord& coord = (*it).first;
+	loadedChunks.for_each([this, camera, cameraPos, playerCoord](const ChunkCoord& coord, const std::shared_ptr<Chunk>& chunk) {
+		if (!chunk->hasMesh()) return;
+
 		glm::mat4 model = glm::mat4(1.0f);
 
 		ChunkCoord relative = coord - playerCoord;
@@ -59,14 +57,14 @@ void World::renderWorld(const ChunkCoord& playerCoord, Camera& camera)
 		
 		AABB aabb = AABB(relativePos, relativePos + glm::vec3(32));
 		if (!camera.isInsideFrustum(aabb))
-			continue;
+			return;
 		
 		model = glm::translate(model, relativePos);
 
 		glUniformMatrix4fv(shaderModelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 		chunk->render(blockData);
-	}
+	});
 }
 
 void World::updateLoadedChunks(ChunkCoord& newCoordinate)
@@ -86,7 +84,7 @@ void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 		if (visited.find(coord) != visited.end())
 			continue;
 
-		if (loadedChunks.find(coord) == loadedChunks.end())
+		if (!loadedChunks.contains(coord))
 			loadChunk(coord);
 		
 		for (const auto& direction : worldDirections)
@@ -108,10 +106,7 @@ void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 		visited.insert(coord);
 	}
 
-	for (auto it = loadedChunks.begin(); it != loadedChunks.end(); it++)
-	{
-		const ChunkCoord& coord = it->first;
-
+	loadedChunks.for_each([this, newCoordinate](const ChunkCoord& coord, const std::shared_ptr<Chunk>& chunk) {
 		float xDiff = abs(newCoordinate.x - coord.x);
 		float yDiff = abs(newCoordinate.y - coord.y);
 		float zDiff = abs(newCoordinate.z - coord.z);
@@ -121,7 +116,7 @@ void World::updateLoadedChunks(ChunkCoord& newCoordinate)
 		{
 			chunkManager.unloadChunk(coord);
 		}
-	}
+	});
 	
 	lastplayerCoord = newCoordinate;
 }

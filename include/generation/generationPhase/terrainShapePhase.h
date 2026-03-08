@@ -10,8 +10,6 @@ public:
 
 	TerrainShapePhase(ChunkGenerator& chunkGenerator);
 
-	~TerrainShapePhase();
-
 	void generate() override;
 private:
 	float* heightNoiseSet;
