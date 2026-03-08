@@ -548,7 +548,7 @@ void InitCallstack()
     // Sometimes this process can take a very long time and prevent resolving callstack frames
     // symbols during that time.
     const char* noInitLoadEnv = GetEnvVar( "TRACY_NO_DBGHELP_INIT_LOAD" );
-    const bool initTimeModuleLoad = !( noInitLoadEnv && noInitLoadEnv[0] == '1' );
+    const bool initTimeModuleLoad = false;
     if ( !initTimeModuleLoad )
     {
         TracyDebug("TRACY: skipping init time dbghelper module load\n");

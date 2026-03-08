@@ -5,6 +5,7 @@ project(tracy)
 if(PROFILE_TRACY)
 	add_library(tracy STATIC "${CMAKE_CURRENT_SOURCE_DIR}/src/TracyClient.cpp")
 	target_compile_definitions(tracy PUBLIC TRACY_ENABLE)
+	target_compile_definitions(tracy PUBLIC TRACY_NO_SYSTEM_TRACING)
 
 	target_include_directories(tracy PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/")
 else()
