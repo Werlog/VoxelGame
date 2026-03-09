@@ -49,7 +49,6 @@ private:
 	std::unordered_map<ChunkCoord, std::shared_ptr<Chunk>> savedChunks;
 
 	ts_queue<ChunkCoord> chunksToLoad;
-	ts_queue<std::shared_ptr<Chunk>> readyChunks; // Chunks that were just loaded by the loadWorker
 
 	ts_queue<std::shared_ptr<Chunk>> chunksToMesh;
 	std::unordered_set<ChunkCoord> chunksToUnload;

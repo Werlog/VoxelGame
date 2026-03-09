@@ -122,7 +122,7 @@ float TerrainShapePhase::getDensityAt(int x, int y, int z)
 	int yPos = y + chunk->getCoord().y * CHUNK_SIZE_Y;
 
 	float weirdness = (getWeirdnessNoiseAt(x, z) + 1.0f) * 0.5f;
-	weirdness -= (float)yPos / 60.0f;
+	weirdness -= (float)yPos / 70.0f;
 	weirdness = std::max(0.0f, weirdness);
 
 	if (weirdness < 0.1f) return -1.0f;
@@ -156,5 +156,5 @@ float TerrainShapePhase::getWeirdnessNoiseAt(int x, int z)
 
 int TerrainShapePhase::getHeightAt(int x, int z)
 {
-	return (int)floor(10.0f + getHeightNoiseAt(x, z) * 13.0f);
+	return (int)floor(10.0f + getHeightNoiseAt(x, z) * 15.0f);
 }

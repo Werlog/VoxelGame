@@ -55,7 +55,7 @@ public:
 	void for_each(const std::function<void(const K& key, const V& value)>& func) const
 	{
 		PROFILER_ZONE_N("Const for_each");
-		//std::shared_lock lock(mapMutex);
+		std::shared_lock lock(mapMutex);
 		for (const auto& [key, value] : map)
 		{
 			func(key, value);
@@ -65,7 +65,7 @@ public:
 	void for_each(const std::function<void(const K& key, V& value)>& func)
 	{
 		PROFILER_ZONE_N("Mutable for_each");
-		//std::unique_lock lock(mapMutex);
+		std::unique_lock lock(mapMutex);
 		for (auto& [key, value] : map)
 		{
 			func(key, value);

@@ -70,14 +70,6 @@ void ChunkManager::update()
 		it = chunksToUnload.erase(it);
 		unloadedCount++;
 	}
-
-	while (!readyChunks.empty())
-	{
-		PROFILER_ZONE_N("Load ready chunk");
-		std::shared_ptr<Chunk> chunk = readyChunks.pop_front().value();
-		
-		loadedChunks.insert(chunk->getCoord(), chunk);
-	}
 }
 
 void ChunkManager::remeshChunk(ChunkCoord coord, bool pushToFront)
@@ -174,7 +166,7 @@ void ChunkManager::loadWorker()
 		
 		remeshChunk(coord);
 
-		readyChunks.push_back(chunk);
+		loadedChunks.insert(coord, chunk);
 	}
 }
 
