@@ -3,12 +3,10 @@
 #include "shader.h"
 #include "resourcemanager.h"
 #include "camera.h"
-
-constexpr float cloudPlaneSize = 700.0f;
-
 class Clouds
 {
 public:
+	static constexpr float cloudPlaneSize = 700.0f;
 
 	Clouds(ResourceManager& resourceManager);
 

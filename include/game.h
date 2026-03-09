@@ -10,14 +10,13 @@
 #include "debugRenderer.h"
 #include "fpscounter.h"
 
-constexpr int windowWidth = 1280;
-constexpr int windowHeight = 720;
-
 class BaseGameState;
 
 class Game
 {
 public:
+	static constexpr int windowWidth = 1280;
+	static constexpr int windowHeight = 720;
 
 	Game();
 

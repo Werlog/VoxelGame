@@ -12,12 +12,12 @@ enum CameraMovement {
 	RIGHT
 };
 
-constexpr float nearPlane = 0.1f;
-constexpr float farPlane = 1000.0f;
-
 class Camera
 {
 public:
+	static constexpr float nearPlane = 0.1f;
+	static constexpr float farPlane = 1000.0f;
+
 	glm::vec3 front;
 	glm::vec3 up;
 	glm::vec3 right;

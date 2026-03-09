@@ -54,7 +54,7 @@ void ChunkManager::update()
 	int unloadedCount = 0;
 	for (auto it = chunksToUnload.begin(); it != chunksToUnload.end();)
 	{
-		if (unloadedCount >= MAX_UNLOAD_COUNT)
+		if (unloadedCount >= World::MAX_UNLOAD_COUNT)
 			break;
 		PROFILER_ZONE_N("Unload chunk");
 
@@ -158,7 +158,7 @@ void ChunkManager::loadWorker()
 			chunkGenerator.generate();
 		}
 
-		for (const auto& direction : worldDirections)
+		for (const auto& direction : World::worldDirections)
 		{
 			ChunkCoord nCoord = ChunkCoord{ coord.x + direction[0], coord.y + direction[1], coord.z + direction[2] };
 			remeshChunk(nCoord);

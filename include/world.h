@@ -10,19 +10,18 @@
 #include "chunkmanager.h"
 #include "saving/worldsaver.h"
 
-constexpr int RENDER_DISTANCE = 10;
-constexpr int SIMULATION_DISTANCE = 1; // The chunk radius in which blocks will receive random updates
-constexpr float RANDOM_UPDATE_DELAY = 0.1f;
-constexpr int RENDER_HEIGHT = 1;
-constexpr int MAX_UNLOAD_COUNT = 2; // Maximum amount of chunks to unload per frame
-
-constexpr int worldDirections[6][3] = { { 1, 0, 0 }, { 0, 0, 1 }, { -1, 0, 0, }, { 0, 0, -1 }, { 0, 1, 0 }, { 0, -1, 0 } };
 
 class PlayingGameState;
 
 class World
 {
 public:
+	static constexpr int RENDER_DISTANCE = 10;
+	static constexpr int SIMULATION_DISTANCE = 1; // The chunk radius in which blocks will receive random updates
+	static constexpr float RANDOM_UPDATE_DELAY = 0.1f;
+	static constexpr int RENDER_HEIGHT = 1;
+	static constexpr int MAX_UNLOAD_COUNT = 2; // Maximum amount of chunks to unload per frame
+	static constexpr int worldDirections[6][3] = { { 1, 0, 0 }, { 0, 0, 1 }, { -1, 0, 0, }, { 0, 0, -1 }, { 0, 1, 0 }, { 0, -1, 0 } };
 
 	World(Shader& terrainShader, PlayingGameState* playingState, const std::string& worldName, int worldSeed);
 

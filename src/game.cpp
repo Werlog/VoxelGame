@@ -130,9 +130,9 @@ void Game::gameLoop()
 		// Rendering
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		fpsCounter.render(uiRenderer);
-
 		currentState->render();
+
+		fpsCounter.render(uiRenderer);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

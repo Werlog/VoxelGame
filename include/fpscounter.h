@@ -1,11 +1,10 @@
 #pragma once
 #include "UI/uirenderer.h"
 
-constexpr float frameUpdatePeriod = 0.25f;
-
 class FpsCounter
 {
 public:
+	static constexpr float frameUpdatePeriod = 0.25f;
 
 	FpsCounter();
 

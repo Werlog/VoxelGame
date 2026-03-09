@@ -158,7 +158,7 @@ glm::vec3 ViewModel::calculateDisplayPosition()
 void ViewModel::onResize()
 {
 	float aspect = uiRenderer.getWindowWidth() / (float)uiRenderer.getWindowHeight();
-	projectionMatrix = glm::perspective(glm::radians(viewModelFOV), aspect, nearPlane, farPlane);
+	projectionMatrix = glm::perspective(glm::radians(viewModelFOV), aspect, Camera::nearPlane, Camera::farPlane);
 
 	if (depthHandle != 0)
 		glDeleteTextures(1, &depthHandle);
